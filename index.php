@@ -1,3 +1,3 @@
 <?php
-    echo "started";
+    header("Location: /admin.html");
 ?>
