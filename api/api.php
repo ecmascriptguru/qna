@@ -6,6 +6,7 @@ require("../config/db-config.php");
 require("../classes/qnaTypes.php");
 require("../classes/qnaWizards.php");
 require("../classes/qnaSubjects.php");
+require("../classes/qnaResults.php");
 
 if (!isset($_POST) || empty($_POST)) {
     $DATA = $_GET;
@@ -82,10 +83,32 @@ switch($end_point) {
             echo json_encode($return);
         }
         break;
-        break;
 
-    case "answers":
-        //
+    case "results":
+        if ($action == "get_all") {
+            $results = get_all_results($conn, $params);
+
+            echo json_encode([
+                'status' => true,
+                'results' => $results
+            ]);
+        } else if ($action == "create") {
+            $return = create_result($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "get") {
+            $return = get_result($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "update") {
+            $return = update_result($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "delete") {
+            $return = delete_result($conn, $params);
+
+            echo json_encode($return);
+        }
         break;
 
     case "preserved":
