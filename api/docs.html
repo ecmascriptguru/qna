@@ -316,14 +316,181 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane" id="resutls-api">Settings Tab.</div>
+                        <div class="tab-pane" id="resutls-api">
+                            <div class="content">
+                                <h3 class="subject">Getting all Results</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "resuts",
+    "action": "get_all",
+    "params": {}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "results":[
+        {
+            "id":"2",
+            "user_id":"1",
+            "wizard_id":"2",
+            "analysis":"80"
+        },
+        //...
+        {
+            "id":"30",
+            "user_id":"3",
+            "wizard_id":"6",
+            "analysis":"30"
+        }
+    ]
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Create a Result</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "results",
+    "action": "create",
+    "params": {
+        "user_id":1,
+        "wizard_id":2,
+        "analysis":80, 
+        "answers":[
+            {
+                "subject_id":2,
+                "value":"none",
+                "est": 40
+            }
+        ]
+    }
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "result_id":3
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Get a Result</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "results",
+    "action": "get",
+    "params": {"id": 3}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "result":{
+        "id":"3",
+        "user_id":"1",
+        "wizard_id":"2",
+        "analysis":"64"
+    },
+    "answers":[
+        {
+            "id":"3",
+            "result_id":"3",
+            "subject_id":"2",
+            "value":"none","estimation":"40"
+        },
+
+        // ...
+        {
+            "id":"28",
+            "result_id":"3",
+            "subject_id":"75",
+            "value":"none","estimation":"80"
+        }
+    ]
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Update a Result</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "resutls",
+    "action": "update",
+    "params": {
+        "id":1,
+        "user_id":1,
+        "wizard_id":2,
+        "analysis":90,
+        "answers":[{"subject_id":2, "value":"none", "est": 40}]
+    }
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Delete a Result</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "results",
+    "action": "delete",
+    "params": {"id": 3}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true
+}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-		<footer>
-            <a href="/admin.html">Go to Admin Page</a>
-        </footer>
     </div>
 	<script src="../assets/js/jquery.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
