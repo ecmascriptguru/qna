@@ -67,10 +67,20 @@ function get_result($conn, $params) {
     $results = array();
 
     if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
+        $resultRow = $result->fetch_assoc();
+
+        $query = "SELECT * FROM `qna_answers` WHERE `result_id`={$resultRow['id']}";
+        $answers = array();
+        $answerResult = $conn->query($query);
+        if ($answerResult->num_rows > 0) {
+            while($answerRow = $answerResult->fetch_assoc()) {
+                array_push($answers, $answerRow);
+            }
+        }
         return [
             'status' => true,
-            'result' => $row
+            'result' => $resultRow,
+            'answers' => $answers
         ];
     } else {
         return [
@@ -84,20 +94,11 @@ function get_result($conn, $params) {
  *  updating a result
  */
 function update_result($conn, $params) {
-    if(isset($params->value)) {
-        $value = $params->value;
+    if(isset($params->analysis)) {
+        $analysis = $params->analysis;
     }
 
-    if (empty($value) || $value == "") {
-        $type_id = $params->type_id;
-        if (!isset($type_id) || empty($type_id)) {
-            $type_id = 1;
-        }
-        $type = get_type($conn, $params->type_id);
-        $value = $type['value'];
-    }
-
-    $query = "UPDATE `qna_results` SET question='{$params->question}', type_id={$params->type_id}, value='{$value}' WHERE id={$params->id}";
+    $query = "UPDATE `qna_results` SET analysis='{$analysis}' WHERE id={$params->id}";
     
     if ($conn->query($query) === TRUE) {
         return [
