@@ -1,6 +1,5 @@
 <?php
 
-// namespace App\Classes;
 /**
  *  Getting all step logics
  */

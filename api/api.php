@@ -3,8 +3,9 @@
 require("../config/env.php");
 require("../config/db-config.php");
 
-require("../classes/qnaType.php");
+require("../classes/qnaTypes.php");
 require("../classes/qnaWizards.php");
+require("../classes/qnaSubjects.php");
 
 if (!isset($_POST) || empty($_POST)) {
     $DATA = $_GET;
@@ -56,7 +57,31 @@ switch($end_point) {
         break;
 
     case "subjects":
-        //
+        if ($action == "get_all") {
+            $subjects = get_all_subjects($conn, $params);
+
+            echo json_encode([
+                'status' => true,
+                'subjects' => $subjects
+            ]);
+        } else if ($action == "create") {
+            $return = create_subject($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "get") {
+            $return = get_subject($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "update") {
+            $return = update_subject($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "delete") {
+            $return = delete_subject($conn, $params);
+
+            echo json_encode($return);
+        }
+        break;
         break;
 
     case "answers":
