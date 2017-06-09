@@ -4,7 +4,7 @@ require("../config/env.php");
 require("../config/db-config.php");
 
 require("../classes/qnaType.php");
-require("../classes/wizards.php");
+require("../classes/qnaWizards.php");
 
 if (!isset($_POST) || empty($_POST)) {
     $DATA = $_GET;
