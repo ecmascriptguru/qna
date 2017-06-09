@@ -4,13 +4,278 @@
 	<title>API References</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.css">
     <link rel="stylesheet" href="../assets/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="../assets/css/docs.css">
 </head>
 <body>
 	<div class="wrapper">
-        <div class="container">
-            <h3>Question and Answers</h3>
-            <div id="qna-container">
-                Here we will see the questions and answer options one by one rendered by JavaScript library.
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <!-- required for floating -->
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs tabs-left">
+                        <li class="active"><a href="#types-api" data-toggle="tab">Answer Types API</a></li>
+                        <li><a href="#wizards-api" data-toggle="tab">Wizards API</a></li>
+                        <li><a href="#subjects-api" data-toggle="tab">Subjects API</a></li>
+                        <li><a href="#resutls-api" data-toggle="tab">Resutls API</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-6">
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="types-api">
+                            <div class="content">
+                                <h3 class="subject">Getting all Answer Types</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "types",
+    "action": "get_all",
+    "params": "{}"
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "types":[
+        {
+            "id":"1",
+            "type_name":"Text Field",
+            "value":"{\"caption\":\"title\",\"value\":\"\",\"weight\":100}"
+        },
+        ...
+        
+        {
+            "id":"10",
+            "type_name":"Number Field",
+            "value":"{\"caption\":\"title\",\"value\":\"\",\"weight\":100}"
+        }
+    ]
+}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="wizards-api">
+                            <div class="content">
+                                <h3 class="subject">Getting all Wizards</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "wizards",
+    "action": "get_all",
+    "params": "{}"
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "wizards":[
+        {
+            "id":"1",
+            "name":"First one"
+        },
+        {
+            "id":"2",
+            "name":"something"
+        },
+        //...
+        {
+            "id":"n",
+            "name":"last one"
+        }
+    ]
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Create a Wizard</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "wizards",
+    "action": "create",
+    "params": {"name": "Something new"}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "wizard_id":3
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Update a Wizard</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "wizards",
+    "action": "update",
+    "params": {"id": 3, "name": "Different one."}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Delete a Wizard</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "wizards",
+    "action": "delete",
+    "params": {"id": 3}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true
+}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="subjects-api">
+                            <div class="content">
+                                <h3 class="subject">Getting all Subjects</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "subjects",
+    "action": "get_all",
+    "params": {"wizard_id":2}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "subjects":[
+        {
+            "id":"2",
+            "question":"Is that correct?",
+            "wizard_id":"2",
+            "type_id":"1",
+            "value":"{\"caption\":\"title\",\"value\":\"\",\"weight\":100}"
+        }
+    ]
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Create a Subject</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "subjects",
+    "action": "create",
+    "params": {"name": "Something new"}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "wizard_id":3
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Update a Wizard</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "wizards",
+    "action": "update",
+    "params": {"id": 3, "name": "Different one."}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Delete a Wizard</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "wizards",
+    "action": "delete",
+    "params": {"id": 3}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true
+}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="resutls-api">Settings Tab.</div>
+                    </div>
+                </div>
             </div>
         </div>
 		<footer>
