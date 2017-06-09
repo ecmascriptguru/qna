@@ -125,7 +125,7 @@
                             </div>
 
                             <div class="content">
-                                <h3 class="subject">Update a Wizard</h3>
+                                <h3 class="subject">Get a Wizard</h3>
                                 <div class="api-url">
                                     <pre>POST: http://host.com/api/api.php</pre>
                                 </div>
@@ -133,15 +133,19 @@
                                     <pre>
 {
     "endpoint": "wizards",
-    "action": "update",
-    "params": {"id": 3, "name": "Different one."}
+    "action": "get",
+    "params": {"id": 3}
 }
                                     </pre>
                                 </div>
                                 <div class="api-response">
                                     <pre>
 {
-    "status":true
+    "status":true,
+    "wizard":{
+        "id":"2",
+        "name":"something"
+    }
 }
                                     </pre>
                                 </div>
@@ -213,7 +217,11 @@
 {
     "endpoint": "subjects",
     "action": "create",
-    "params": {"name": "Something new"}
+    "params": {
+        "wizard_id":2,
+        "type_id":1,
+        "question":"Who are you?"
+    }
 }
                                     </pre>
                                 </div>
@@ -221,23 +229,58 @@
                                     <pre>
 {
     "status":true,
-    "wizard_id":3
+    "subject_id":3
 }
                                     </pre>
                                 </div>
                             </div>
 
                             <div class="content">
-                                <h3 class="subject">Update a Wizard</h3>
+                                <h3 class="subject">Get a Subject</h3>
                                 <div class="api-url">
                                     <pre>POST: http://host.com/api/api.php</pre>
                                 </div>
                                 <div class="api-requests">
                                     <pre>
 {
-    "endpoint": "wizards",
+    "endpoint": "subjects",
+    "action": "get",
+    "params": {"id": 3}
+}
+                                    </pre>
+                                </div>
+                                <div class="api-response">
+                                    <pre>
+{
+    "status":true,
+    "subject":{
+        "id":"2",
+        "question":"Is that correct?",
+        "wizard_id":"2",
+        "type_id":"1",
+        "value":"{\"caption\":\"title\",\"value\":\"\",\"weight\":100}"
+    }
+}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="content">
+                                <h3 class="subject">Update a Subject</h3>
+                                <div class="api-url">
+                                    <pre>POST: http://host.com/api/api.php</pre>
+                                </div>
+                                <div class="api-requests">
+                                    <pre>
+{
+    "endpoint": "subjects",
     "action": "update",
-    "params": {"id": 3, "name": "Different one."}
+    "params": {
+        "id":2,
+        "wizard_id":2,
+        "type_id":1,
+        "question":"Is that true?"
+    }
 }
                                     </pre>
                                 </div>
@@ -258,7 +301,7 @@
                                 <div class="api-requests">
                                     <pre>
 {
-    "endpoint": "wizards",
+    "endpoint": "subjects",
     "action": "delete",
     "params": {"id": 3}
 }
