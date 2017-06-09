@@ -1,3 +1,4 @@
 <?php
-    header("Location: /admin.html");
-?>
+
+namespace App;
+header("Location: /admin.html");

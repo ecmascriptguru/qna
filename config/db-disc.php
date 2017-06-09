@@ -1,2 +1,2 @@
 <?php
-$conn = null;
+$conn->close();

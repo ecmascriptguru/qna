@@ -1,5 +1,8 @@
 <?php
 
+/**
+*  Getting all of answer types
+*/
 function get_all_types($conn) {
     $query = "SELECT * FROM `qna_types`;";
     $result = $conn->query($query);

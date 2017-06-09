@@ -3,7 +3,8 @@
 require("../config/env.php");
 require("../config/db-config.php");
 
-require("../classes/types.php");
+require("../classes/qnaType.php");
+require("../classes/wizards.php");
 
 if (!isset($_POST) || empty($_POST)) {
     $DATA = $_GET;
@@ -14,7 +15,6 @@ if (!isset($_POST) || empty($_POST)) {
 $end_point = $DATA['end_point'];
 $action = $DATA['action'];
 $params = json_decode($DATA['params']);
-
 
 switch($end_point) {
     case "types":
@@ -29,7 +29,30 @@ switch($end_point) {
         break;
 
     case "wizards":
-        //
+        if ($action == "get_all") {
+            $wizards = get_all_wizards($conn);
+
+            echo json_encode([
+                'status' => true,
+                'wizards' => $wizards
+            ]);
+        } else if ($action == "create") {
+            $return = create_wizard($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "get") {
+            $return = get_wizard($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "update") {
+            $return = update_wizard($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "delete") {
+            $return = delete_wizard($conn, $params);
+
+            echo json_encode($return);
+        }
         break;
 
     case "subjects":

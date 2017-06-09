@@ -1,0 +1,10 @@
+{
+    "name": "monster/qna",
+    "authors": [
+        {
+            "name": "ecmascriptguru",
+            "email": "ecmascript.guru@gmail.com"
+        }
+    ],
+    "require": {}
+}
