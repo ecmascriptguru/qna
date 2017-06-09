@@ -1,6 +1,9 @@
 <?php
+
 require("../config/env.php");
 require("../config/db-config.php");
+
+require("../classes/types.php");
 
 if (!isset($_POST) || empty($_POST)) {
     $DATA = $_GET;
@@ -9,15 +12,36 @@ if (!isset($_POST) || empty($_POST)) {
 }
 
 $end_point = $DATA['end_point'];
+$action = $DATA['action'];
 $params = json_decode($DATA['params']);
 
 
 switch($end_point) {
     case "types":
-        echo json_encode([
-            'end_point' => $end_point,
-            'params' => $params
-        ]);
+        if ($action == "get_all") {
+            $types = get_all_types($conn);
+
+            echo json_encode([
+                'status' => true,
+                'types' => $types
+            ]);
+        }
+        break;
+
+    case "wizards":
+        //
+        break;
+
+    case "subjects":
+        //
+        break;
+
+    case "answers":
+        //
+        break;
+
+    case "preserved":
+        //
         break;
 
     default:

@@ -12,10 +12,8 @@ if ($env === "dev") {
     $DB_NAME = "qna";
 }
 
-try {
-    $conn = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USERNAME, $DB_PASSWORD);
+$conn = new mysqli($DB_HOST, $DB_USERNAME, $DB_PASSWORD, $DB_NAME);
 
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo "Failed";
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
