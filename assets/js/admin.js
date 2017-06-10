@@ -1,3 +1,3 @@
 (function(window, jQuery) {
-    QuestionGenerator.init("tool-container");
+    QuestionGenerator.init("tool-container", window.QNAConfig.baseUrl());
 })(window, $);
