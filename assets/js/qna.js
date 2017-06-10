@@ -366,11 +366,12 @@ let QuestionGenerator = (() => {
      * Render Answer Types Container. This should render answer options according to answer type
      */
     const renderAnswerOptions = (value, container) => {
-        let type = DataStorage.Types.find(value);
-        container.children().remove();
-        container.append(
-            $("<pre/>").text(JSON.stringify(type.value))
-        );
+        DataStorage.Types.find(value, (type) => {
+            container.children().remove();
+            container.append(
+                $("<pre/>").text(JSON.stringify((type || {}).value))
+            );
+        });
     }
 
     /**

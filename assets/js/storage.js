@@ -76,17 +76,24 @@ let DataStorage = (() => {
             }
         ];
 
-        const get = () => {
-            return _types;
+        const get = (callback) => {
+            if (typeof callback === "function") {
+                callback(_types);
+            }
         }
 
-        const find = (id) => {
+        const find = (id, callback) => {
             for( let i = 0; i < _types.length; i ++) {
                 if (_types[i].id == parseInt(id)) {
-                    return _types[i];
+                    if (typeof callback === "function") {
+                        callback(_types[i]);
+                        return false;
+                    }
                 }
             }
-            return null;
+            if (typeof callback === "function") {
+                callback(null);
+            }
         }
 
         return {
@@ -97,12 +104,18 @@ let DataStorage = (() => {
 
     let Wizards = (() => {
         let _wizards = [];
-        const get = () => {
-            return _wizards;
+        const get = (callback) => {
+            if (typeof callback === "function") {
+                callback(_wizards);
+            }
         }
 
-        const addWizard = (wizard) => {
+        const addWizard = (wizard, callback) => {
             _wizards.push(wizard);
+
+            if (typeof callback === "function") {
+                callback();
+            }
         }
 
         return {
