@@ -65,6 +65,44 @@ let QuestionGenerator = (() => {
                 id: "subjects-table",
                 class: "table table-striped table-bordered"
             }
+        },
+        newSubject: {
+            panel: {
+                id: "new-subject-panel",
+                class: "panel panel-default",
+                title: "Create a new Subject"
+            },
+            backButton: {
+                id: "new-subject-back-button",
+                class: "btn btn-default form-control",
+                title: "Back to List"
+            },
+            createButton: {
+                id: "new-subject-create-button",
+                class: "btn btn-primary form-control",
+                title: "Create"
+            },
+            questionInput: {
+                id: "new-subject-question-input",
+                class: "form-control",
+                title: "Enter a question."
+            },
+            typeSelect: {
+                id: "new-subject-type-select",
+                class: "form-control",
+                values: {
+                    "1": "Text Field",
+                    "2": "Number Field",
+                    "3": "Drop Down Choice",
+                    "4": "Multiple Choice",
+                    "5": "Yes / No"
+                }
+            },
+            answersContainer: {
+                id: "new-subject-answers-container",
+                class: "",
+                title: ""
+            }
         }
     }
 
@@ -100,7 +138,7 @@ let QuestionGenerator = (() => {
             panel = $(`#${settings.newWizard.panel.id}`).eq(0);
             backToWizardsButton = $(`#${settings.newWizard.panel.id} button#${settings.newWizard.backButton.id}`).eq(0);
             createWizardButton = $(`#${settings.newWizard.panel.id} button#${settings.newWizard.createButton.id}`).eq(0);
-            createWizardButton = $(`#${settings.newWizard.panel.id} input#${settings.newWizard.nameInput.id}`).eq(0);
+            wizardNameInput = $(`#${settings.newWizard.panel.id} input#${settings.newWizard.nameInput.id}`).eq(0);
         } else {
             panel = $("<div/>").addClass(settings.newWizard.panel.class).attr({id: settings.newWizard.panel.id});
             let panelHeader = $("<div/>").addClass("panel-heading").append(
@@ -221,7 +259,118 @@ let QuestionGenerator = (() => {
      * Render New Subject Panel
      */
     const renderNewSubjectForm = () => {
-        //
+        let panel = null,
+            backToSubjectsButton = null,
+            createSubjectButton = null,
+            questionInput = null,
+            typeSelect = null,
+            answersContainer = null;
+
+        if ($(`#${settings.newSubject.panel.id}`).length > 0) {
+            panel = $(`#${settings.newSubject.panel.id}`).eq(0);
+            backToSubjectsButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.backButton.id}`).eq(0);
+            createSubjectButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.createButton.id}`).eq(0);
+            questionInput = $(`#${settings.newSubject.panel.id} input#${settings.newSubject.questionInput.id}`).eq(0);
+            typeSelect = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.typeSelect.id}`).eq(0);
+            answersContainer = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.answersContainer.id}`).eq(0);
+        } else {
+            panel = $("<div/>").addClass(settings.newSubject.panel.class).attr({id: settings.newSubject.panel.id});
+            let panelHeader = $("<div/>").addClass("panel-heading").append(
+                    $("<h3/>").text(settings.newSubject.panel.title)
+                ),
+                panelBody = $("<div/>").addClass("panel-body"),
+                panelFooter = $("<div/>").addClass("panel-footer");
+
+            backToSubjectsButton = $("<button/>").addClass(settings.newSubject.backButton.class)
+                .text(settings.newSubject.backButton.title)
+                .attr({
+                    id: settings.newSubject.backButton.id
+                });
+            createSubjectButton = $("<button/>").addClass(settings.newSubject.createButton.class)
+                .text(settings.newSubject.createButton.title)
+                .attr({
+                    id: settings.newSubject.createButton.id
+                });
+                //  Adding buttons to panel footer
+                panelFooter.append(
+                    $("<div/>").addClass("row").append(
+                        $("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6").append(backToSubjectsButton),
+                        $("<div/>").addClass("col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6").append(createSubjectButton)
+                    )
+                );
+
+            questionInput = $("<input/>").addClass(settings.newSubject.questionInput.class)
+                .attr({
+                    id: settings.newSubject.questionInput.id,
+                    placeHolder: settings.newSubject.questionInput.title
+                });
+                //  Adding Input to panel body
+                panelBody.append(
+                    $("<div/>").addClass("form-group").append(
+                        $("<label/>").attr({for: settings.newSubject.questionInput.id}).text(settings.newSubject.questionInput.title),
+                        questionInput
+                    )
+                );
+
+            typeSelect = $("<select/>").addClass(settings.newSubject.typeSelect.class)
+                .attr({
+                    id: settings.newSubject.typeSelect.id
+                });
+                values = settings.newSubject.typeSelect.values;
+                for (let p in values) {
+                    typeSelect.append(
+                        $("<option/>").text(values[p]).val(p)
+                    );
+                }
+                //  Adding Input to panel body
+                panelBody.append(
+                    $("<div/>").addClass("form-group").append(
+                        $("<label/>").attr({for: settings.newSubject.typeSelect.id}).text(settings.newSubject.typeSelect.title),
+                        typeSelect
+                    )
+                );
+
+            answersContainer = $("<div/>").addClass(settings.newSubject.answersContainer.class)
+                .attr({
+                    id: settings.newSubject.answersContainer.id
+                });
+                //  Adding Input to panel body
+                panelBody.append(
+                    answersContainer.text("Controllers will be placed here.")
+                );
+            
+            panel.append(panelHeader, panelBody, panelFooter);
+            $_container.append(panel);
+
+            backToSubjectsButton.click(() => {
+                goTo(settings.subjects.panel.id);
+            });
+
+            createSubjectButton.click(() => {
+                if (questionInput.val() !== "") {
+                    createWizard(wizardNameInput.val())
+                } else {
+                    alert("Question can't be empty!");
+                }
+                //  Creating a new wizard
+            });
+
+            typeSelect.change((event) => {
+                renderAnswerOptions(event.target.value, answersContainer);
+            });
+        }
+        goTo(settings.newSubject.panel.id);
+    }
+
+    /**
+     * Render Answer Types Container. This should render answer options according to answer type
+     */
+    const renderAnswerOptions = (value, container) => {
+        let type = DataStorage.Types.find(value);
+        container.children().remove();
+        container.append(
+            $("<pre/>").text(JSON.stringify(type.value))
+        );
     }
 
     /**
@@ -230,6 +379,13 @@ let QuestionGenerator = (() => {
     const createWizard = (name) => {
         //  Code to create wizard here. Callback function should be used here.
         renderSubjectsPanel(name);
+    }
+
+    /**
+     * Create a new subject with properties given by admin
+     */
+    const createSubject = () => {
+        alert("Creating a new subject");
     }
 
     /**
