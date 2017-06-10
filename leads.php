@@ -1,3 +1,7 @@
+<?php
+require("config/env.php");
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +18,7 @@
             </div>
         </div>
 		<footer>
-            <a href="/admin.html">Go to Admin Page</a>
+            <a href="<?php echo $BASE_URL . '/admin.php'; ?>">Go to Admin Page</a>
         </footer>
     </div>
 	<script src="assets/js/jquery.js"></script>
