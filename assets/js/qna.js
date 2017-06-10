@@ -164,54 +164,56 @@ let QuestionGenerator = (() => {
      */
     const renderSubjectsPanel = (wizardName) => {
         //  Initializing container panel.
-        let containerPanel = $("<div/>").addClass(settings.subjects.panel.class).attr({
-                id: settings.subjects.panel.id
-            }),
-            panelHeader = $("<div/>").addClass("panel-heading"),
-            newButton = $("<button/>").addClass(settings.subjects.panel.newButton.class)
-                .text(settings.subjects.panel.newButton.title)
-                .attr({id: settings.subjects.panel.newButton.id}).css({
-                    position: "absolute",
-                    "top": "25px",
-                    "right": "15px"
+        if ($(`#${settings.subjects.panel.id}`).length == 0) {
+            let containerPanel = $("<div/>").addClass(settings.subjects.panel.class).attr({
+                    id: settings.subjects.panel.id
                 }),
-            panelBody = $("<div/>").addClass("panel-body"),
-            panelFooter = $("<div/>").addClass("panel-footer");
+                panelHeader = $("<div/>").addClass("panel-heading"),
+                newButton = $("<button/>").addClass(settings.subjects.panel.newButton.class)
+                    .text(settings.subjects.panel.newButton.title)
+                    .attr({id: settings.subjects.panel.newButton.id}).css({
+                        position: "absolute",
+                        "top": "25px",
+                        "right": "15px"
+                    }),
+                panelBody = $("<div/>").addClass("panel-body"),
+                panelFooter = $("<div/>").addClass("panel-footer");
 
-            panelHeader.css({position: "relative"}).append(
-                $("<h3/>").text(settings.subjects.panel.title),
-                newButton
-            ).appendTo(containerPanel);
+                panelHeader.css({position: "relative"}).append(
+                    $("<h3/>").text(settings.subjects.panel.title),
+                    newButton
+                ).appendTo(containerPanel);
 
-            panelBody.appendTo(containerPanel);
+                panelBody.appendTo(containerPanel);
 
-            panelFooter.append(
-                $("<button/>").addClass("btn btn-primary").text("Something")
-            ).appendTo(containerPanel);
+                panelFooter.append(
+                    $("<button/>").addClass("btn btn-primary").text("Something")
+                ).appendTo(containerPanel);
 
-        //  Initializing Subjects table.
-        let table = $("<table/>").addClass(settings.subjects.table.class)
-            .attr({
-                id: settings.subjects.table.id
-            }),
-            tHead = $("<thead/>"),
-            tHeadRecord = $("<tr/>"),
-            tBody = $("<tbody/>");
+            //  Initializing Subjects table.
+            let table = $("<table/>").addClass(settings.subjects.table.class)
+                .attr({
+                    id: settings.subjects.table.id
+                }),
+                tHead = $("<thead/>"),
+                tHeadRecord = $("<tr/>"),
+                tBody = $("<tbody/>");
 
-            tHeadRecord.append(
-                $("<th/>").text("#"),
-                $("<th/>").text("Question"),
-                $("<th/>").text("Answer Type"),
-                $("<th/>").text("Actions")
-            ).appendTo(tHead);
-            table.append(tHead, tBody);
+                tHeadRecord.append(
+                    $("<th/>").text("#"),
+                    $("<th/>").text("Question"),
+                    $("<th/>").text("Answer Type"),
+                    $("<th/>").text("Actions")
+                ).appendTo(tHead);
+                table.append(tHead, tBody);
 
-        panelBody.append(table);
+            panelBody.append(table);
 
-        $_container.append(containerPanel);
+            $_container.append(containerPanel);
 
-        // Binding Event to new Button
-        newButton.click(renderNewSubjectForm);
+            // Binding Event to new Button
+            newButton.click(renderNewSubjectForm);
+        }
         goTo(settings.subjects.panel.id);
     }
 
