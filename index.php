@@ -1,3 +1,3 @@
 <?php
-
-header("Location: /admin.html");
+require_once("config/env.php");
+header("Location: {$BASE_URL}admin.html");
