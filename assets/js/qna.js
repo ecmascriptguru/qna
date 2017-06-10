@@ -17,7 +17,7 @@ let QuestionGenerator = (() => {
     let settings = {
         wizards: {
             "panel": {
-                id: "wizards-table-container",
+                id: "wizards-panel",
                 class: "panel panel-default",
                 title: "Wizards List",
                 newButtonID: "new-wizard-button"
@@ -25,6 +25,28 @@ let QuestionGenerator = (() => {
             "table": {
                 id: "wizards-table",
                 class: "table table-striped table-bordered"
+            }
+        },
+        newWizard: {
+            panel: {
+                id: "new-wizard-panel",
+                class: "panel panel-default",
+                title: "Create a new Wizard"
+            },
+            backButton: {
+                id: "new-wizard-back-button",
+                class: "btn btn-default form-control",
+                title: "Back to List"
+            },
+            createButton: {
+                id: "new-wizard-create-button",
+                class: "btn btn-primary form-control",
+                title: "Create"
+            },
+            nameInput: {
+                id: "new-wizard-name-input",
+                class: "form-control",
+                title: "Wizard Name"
             }
         }
     }
@@ -39,10 +61,76 @@ let QuestionGenerator = (() => {
     };
 
     /**
+     * Go to Next Step
+     */
+    const goTo = (step) => {
+        if (!step) {
+            step = settings.wizards.panel.id;
+        }
+        $(".panel.active").removeClass("active");
+        $(`#${step}`).addClass("active")
+    }
+
+    /**
      * Render new ziard form
      */
     const renderNewWizardForm = () => {
-        
+        let panel = null,
+            backToWizardsButton = null,
+            createWizardButton = null,
+            wizardNameInput = null;
+        if ($(`#${settings.newWizard.panel.id}`).length > 0) {
+            panel = $(`#${settings.newWizard.panel.id}`).eq(0);
+            backToWizardsButton = $(`#${settings.newWizard.panel.id} button#${settings.newWizard.backButton.id}`).eq(0);
+            createWizardButton = $(`#${settings.newWizard.panel.id} button#${settings.newWizard.createButton.id}`).eq(0);
+            createWizardButton = $(`#${settings.newWizard.panel.id} input#${settings.newWizard.nameInput.id}`).eq(0);
+        } else {
+            panel = $("<div/>").addClass(settings.newWizard.panel.class).attr({id: settings.newWizard.panel.id});
+            let panelHeader = $("<div/>").addClass("panel-heading").append(
+                    $("<h3/>").text(settings.newWizard.panel.title)
+                ),
+                panelBody = $("<div/>").addClass("panel-body"),
+                panelFooter = $("<div/>").addClass("panel-footer");
+
+            backToWizardsButton = $("<button/>").addClass(settings.newWizard.backButton.class)
+                .text(settings.newWizard.backButton.title)
+                .attr({
+                    id: settings.newWizard.backButton.id
+                });
+            createWizardButton = $("<button/>").addClass(settings.newWizard.createButton.class)
+                .text(settings.newWizard.createButton.title)
+                .attr({
+                    id: settings.newWizard.createButton.id
+                });
+                //  Adding buttons to panel footer
+                panelFooter.append(
+                    $("<div/>").addClass("row").append(
+                        $("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6").append(backToWizardsButton),
+                        $("<div/>").addClass("col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6").append(createWizardButton)
+                    )
+                );
+
+            wizardNameInput = $("<input/>").addClass(settings.newWizard.nameInput.class)
+                .attr({
+                    id: settings.newWizard.nameInput.id,
+                    placeHolder: settings.newWizard.nameInput.title
+                });
+                //  Adding Input to panel body
+                panelBody.append(
+                    $("<div/>").addClass("form-group").append(
+                        $("<label/>").attr({for: settings.newWizard.nameInput.id}).text(settings.newWizard.nameInput.title),
+                        wizardNameInput
+                    )
+                );
+            
+            panel.append(panelHeader, panelBody, panelFooter);
+            $_container.append(panel);
+
+            backToWizardsButton.click(() => {
+                goTo();
+            });
+        }
+        goTo(settings.newWizard.panel.id);
     }
 
     /**
@@ -92,6 +180,9 @@ let QuestionGenerator = (() => {
         // $_wizardsTable = table.DataTable();
 
         $_container.append(containerPanel);
+
+        // Binding Event to new Button
+        newButton.click(renderNewWizardForm);
     }
 
     /**
@@ -111,6 +202,7 @@ let QuestionGenerator = (() => {
         $_container = $(`#${containerID}`);
         _apiBaseUrl = `${baseUrl}api/api.php`;
         initComponents();
+        goTo();
     };
 
     return {

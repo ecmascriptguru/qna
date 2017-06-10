@@ -7,6 +7,7 @@ require("config/env.php");
 	<title>QA Administration</title>
     <link rel="stylesheet" href="assets/css/bootstrap.css">
     <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
     <div class="wrapper">
