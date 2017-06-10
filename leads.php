@@ -8,6 +8,7 @@ require("config/env.php");
 	<title>Questions and Answers</title>
     <link rel="stylesheet" href="assets/css/bootstrap.css">
     <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
+    <link href="assets/images/favicon.png" rel="shortcut icon" type="image/x-icon" />
 </head>
 <body>
 	<div class="wrapper">

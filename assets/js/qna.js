@@ -20,7 +20,8 @@ let QuestionGenerator = (() => {
                 id: "wizards-panel",
                 class: "panel panel-default",
                 title: "Wizards List",
-                newButtonID: "new-wizard-button"
+                newButtonID: "new-wizard-button",
+                newButtonText: "New Wizard"
             },
             "table": {
                 id: "wizards-table",
@@ -47,6 +48,22 @@ let QuestionGenerator = (() => {
                 id: "new-wizard-name-input",
                 class: "form-control",
                 title: "Wizard Name"
+            }
+        },
+        subjects: {
+            "panel": {
+                id: "subjects-panel",
+                class: "panel panel-default",
+                title: "subjects List",
+                newButton: {
+                    id: "new-subject-button",
+                    title: "New Subject",
+                    class: "btn btn-default pull-right"
+                }
+            },
+            "table": {
+                id: "subjects-table",
+                class: "table table-striped table-bordered"
             }
         }
     }
@@ -129,8 +146,88 @@ let QuestionGenerator = (() => {
             backToWizardsButton.click(() => {
                 goTo();
             });
+
+            createWizardButton.click(() => {
+                if (wizardNameInput.val() !== "") {
+                    createWizard(wizardNameInput.val())
+                } else {
+                    alert("Wizard Name can't be empty!");
+                }
+                //  Creating a new wizard
+            })
         }
         goTo(settings.newWizard.panel.id);
+    }
+
+    /**
+     * Render subjects(Questions and Answers) panel. This panel will be shown once a new wizard created.
+     */
+    const renderSubjectsPanel = (wizardName) => {
+        //  Initializing container panel.
+        let containerPanel = $("<div/>").addClass(settings.subjects.panel.class).attr({
+                id: settings.subjects.panel.id
+            }),
+            panelHeader = $("<div/>").addClass("panel-heading"),
+            newButton = $("<button/>").addClass(settings.subjects.panel.newButton.class)
+                .text(settings.subjects.panel.newButton.title)
+                .attr({id: settings.subjects.panel.newButton.id}).css({
+                    position: "absolute",
+                    "top": "25px",
+                    "right": "15px"
+                }),
+            panelBody = $("<div/>").addClass("panel-body"),
+            panelFooter = $("<div/>").addClass("panel-footer");
+
+            panelHeader.css({position: "relative"}).append(
+                $("<h3/>").text(settings.subjects.panel.title),
+                newButton
+            ).appendTo(containerPanel);
+
+            panelBody.appendTo(containerPanel);
+
+            panelFooter.append(
+                $("<button/>").addClass("btn btn-primary").text("Something")
+            ).appendTo(containerPanel);
+
+        //  Initializing Subjects table.
+        let table = $("<table/>").addClass(settings.subjects.table.class)
+            .attr({
+                id: settings.subjects.table.id
+            }),
+            tHead = $("<thead/>"),
+            tHeadRecord = $("<tr/>"),
+            tBody = $("<tbody/>");
+
+            tHeadRecord.append(
+                $("<th/>").text("#"),
+                $("<th/>").text("Question"),
+                $("<th/>").text("Answer Type"),
+                $("<th/>").text("Actions")
+            ).appendTo(tHead);
+            table.append(tHead, tBody);
+
+        panelBody.append(table);
+
+        $_container.append(containerPanel);
+
+        // Binding Event to new Button
+        newButton.click(renderNewSubjectForm);
+        goTo(settings.subjects.panel.id);
+    }
+
+    /**
+     * Render New Subject Panel
+     */
+    const renderNewSubjectForm = () => {
+        //
+    }
+
+    /**
+     * Create a new Wizard with name property
+     */
+    const createWizard = (name) => {
+        //  Code to create wizard here. Callback function should be used here.
+        renderSubjectsPanel(name);
     }
 
     /**
@@ -142,7 +239,8 @@ let QuestionGenerator = (() => {
                 id: settings.wizards.panel.id
             }),
             panelHeader = $("<div/>").addClass("panel-heading"),
-            newButton = $("<button/>").addClass("btn btn-default pull-right").text("New Wizard").attr({id: settings.wizards.panel.newButtonID}).css({
+            newButton = $("<button/>").addClass("btn btn-default pull-right")
+                .text(settings.wizards.panel.newButtonText).attr({id: settings.wizards.panel.newButtonID}).css({
                     position: "absolute",
                     "top": "25px",
                     "right": "15px"

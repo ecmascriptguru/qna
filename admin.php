@@ -8,13 +8,13 @@ require("config/env.php");
     <link rel="stylesheet" href="assets/css/bootstrap.css">
     <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
     <link rel="stylesheet" href="assets/css/admin.css">
+    <link href="assets/images/favicon.png" rel="shortcut icon" type="image/x-icon" />
 </head>
 <body>
     <div class="wrapper">
         <div class="container">
             <h3>Question and Answer Generation</h3>
             <div id="tool-container">
-                Here we will have the tool rendered by JavaScript library.
             </div>
         </div>
         <footer>
