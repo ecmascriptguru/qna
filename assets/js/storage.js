@@ -103,15 +103,99 @@ let DataStorage = (() => {
     })();
 
     let Wizards = (() => {
-        let _wizards = [];
+        let _wizards = [
+            {
+                id: 1,
+                name: "Demo Wizard 1"
+            },
+            {
+                id: 2,
+                name: "Demo Wizard 2"
+            }
+        ];
+
+        let _offset = 3;
         const get = (callback) => {
             if (typeof callback === "function") {
                 callback(_wizards);
             }
         }
 
-        const addWizard = (wizard, callback) => {
+        const addWizard = (name, callback) => {
+            wizard = {
+                id: _offset,
+                name: name
+            }
             _wizards.push(wizard);
+            _offset++;
+
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+
+        const editWizard = (id, newName, callback) => {
+            let flag = false;
+            for (let i = 0; i < _wizards.length; i ++) {
+                if (_wizards[i].id == id) {
+                    _wizards[i].name = newName;
+                    flag = true;
+                    break;
+                }
+            }
+            
+            if (typeof callback == "function") {
+                callback(flag);
+            }
+        }
+
+        const findWizard = (id, callback) => {
+            for (let i = 0; i < _wizards.length; i ++) {
+                if (_wizards[i].id == id) {
+                    if (typeof callback === "function") {
+                        callback(_wizards[i]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        const deleteWizard = (id, callback) => {
+            _wizards = _wizards.filter(wizard => wizard.id != id);
+            if (typeof callback == "function") {
+                callback();
+            }
+        }
+
+        return {
+            get: get,
+            insert: addWizard,
+            remove: deleteWizard,
+            update: editWizard,
+            find: findWizard
+        }
+    })();
+
+    let Subjects = (() => {
+        let _subjects = [];
+        let _offset = 1;
+
+        const get = (wizard_id, callback) => {
+            let results = [];
+            for (let i = 0; i < _subjects.length; i ++) {
+                if (_subjects[i].wizard_id == wizard_id) {
+                    results.push(_subjects[i]);
+                }
+            }
+            if (typeof callback === "function") {
+                callback(results);
+            }
+        }
+
+        const addSubject = (subject, callback) => {
+            subject.id = _offset;
+            _subjects.push(subject);
+            _offset++;
 
             if (typeof callback === "function") {
                 callback();
@@ -120,12 +204,14 @@ let DataStorage = (() => {
 
         return {
             get: get,
-            insert: addWizard
+            insert: addSubject
         }
     })();
 
     return {
         Types: AnswerTypes,
-        Wizards: Wizards
+        Wizards: Wizards,
+        Subjects: Subjects
     }
+    
 })();
