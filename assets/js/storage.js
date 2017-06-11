@@ -270,7 +270,7 @@ let DataStorage = (() => {
                 question: params.question || "No title",
                 type_id: params.type_id || 1,
                 wizard_id: params.wizard_id,
-                value: JSON.stringify(params.value)
+                answers: JSON.stringify(params.answers)
             };
             _subjects.push(tempSubject);
             _offset++;
@@ -318,7 +318,7 @@ let DataStorage = (() => {
                 if (_subjects[i].id == id) {
                     _subjects[i].question = params.question;
                     _subjects[i].type_id = params.type_id;
-                    _subjects[i].value = params.value;
+                    _subjects[i].answers = params.answers;
                     flag = true;
                     break;
                 }

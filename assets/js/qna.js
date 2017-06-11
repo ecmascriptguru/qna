@@ -412,7 +412,7 @@ let QuestionGenerator = (() => {
                         wizard_id: _selected_wizard,
                         question: questionInput.val().trim(),
                         type_id: parseInt(typeSelect.val()),
-                        values: extractValuesFromAnswersConfig()
+                        answers: extractValuesFromAnswersConfig()
                     }
                     if (event.target.getAttribute("data-action") == "create") {
                         createSubject(params);
@@ -426,10 +426,10 @@ let QuestionGenerator = (() => {
             });
 
             typeSelect.change((event) => {
-                renderAnswerOptions(event.target.value, answersContainer, dataInfoContainer);
+                renderNewAnswerOptions(event.target.value, answersContainer, dataInfoContainer);
             });
 
-            typeSelect.val(1).change();
+            
         //}
 
         if (subject) {
@@ -437,8 +437,9 @@ let QuestionGenerator = (() => {
                 "data-id": subject.id,
                 "data-action": "update"
             });
-            questionInput.val(subject.question).change();
+            questionInput.val(subject.question);//.change();
             typeSelect.val(subject.type_id);
+            renderExistingAnswerOptions(subject, answersContainer, dataInfoContainer);
         } else {
             createSubjectButton.attr({
                 "data-id": null,
@@ -477,12 +478,12 @@ let QuestionGenerator = (() => {
      * Render Answer Types Container. This should render answer options according to answer type whenever admin changes answer type options.
      * container parameter will be used to place all of answer options
      * monitor parameter is valid in development phase to observe data
-     * @param {string} value
+     * @param {string} id
      * @param {object} container
      * @param {object} monitor
      */
-    const renderAnswerOptions = (value, container, monitor) => {
-        DataStorage.Types.find(value, (type) => {
+    const renderNewAnswerOptions = (id, container, monitor) => {
+        DataStorage.Types.find(id, (type) => {
             container.children().remove();
             if (type) {
                 let values = type.value;
@@ -529,6 +530,65 @@ let QuestionGenerator = (() => {
                 $("<pre/>").text(JSON.stringify((type || {}).value))
             );
         });
+    }
+
+    /**
+     * Render answer options from existing subject's answer options.
+     * @param {object} subject
+     * @param {object} container
+     * @param {object} monitor
+     */
+    const renderExistingAnswerOptions = (subject, container, monitor) => {
+        let values = null;
+        container.children().remove();
+        if (subject.answers) {
+            if (typeof subject.answers == "string") {
+                values = JSON.parse(subject.answers || "[]");
+            } else if (typeof subject.answers == "object") {
+                values = subject.answers;
+            }
+            for (let i = 0; i < values.length; i ++) {
+                let $subjectsDropdown = getSubjectsDropdown();
+                container.append(
+                    $("<div/>").addClass("form-group row answer-option").append(
+                        $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-6").append(
+                            $("<input/>").attr({
+                                "data-id": "caption",
+                                "placeholder": "Caption"
+                            }).val(values[i].caption).addClass("form-control")
+                        ),
+                        $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-6").append(
+                            $("<input/>").attr({
+                                "data-id": "value",
+                                "placeholder": "Value"
+                            }).val(values[i].value).addClass("form-control")
+                        ),
+                        $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
+                            $("<input/>").attr({
+                                "type": "number", 
+                                "placeholder": "Weight",
+                                "data-id": "weight"
+                            }).val(values[i].weight).addClass("form-control")
+                        ),
+                        $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-4").append(
+                            // $("<select/>").attr({"data-id": "next"}).addClass("form-control").append(
+                            //     $("<option/>").val("aaa").text("AAA"),
+                            //     $("<option/>").val("bbb").text("BBB")
+                            // )
+                            $subjectsDropdown
+                        ),
+                        $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
+                            $("<button/>").addClass("btn btn-danger form-control").text("Remove")
+                        )
+                    )
+                )
+            }
+        }
+        
+        monitor.children().remove();
+        monitor.append(
+            $("<pre/>").text(JSON.stringify(values || {}))
+        );
     }
 
     /**
