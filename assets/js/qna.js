@@ -119,6 +119,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Go to Next Step
+     * @param {string} step
      */
     const goTo = (step) => {
         if (!step) {
@@ -134,7 +135,9 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Render new ziard form
+     * Render new ziard form.
+     * Here wizard parameter can be empty. So this can be empty when you need to create a new Wizard
+     * @param {object} wizard
      */
     const renderNewWizardForm = (wizard) => {
         let panel = null,
@@ -221,6 +224,9 @@ let QuestionGenerator = (() => {
 
     /**
      * Render subjects(Questions and Answers) panel. This panel will be shown once a new wizard created.
+     * Currently wizard name was not used, but this will be value of because user might need to know where he/she is in.
+     * @param {string} wizardName
+     * @return {void}
      */
     const renderSubjectsPanel = (wizardName) => {
         //  Initializing container panel.
@@ -302,7 +308,8 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Render New Subject Panel
+     * Render New Subject Panel. Subject parameter can be null/empty when you create a new Subject.
+     * @param {object} subject
      */
     const renderNewSubjectForm = (subject) => {
         let panel = null,
@@ -445,16 +452,34 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Extract values from answer types configuration
+     * Extract values from answer types configuration. Not done yet.
      */
     const extractValuesFromAnswersConfig = () => {
         let values = [];
+        let $options = $(`#${settings.newSubject.answersContainer.id} div.answer-option`);
+
+        for (let i = 0; i < $options.length; i ++) {
+            let curOption = $options.eq(i);
+            let value = {
+                caption: curOption.find("[data-id='caption']").val(),
+                value: curOption.find("[data-id='value']").val(),
+                weight: curOption.find("[data-id='weight']").val(),
+                next: curOption.find("[data-id='next']").val(),
+            };
+
+            values.push(value);
+        }
 
         return values;
     }
 
     /**
-     * Render Answer Types Container. This should render answer options according to answer type
+     * Render Answer Types Container. This should render answer options according to answer type whenever admin changes answer type options.
+     * container parameter will be used to place all of answer options
+     * monitor parameter is valid in development phase to observe data
+     * @param {string} value
+     * @param {object} container
+     * @param {object} monitor
      */
     const renderAnswerOptions = (value, container, monitor) => {
         DataStorage.Types.find(value, (type) => {
@@ -464,15 +489,25 @@ let QuestionGenerator = (() => {
                 for (let i = 0; i < values.length; i ++) {
                     let $subjectsDropdown = getSubjectsDropdown();
                     container.append(
-                        $("<div/>").addClass("form-group row").append(
+                        $("<div/>").addClass("form-group row answer-option").append(
                             $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-6").append(
-                                $("<input/>").attr({"data-id": "caption"}).val(values[i].caption).addClass("form-control")
+                                $("<input/>").attr({
+                                    "data-id": "caption",
+                                    "placeholder": "Caption"
+                                }).val(values[i].caption).addClass("form-control")
                             ),
                             $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-6").append(
-                                $("<input/>").attr({"data-id": "value"}).val(values[i].value).addClass("form-control")
+                                $("<input/>").attr({
+                                    "data-id": "value",
+                                    "placeholder": "Value"
+                                }).val(values[i].value).addClass("form-control")
                             ),
                             $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
-                                $("<input/>").attr({"type": "number", "data-id": "weight"}).val(values[i].weight).addClass("form-control")
+                                $("<input/>").attr({
+                                    "type": "number", 
+                                    "placeholder": "Weight",
+                                    "data-id": "weight"
+                                }).val(values[i].weight).addClass("form-control")
                             ),
                             $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-4").append(
                                 // $("<select/>").attr({"data-id": "next"}).addClass("form-control").append(
@@ -497,7 +532,8 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Create a new Wizard with name property
+     * Create a new Wizard with name property. This method will call the temp object to manage mock database.
+     * @param {string} name
      */
     const createWizard = (name) => {
         //  Code to create wizard here. Callback function should be used here.
@@ -508,7 +544,9 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Update an existing wizard
+     * Update an existing wizard.
+     * @param {number} id
+     * @param {string} name
      */
     const updateWizard = (id, name) => {
         DataStorage.Wizards.update(id, name, () => {
@@ -518,7 +556,8 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Update local subject Database
+     * Update local subject Database. can be called refreshing for subjects.
+     * @param {function} callback
      */
     const updateLocalSubjects = (callback) => {
         DataStorage.Subjects.get(_selected_wizard, (subjects) => {
@@ -532,6 +571,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Create a new subject with properties given by admin
+     * @param {object} params
      */
     const createSubject = (params) => {
         DataStorage.Subjects.insert(params, () => {
@@ -542,6 +582,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Update an existing subject
+     * @param {object} params
      */
     const updateSubject = (params) => {
         DataStorage.Subjects.update(params.id, params, (response) => {
@@ -552,7 +593,7 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Rerender wizards table
+     * Rerender wizards table with data pulled from data store.
      */
     const renderWizardsTable = () => {
         DataStorage.Wizards.get((wizards) => {
@@ -575,7 +616,7 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Rerender Subjects table
+     * Rerender Subjects table with data pulled from data store.
      */
     const renderSubjectsTable = () => {
         DataStorage.Subjects.get(_selected_wizard, (subjects) => {
@@ -602,12 +643,14 @@ let QuestionGenerator = (() => {
 
     /**
      * Get subjects select option 
-     * @param {integer} ID
+     * @param {integer} id
      * @param {object} params
      */
     const getSubjectsDropdown = (id, params) => {
         let others = null;
-        let $select = $("<select/>").addClass("form-control");
+        let $select = $("<select/>").addClass("form-control").attr({
+            "data-id": "next"
+        });
 
         if (params) {
             $select.attr(params);
@@ -632,7 +675,7 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Render wizards talbe
+     * Initialize Wizards panel including wizards table.
      */
     const initWizardsTable = () => {
         //  Initializing container panel.

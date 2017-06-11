@@ -1,3 +1,9 @@
+/**
+ * Questions and Answers Rendering Tool
+ * Created By Alexis Richard
+ * ecmascript.guru@gmail.com
+ * Created At June 10, 2017
+ */
 let DataStorage = (() => {
     let AnswerTypes = (() => {
         const _types = [
@@ -76,6 +82,11 @@ let DataStorage = (() => {
             }
         ];
 
+        /**
+         * Getting all of Answer Types. Callback function can be null or empty
+         * @param {function} callback 
+         * @return {array}
+         */
         const get = (callback) => {
             if (typeof callback === "function") {
                 callback(_types);
@@ -84,6 +95,12 @@ let DataStorage = (() => {
             }
         }
 
+        /**
+         * Find a Answer Type with ID.
+         * @param {number} id 
+         * @param {function} callback 
+         * @return {array}
+         */
         const find = (id, callback) => {
             for( let i = 0; i < _types.length; i ++) {
                 if (_types[i].id == parseInt(id)) {
@@ -121,12 +138,25 @@ let DataStorage = (() => {
         ];
 
         let _offset = 3;
+
+        /**
+         * Getting all of Question and Answer Wizards
+         * @param {function} callback 
+         * @return {array}
+         */
         const get = (callback) => {
             if (typeof callback === "function") {
                 callback(_wizards);
+            } else {
+                return _wizards;
             }
         }
 
+        /**
+         * Create a new wizard with the given name parameter.
+         * @param {string} name 
+         * @param {function} callback 
+         */
         const addWizard = (name, callback) => {
             wizard = {
                 id: _offset,
@@ -137,10 +167,19 @@ let DataStorage = (() => {
 
             if (typeof callback === "function") {
                 callback({id: _offset - 1});
+            } else {
+                return _offset - 1;
             }
         }
 
-        const editWizard = (id, newName, callback) => {
+        /**
+         * Update an existing wizard
+         * @param {number} id 
+         * @param {string} newName 
+         * @param {function} callback 
+         * @return {boolean}
+         */
+        const updateWizard = (id, newName, callback) => {
             let flag = false;
             for (let i = 0; i < _wizards.length; i ++) {
                 if (_wizards[i].id == id) {
@@ -155,6 +194,11 @@ let DataStorage = (() => {
             }
         }
 
+        /**
+         * Retrieve wizards with ID.
+         * @param {number} id 
+         * @param {function} callback 
+         */
         const findWizard = (id, callback) => {
             for (let i = 0; i < _wizards.length; i ++) {
                 if (_wizards[i].id == id) {
@@ -166,6 +210,11 @@ let DataStorage = (() => {
             }
         }
 
+        /**
+         * 
+         * @param {number} id 
+         * @param {function} callback 
+         */
         const deleteWizard = (id, callback) => {
             _wizards = _wizards.filter(wizard => wizard.id != id);
             if (typeof callback == "function") {
@@ -177,7 +226,7 @@ let DataStorage = (() => {
             get: get,
             insert: addWizard,
             remove: deleteWizard,
-            update: editWizard,
+            update: updateWizard,
             find: findWizard
         }
     })();
@@ -186,6 +235,12 @@ let DataStorage = (() => {
         let _subjects = [];
         let _offset = 1;
 
+        /**
+         * Get all Subjects.
+         * @param {number} wizard_id 
+         * @param {function} callback 
+         * @return {array}
+         */
         const get = (wizard_id, callback) => {
             let results = [];
             for (let i = 0; i < _subjects.length; i ++) {
@@ -198,9 +253,17 @@ let DataStorage = (() => {
             }
             if (typeof callback === "function") {
                 callback(results);
+            } else {
+                return results;
             }
         }
 
+        /**
+         * Create a new subject.
+         * @param {object} params 
+         * @param {function} callback 
+         * @return {number}
+         */
         const addSubject = (params, callback) => {
             let tempSubject = {
                 id: _offset,
@@ -214,9 +277,17 @@ let DataStorage = (() => {
 
             if (typeof callback === "function") {
                 callback();
+            } else {
+                return offset -1;
             }
         }
 
+        /**
+         * Find an existing Subject.
+         * @param {number} id 
+         * @param {function} callback 
+         * @return {object}
+         */
         const findSubject = (id, callback) => {
             let subject = null;
 
@@ -234,6 +305,13 @@ let DataStorage = (() => {
             }
         }
 
+        /**
+         * Update an existing subject.
+         * @param {number} id 
+         * @param {object} params 
+         * @param {function} callback 
+         * @return {boolean}
+         */
         const updateSubject = (id, params, callback) => {
             let flag = false;
             for (let i = 0; i < _subjects.length; i ++) {
@@ -253,6 +331,11 @@ let DataStorage = (() => {
             }
         }
 
+        /**
+         * Delete a subject with the ID.
+         * @param {number} id 
+         * @param {function} callback 
+         */
         const deleteSubject = (id, callback) => {
             _subjects = _subjects.filter(subject => subject.id != id);
 
