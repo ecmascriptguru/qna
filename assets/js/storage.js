@@ -79,6 +79,8 @@ let DataStorage = (() => {
         const get = (callback) => {
             if (typeof callback === "function") {
                 callback(_types);
+            } else {
+                return _types;
             }
         }
 
@@ -88,11 +90,15 @@ let DataStorage = (() => {
                     if (typeof callback === "function") {
                         callback(_types[i]);
                         return false;
+                    } else {
+                        return _types[i];
                     }
                 }
             }
             if (typeof callback === "function") {
                 callback(null);
+            } else {
+                return null;
             }
         }
 
@@ -130,7 +136,7 @@ let DataStorage = (() => {
             _offset++;
 
             if (typeof callback === "function") {
-                callback();
+                callback({id: _offset - 1});
             }
         }
 
@@ -184,7 +190,10 @@ let DataStorage = (() => {
             let results = [];
             for (let i = 0; i < _subjects.length; i ++) {
                 if (_subjects[i].wizard_id == wizard_id) {
-                    results.push(_subjects[i]);
+                    let type = AnswerTypes.find(_subjects[i].type_id);
+                    let cur = _subjects[i];
+                    cur.type_name = type.type_name;
+                    results.push(cur);
                 }
             }
             if (typeof callback === "function") {
@@ -192,10 +201,60 @@ let DataStorage = (() => {
             }
         }
 
-        const addSubject = (subject, callback) => {
-            subject.id = _offset;
-            _subjects.push(subject);
+        const addSubject = (params, callback) => {
+            let tempSubject = {
+                id: _offset,
+                question: params.question || "No title",
+                type_id: params.type_id || 1,
+                wizard_id: params.wizard_id,
+                value: JSON.stringify(params.value)
+            };
+            _subjects.push(tempSubject);
             _offset++;
+
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+
+        const findSubject = (id, callback) => {
+            let subject = null;
+
+            for (let i = 0; i < _subjects.length; i ++) {
+                if (_subjects[i].id == id) {
+                    subject = _subjects[i];
+                    break;
+                }
+            }
+
+            if (typeof callback === "function") {
+                callback(subject);
+            } else {
+                return subject;
+            }
+        }
+
+        const updateSubject = (id, params, callback) => {
+            let flag = false;
+            for (let i = 0; i < _subjects.length; i ++) {
+                if (_subjects[i].id == id) {
+                    _subjects[i].question = params.question;
+                    _subjects[i].type_id = params.type_id;
+                    _subjects[i].value = params.value;
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (typeof callback == "function") {
+                callback({status: flag});
+            } else {
+                return flag;
+            }
+        }
+
+        const deleteSubject = (id, callback) => {
+            _subjects = _subjects.filter(subject => subject.id != id);
 
             if (typeof callback === "function") {
                 callback();
@@ -204,7 +263,10 @@ let DataStorage = (() => {
 
         return {
             get: get,
-            insert: addSubject
+            find: findSubject,
+            insert: addSubject,
+            update: updateSubject,
+            remove: deleteSubject
         }
     })();
 

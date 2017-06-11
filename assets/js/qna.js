@@ -8,6 +8,8 @@ let QuestionGenerator = (() => {
     let _data = [],
         _something = null,
         _apiBaseUrl = null,
+        _selected_wizard = null,
+        _subjects = [],
         $_container = null,
         $_wizardsTable = null;
 
@@ -80,7 +82,7 @@ let QuestionGenerator = (() => {
             createButton: {
                 id: "new-subject-create-button",
                 class: "btn btn-primary form-control",
-                title: "Create"
+                title: "Save Changes"
             },
             questionInput: {
                 id: "new-subject-question-input",
@@ -270,18 +272,39 @@ let QuestionGenerator = (() => {
             $_container.append(containerPanel);
 
             // Binding Event to new Button
-            newButton.click(renderNewSubjectForm);
+            newButton.click(() => {
+                renderNewSubjectForm()
+            });
             backToWizardsButton.click(() => {
                 goTo(settings.wizards.panel.id);
+            });
+
+            table.on("click", "button.subject-edit", (event) => {
+                let $record = $(event.target).parents("tr");
+                let id = $record.attr("data-subject-id");
+
+                DataStorage.Subjects.find(id, (subject) => {
+                    renderNewSubjectForm(subject);
+                    goTo(settings.newSubject.panel.id);
+                });
+            }).on("click", "button.subject-delete", (event) => {
+                let $record = $(event.target).parents("tr");
+                let id = $record.attr("data-subject-id");
+
+                DataStorage.Subjects.remove(id, () => {
+                    renderSubjectsPanel();
+                    goTo(settings.subjects.panel.id);
+                });
             })
         }
+        renderSubjectsTable();
         goTo(settings.subjects.panel.id);
     }
 
     /**
      * Render New Subject Panel
      */
-    const renderNewSubjectForm = () => {
+    const renderNewSubjectForm = (subject) => {
         let panel = null,
             backToSubjectsButton = null,
             createSubjectButton = null,
@@ -292,13 +315,14 @@ let QuestionGenerator = (() => {
 
         if ($(`#${settings.newSubject.panel.id}`).length > 0) {
             panel = $(`#${settings.newSubject.panel.id}`).eq(0);
-            backToSubjectsButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.backButton.id}`).eq(0);
-            createSubjectButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.createButton.id}`).eq(0);
-            questionInput = $(`#${settings.newSubject.panel.id} input#${settings.newSubject.questionInput.id}`).eq(0);
-            typeSelect = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.typeSelect.id}`).eq(0);
-            answersContainer = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.answersContainer.id}`).eq(0);
-            answerDataInfoContainer = $(`#${settings.newSubject.panel.id} select#new-subject-data-info-container`).eq(0);
-        } else {
+            panel.remove();
+            // backToSubjectsButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.backButton.id}`).eq(0);
+            // createSubjectButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.createButton.id}`).eq(0);
+            // questionInput = $(`#${settings.newSubject.panel.id} input#${settings.newSubject.questionInput.id}`).eq(0);
+            // typeSelect = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.typeSelect.id}`).eq(0);
+            // answersContainer = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.answersContainer.id}`).eq(0);
+            // answerDataInfoContainer = $(`#${settings.newSubject.panel.id} select#new-subject-data-info-container`).eq(0);
+        }// else {
             panel = $("<div/>").addClass(settings.newSubject.panel.class).attr({id: settings.newSubject.panel.id});
             let panelHeader = $("<div/>").addClass("panel-heading").append(
                     $("<h3/>").text(settings.newSubject.panel.title)
@@ -374,9 +398,20 @@ let QuestionGenerator = (() => {
                 goTo(settings.subjects.panel.id);
             });
 
-            createSubjectButton.click(() => {
+            createSubjectButton.click((event) => {
                 if (questionInput.val() !== "") {
-                    createWizard(wizardNameInput.val())
+                    let params = {
+                        id: event.target.getAttribute("data-id"),
+                        wizard_id: _selected_wizard,
+                        question: questionInput.val().trim(),
+                        type_id: parseInt(typeSelect.val()),
+                        values: extractValuesFromAnswersConfig()
+                    }
+                    if (event.target.getAttribute("data-action") == "create") {
+                        createSubject(params);
+                    } else if (event.target.getAttribute("data-action") == "update") {
+                        updateSubject(params);
+                    }
                 } else {
                     alert("Question can't be empty!");
                 }
@@ -386,8 +421,36 @@ let QuestionGenerator = (() => {
             typeSelect.change((event) => {
                 renderAnswerOptions(event.target.value, answersContainer, dataInfoContainer);
             });
+
+            typeSelect.val(1).change();
+        //}
+
+        if (subject) {
+            createSubjectButton.attr({
+                "data-id": subject.id,
+                "data-action": "update"
+            });
+            questionInput.val(subject.question).change();
+            typeSelect.val(subject.type_id);
+        } else {
+            createSubjectButton.attr({
+                "data-id": null,
+                "data-action": "create"
+            });
+            questionInput.val("");
+            typeSelect.val(1).change();
         }
+
         goTo(settings.newSubject.panel.id);
+    }
+
+    /**
+     * Extract values from answer types configuration
+     */
+    const extractValuesFromAnswersConfig = () => {
+        let values = [];
+
+        return values;
     }
 
     /**
@@ -399,6 +462,7 @@ let QuestionGenerator = (() => {
             if (type) {
                 let values = type.value;
                 for (let i = 0; i < values.length; i ++) {
+                    let $subjectsDropdown = getSubjectsDropdown();
                     container.append(
                         $("<div/>").addClass("form-group row").append(
                             $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-6").append(
@@ -411,10 +475,11 @@ let QuestionGenerator = (() => {
                                 $("<input/>").attr({"type": "number", "data-id": "weight"}).val(values[i].weight).addClass("form-control")
                             ),
                             $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-4").append(
-                                $("<select/>").attr({"data-id": "next"}).addClass("form-control").append(
-                                    $("<option/>").val("aaa").text("AAA"),
-                                    $("<option/>").val("bbb").text("BBB")
-                                )
+                                // $("<select/>").attr({"data-id": "next"}).addClass("form-control").append(
+                                //     $("<option/>").val("aaa").text("AAA"),
+                                //     $("<option/>").val("bbb").text("BBB")
+                                // )
+                                $subjectsDropdown
                             ),
                             $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
                                 $("<button/>").addClass("btn btn-danger form-control").text("Remove")
@@ -436,7 +501,8 @@ let QuestionGenerator = (() => {
      */
     const createWizard = (name) => {
         //  Code to create wizard here. Callback function should be used here.
-        DataStorage.Wizards.insert(name, () => {
+        DataStorage.Wizards.insert(name, (response) => {
+            _selected_wizard = response.id;
             renderSubjectsPanel(name);
         });
     }
@@ -446,15 +512,43 @@ let QuestionGenerator = (() => {
      */
     const updateWizard = (id, name) => {
         DataStorage.Wizards.update(id, name, () => {
+            _selected_wizard = id;
             renderSubjectsPanel(name);
+        });
+    }
+
+    /**
+     * Update local subject Database
+     */
+    const updateLocalSubjects = (callback) => {
+        DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+            _subjects = subjects;
+
+            if (typeof callback == "function") {
+                callback();
+            }
         });
     }
 
     /**
      * Create a new subject with properties given by admin
      */
-    const createSubject = () => {
-        alert("Creating a new subject");
+    const createSubject = (params) => {
+        DataStorage.Subjects.insert(params, () => {
+            renderSubjectsPanel();
+            updateLocalSubjects();
+        });
+    }
+
+    /**
+     * Update an existing subject
+     */
+    const updateSubject = (params) => {
+        DataStorage.Subjects.update(params.id, params, (response) => {
+            updateLocalSubjects(() => {
+                renderSubjectsPanel();
+            })
+        })
     }
 
     /**
@@ -478,6 +572,63 @@ let QuestionGenerator = (() => {
                 )
             }
         })
+    }
+
+    /**
+     * Rerender Subjects table
+     */
+    const renderSubjectsTable = () => {
+        DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+            _subjects = subjects;
+            let $tbody = $(`#${settings.subjects.table.id} tbody`);
+            $tbody.children().remove();
+
+            for (let i = 0; i < subjects.length; i ++) {
+                $tbody.append(
+                    $("<tr/>").attr({"data-subject-id": subjects[i].id}).append(
+                        $("<td/>").text(i + 1),
+                        $("<td/>").text(subjects[i].question),
+                        $("<td/>").text(subjects[i].type_name),
+                        $("<td/>").append(
+                            $("<div/>").addClass("col-xs-6").append($("<button/>").addClass("btn btn-info form-control subject-edit").text("Edit")),
+                            $("<div/>").addClass("col-xs-6").append($("<button/>").addClass("btn btn-danger form-control subject-delete").text("Del"))
+                        )
+                    )
+                )
+            }
+        })
+    }
+
+
+    /**
+     * Get subjects select option 
+     * @param {integer} ID
+     * @param {object} params
+     */
+    const getSubjectsDropdown = (id, params) => {
+        let others = null;
+        let $select = $("<select/>").addClass("form-control");
+
+        if (params) {
+            $select.attr(params);
+        }
+
+        if (id == undefined) {
+            others = _subjects;
+        } else {
+            others = _subjects.filter(subject => subject.id != id);
+        }
+        $select.append(
+            $("<option/>").text("Select a next subject").val("")
+        );
+
+        for (let i = 0; i < others.length; i ++) {
+            $select.append(
+                $("<option/>").text(others[i].question).val(others[i].id)
+            );
+        }
+
+        return $select;
     }
 
     /**
