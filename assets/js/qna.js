@@ -60,7 +60,7 @@ let QuestionGenerator = (() => {
                 newButton: {
                     id: "new-subject-button",
                     title: "New Subject",
-                    class: "btn btn-default pull-right"
+                    class: "btn btn-default pull-right new-subject"
                 }
             },
             "table": {
@@ -237,15 +237,11 @@ let QuestionGenerator = (() => {
                 panelHeader = $("<div/>").addClass("panel-heading"),
                 newButton = $("<button/>").addClass(settings.subjects.panel.newButton.class)
                     .text(settings.subjects.panel.newButton.title)
-                    .attr({id: settings.subjects.panel.newButton.id}).css({
-                        position: "absolute",
-                        "top": "25px",
-                        "right": "15px"
-                    }),
+                    .attr({id: settings.subjects.panel.newButton.id}),
                 panelBody = $("<div/>").addClass("panel-body"),
                 panelFooter = $("<div/>").addClass("panel-footer");
 
-                panelHeader.css({position: "relative"}).append(
+                panelHeader.append(
                     $("<h3/>").text(settings.subjects.panel.title),
                     newButton
                 ).appendTo(containerPanel);
@@ -743,16 +739,12 @@ let QuestionGenerator = (() => {
                 id: settings.wizards.panel.id
             }),
             panelHeader = $("<div/>").addClass("panel-heading"),
-            newButton = $("<button/>").addClass("btn btn-default pull-right")
-                .text(settings.wizards.panel.newButtonText).attr({id: settings.wizards.panel.newButtonID}).css({
-                    position: "absolute",
-                    "top": "25px",
-                    "right": "15px"
-                }),
+            newButton = $("<button/>").addClass("btn btn-default pull-right new-wizard")
+                .text(settings.wizards.panel.newButtonText).attr({id: settings.wizards.panel.newButtonID}),
             panelBody = $("<div/>").addClass("panel-body"),
             panelFooter = $("<div/>").addClass("panel-footer");
 
-            panelHeader.css({position: "relative"}).append(
+            panelHeader.append(
                 $("<h3/>").text(settings.wizards.panel.title),
                 newButton
             ).appendTo(containerPanel);
@@ -772,9 +764,9 @@ let QuestionGenerator = (() => {
             tBody = $("<tbody/>");
 
             tHeadRecord.append(
-                $("<th/>").css({width: "80px"}).text("#"),
+                $("<th/>").text("#"),
                 $("<th/>").text("Wizard Name"),
-                $("<th/>").css({width: "240px"}).text("Actions")
+                $("<th/>").text("Actions")
             ).appendTo(tHead);
             table.append(tHead, tBody);
 

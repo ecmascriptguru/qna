@@ -2,3 +2,16 @@
     display: none;}
     .panel.active {
         display: block;}
+    .panel.panel-default .panel-heading {
+        position: relative;}
+        .panel.panel-default .panel-heading button.btn.new-subject,
+        .panel.panel-default .panel-heading button.btn.new-wizard {
+            position: absolute;
+            top: 25px;
+            right: 15px;
+        }
+
+    table#wizards-table th:first-child {
+        width: 80px;}
+    table#wizards-table th:nth-child(3) {
+        width: 240px;}
