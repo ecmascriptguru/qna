@@ -203,119 +203,50 @@ let QuestionGenerator = (() => {
      * @param {object} subject
      */
     const renderNewSubjectForm = (subject) => {
-        let panel = null,
-            backToSubjectsButton = null,
-            createSubjectButton = null,
-            questionInput = null,
-            typeSelect = null,
-            answersContainer = null,
-            dataInfoContainer = null;
+        let panel = $(`#${settings.newSubject.panel.id}`),
+            backToSubjectsButton = $(`#${settings.newSubject.backButton.id}`),
+            createSubjectButton = $(`#${settings.newSubject.createButton.id}`),
+            questionInput = $(`#${settings.newSubject.questionInput.id}`),
+            typeSelect = $(`#${settings.newSubject.typeSelect.id}`),
+            answersContainer = $(`#${settings.newSubject.answersContainer.id}`),
+            dataInfoContainer = $(`#new-subject-data-info-container`);
 
-        if ($(`#${settings.newSubject.panel.id}`).length > 0) {
-            panel = $(`#${settings.newSubject.panel.id}`).eq(0);
-            panel.remove();
-        }// else {
-            panel = $("<div/>").addClass(settings.newSubject.panel.class).attr({id: settings.newSubject.panel.id});
-            let panelHeader = $("<div/>").addClass("panel-heading").append(
-                    $("<h3/>").text(settings.newSubject.panel.title)
-                ),
-                panelBody = $("<div/>").addClass("panel-body"),
-                panelFooter = $("<div/>").addClass("panel-footer");
+        DataStorage.Types.get((types) => {
+            let source = $("#new-subject-type-template").html(),
+                template = Handlebars.compile(source);
 
-            backToSubjectsButton = $("<button/>").addClass(settings.newSubject.backButton.class)
-                .text(settings.newSubject.backButton.title)
-                .attr({
-                    id: settings.newSubject.backButton.id
-                });
-            createSubjectButton = $("<button/>").addClass(settings.newSubject.createButton.class)
-                .text(settings.newSubject.createButton.title)
-                .attr({
-                    id: settings.newSubject.createButton.id
-                });
-                //  Adding buttons to panel footer
-                panelFooter.append(
-                    $("<div/>").addClass("row").append(
-                        $("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6").append(backToSubjectsButton),
-                        $("<div/>").addClass("col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6").append(createSubjectButton)
-                    )
-                );
+            typeSelect.html(template({
+                types: types
+            }));
+        });
 
-            questionInput = $("<input/>").addClass(settings.newSubject.questionInput.class)
-                .attr({
-                    id: settings.newSubject.questionInput.id,
-                    placeHolder: settings.newSubject.questionInput.title
-                });
-                //  Adding Input to panel body
-                panelBody.append(
-                    $("<div/>").addClass("form-group").append(
-                        $("<label/>").attr({for: settings.newSubject.questionInput.id}).text(settings.newSubject.questionInput.title),
-                        questionInput
-                    )
-                );
+        backToSubjectsButton.click(() => {
+            goTo(settings.subjects.panel.id);
+        });
 
-            typeSelect = $("<select/>").addClass(settings.newSubject.typeSelect.class)
-                .attr({
-                    id: settings.newSubject.typeSelect.id
-                });
-                values = settings.newSubject.typeSelect.values;
-                for (let p in values) {
-                    typeSelect.append(
-                        $("<option/>").text(values[p]).val(p)
-                    );
+        createSubjectButton.click((event) => {
+            if (questionInput.val() !== "") {
+                let params = {
+                    id: event.target.getAttribute("data-id"),
+                    wizard_id: _selected_wizard,
+                    question: questionInput.val().trim(),
+                    type_id: parseInt(typeSelect.val()),
+                    answers: extractValuesFromAnswersConfig()
                 }
-                //  Adding Input to panel body
-                panelBody.append(
-                    $("<div/>").addClass("form-group").append(
-                        $("<label/>").attr({for: settings.newSubject.typeSelect.id}).text(settings.newSubject.typeSelect.title),
-                        typeSelect
-                    )
-                );
-
-            dataInfoContainer = $("<div/>").addClass("form-group").attr({id: "new-subject-data-info-container"});
-            panelBody.append(dataInfoContainer.text("Selected Type Info."));
-
-            answersContainer = $("<div/>").addClass(settings.newSubject.answersContainer.class)
-                .attr({
-                    id: settings.newSubject.answersContainer.id
-                });
-                //  Adding Input to panel body
-                panelBody.append(
-                    answersContainer
-                );
-            
-            panel.append(panelHeader, panelBody, panelFooter);
-            $_container.append(panel);
-
-            backToSubjectsButton.click(() => {
-                goTo(settings.subjects.panel.id);
-            });
-
-            createSubjectButton.click((event) => {
-                if (questionInput.val() !== "") {
-                    let params = {
-                        id: event.target.getAttribute("data-id"),
-                        wizard_id: _selected_wizard,
-                        question: questionInput.val().trim(),
-                        type_id: parseInt(typeSelect.val()),
-                        answers: extractValuesFromAnswersConfig()
-                    }
-                    if (event.target.getAttribute("data-action") == "create") {
-                        createSubject(params);
-                    } else if (event.target.getAttribute("data-action") == "update") {
-                        updateSubject(params);
-                    }
-                } else {
-                    alert("Question can't be empty!");
+                if (event.target.getAttribute("data-action") == "create") {
+                    createSubject(params);
+                } else if (event.target.getAttribute("data-action") == "update") {
+                    updateSubject(params);
                 }
-                //  Creating a new wizard
-            });
+            } else {
+                alert("Question can't be empty!");
+            }
+            //  Creating a new wizard
+        });
 
-            typeSelect.change((event) => {
-                renderNewAnswerOptions(event.target.value, answersContainer, dataInfoContainer);
-            });
-
-            
-        //}
+        typeSelect.change((event) => {
+            renderNewAnswerOptions(event.target.value, answersContainer, dataInfoContainer);
+        });
 
         if (subject) {
             createSubjectButton.attr({
@@ -377,7 +308,7 @@ let QuestionGenerator = (() => {
                     let source = $("#new-answer-option-template").html();
                     let template = Handlebars.compile(source);
                     container.append(
-                        $("<div/>").addClass("form-group row answer-option").html(template({
+                        $(template({
                             caption: "",
                             value: "",
                             weight: 0,
@@ -388,10 +319,10 @@ let QuestionGenerator = (() => {
             }
 
             if (type.type_name == "Drop Down" || type.type_name == "Multiple Choice") {
+                let source = $("#add-new-answer-option-button").html();
+                let template = Handlebars.compile(source);
                 container.append(
-                    $("<div/>").addClass("form-group").append(
-                        $("<button/>").addClass("btn btn-default pull-right").attr({id: "btn-add-answer-option"}).text("Add new Answer Option")
-                    )
+                    $(template())
                 );
             }
             
@@ -423,7 +354,7 @@ let QuestionGenerator = (() => {
                 let template = Handlebars.compile(source);
 
                 container.append(
-                    $("<div/>").addClass("form-group row answer-option").html(template({
+                    $(template({
                         caption: values[i].caption,
                         value: values[i].value,
                         weight: values[i].weight,
@@ -434,10 +365,10 @@ let QuestionGenerator = (() => {
         }
 
         if (subject.type_name == "Drop Down" || subject.type_name == "Multiple Choice") {
+            let source = $("#add-new-answer-option-button").html();
+            let template = Handlebars.compile(source);
             container.append(
-                $("<div/>").addClass("form-group").append(
-                    $("<button/>").addClass("btn btn-default pull-right").attr({id: "btn-add-answer-option"}).text("Add new Answer Option")
-                )
+                $(template())
             );
         }
         
@@ -665,14 +596,12 @@ let QuestionGenerator = (() => {
             let template = Handlebars.compile(source);
 
             $panelBody.find("div.answer-option").last().after(
-                $("<div/>").addClass("form-group row answer-option").html(
-                    template({
-                        caption: "",
-                        value: "",
-                        weight: 0,
-                        subjects: []
-                    })
-                )
+                $(template({
+                    caption: "",
+                    value: "",
+                    weight: 0,
+                    subjects: []
+                }))
             )
         })
     }

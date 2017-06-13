@@ -18,7 +18,7 @@ require("config/env.php");
                 <div class="panel panel-default" id="wizards-panel">
                 </div>
 
-                <div class="panel panel-default active" id="new-wizard-panel">
+                <div class="panel panel-default" id="new-wizard-panel">
                     <div class="panel-heading">
                         <h3>Create a new Wizard</h3>
                     </div>
@@ -42,18 +42,75 @@ require("config/env.php");
                     </div>
                 </div>
 
-                <div class="panel panel-default active" id="subjects-panel">
+                <div class="panel panel-default" id="subjects-panel">
                     <div class="panel-heading">
                         <h3>subjects List</h3>
                         <button class="btn btn-default pull-right new-subject" id="new-subject-button">New Subject</button>
                     </div>
                     <div class="panel-body">
                         <table class="table table-striped table-bordered" id="subjects-table">
-                                             -->
                         </table>
                     </div>
                     <div class="panel-footer">
                         <button class="btn btn-default" id="subjects-panel-back-to-wizards">Back To Wizards</button>
+                    </div>
+                </div>
+
+                <div class="panel panel-default" id="new-subject-panel">
+                    <div class="panel-heading">
+                        <h3>Create a new Subject</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="new-subject-question-input">Enter a question.</label>
+                            <input class="form-control" id="new-subject-question-input" placeholder="Enter a question.">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-subject-type-select"></label>
+                            <select class="form-control" id="new-subject-type-select">
+                                <option value="1">Text Field</option>
+                                <option value="2">Number Field</option>
+                                <option value="3">Drop Down Choice</option>
+                                <option value="4">Multiple Choice</option>
+                                <option value="5">Yes / No</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="new-subject-data-info-container">
+                            Selected Type Info.
+                            <pre>[{"caption":"","value":1,"min":1,"max":100,"weight":100,"next":null}]</pre>
+                        </div>
+                        <div id="new-subject-answers-container">
+                            <div class="form-group row answer-option">
+                                <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-6">
+                                    <input data-id="caption" placeholder="Caption" value="" class="form-control">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-6">
+                                    <input data-id="value" placeholder="Value" class="form-control" value="">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-4">
+                                    <input type="number" placeholder="Weight" data-id="weight" class="form-control" value="0">
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-4">
+                                    <select class="form-control" data-id="next">
+                                        <option value="">Select a next subject</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-4">
+                                    <button class="btn btn-danger form-control answer-option-delete">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                                <button class="btn btn-default form-control" id="new-subject-back-button">Back to List</button>
+                            </div>
+                            <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+                                <button class="btn btn-primary form-control" id="new-subject-create-button" data-action="create">Save Changes</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -83,6 +140,20 @@ require("config/env.php");
                 </div>
             </div>
         <!--</div>-->
+    </script>
+
+    <script id="add-new-answer-option-button" type="text/x-handlebars-template">
+        <div class="form-group">
+            <button class="btn btn-default pull-right" id="btn-add-answer-option">Add new Answer Option</button>
+        </div>
+    </script>
+
+    <script id="new-subject-type-template" type="text/x-handlebars-template">
+        <!--<select class="form-control" id="new-subject-type-select">-->
+            {{#each types}}
+            <option value="{{id}}">{{type_name}}</option>
+            {{/each}}
+        <!--</select>-->
     </script>
 
     <script id="wizards-table-template" type="text/x-handlebars-template">
@@ -118,7 +189,7 @@ require("config/env.php");
     </script>
 
     <script id="new-answer-option-template" type="text/x-handlebars-template">
-        <!--<div class="form-group row answer-option">-->
+        <div class="form-group row answer-option">
             <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-6">
                 <input data-id="caption" placeholder="Caption" value="{{caption}}" class="form-control">
             </div>
@@ -139,7 +210,7 @@ require("config/env.php");
             <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-4">
                 <button class="btn btn-danger form-control answer-option-delete">Remove</button>
             </div>
-        <!--</div>-->
+        </div>
     </script>
 
     <script id="subjects-list-template" type="text/x-handlebars-template">
