@@ -256,18 +256,7 @@ let QuestionGenerator = (() => {
             let table = $("<table/>").addClass(settings.subjects.table.class)
                 .attr({
                     id: settings.subjects.table.id
-                }),
-                tHead = $("<thead/>"),
-                tHeadRecord = $("<tr/>"),
-                tBody = $("<tbody/>");
-
-                tHeadRecord.append(
-                    $("<th/>").text("#"),
-                    $("<th/>").text("Question"),
-                    $("<th/>").text("Answer Type"),
-                    $("<th/>").text("Actions")
-                ).appendTo(tHead);
-                table.append(tHead, tBody);
+                });
 
             panelBody.append(table);
 
@@ -280,24 +269,6 @@ let QuestionGenerator = (() => {
             backToWizardsButton.click(() => {
                 goTo(settings.wizards.panel.id);
             });
-
-            table.on("click", "button.subject-edit", (event) => {
-                let $record = $(event.target).parents("tr");
-                let id = $record.attr("data-subject-id");
-
-                DataStorage.Subjects.find(id, (subject) => {
-                    renderNewSubjectForm(subject);
-                    goTo(settings.newSubject.panel.id);
-                });
-            }).on("click", "button.subject-delete", (event) => {
-                let $record = $(event.target).parents("tr");
-                let id = $record.attr("data-subject-id");
-
-                DataStorage.Subjects.remove(id, () => {
-                    renderSubjectsPanel();
-                    goTo(settings.subjects.panel.id);
-                });
-            })
         }
         renderSubjectsTable();
         goTo(settings.subjects.panel.id);
@@ -567,10 +538,6 @@ let QuestionGenerator = (() => {
                             }).val(values[i].weight).addClass("form-control")
                         ),
                         $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-4").append(
-                            // $("<select/>").attr({"data-id": "next"}).addClass("form-control").append(
-                            //     $("<option/>").val("aaa").text("AAA"),
-                            //     $("<option/>").val("bbb").text("BBB")
-                            // )
                             $subjectsDropdown
                         ),
                         $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
@@ -653,22 +620,31 @@ let QuestionGenerator = (() => {
      */
     const renderWizardsTable = () => {
         DataStorage.Wizards.get((wizards) => {
-            let $tbody = $(`#${settings.wizards.table.id} tbody`);
-            $tbody.children().remove();
+            let table = $(`#${settings.wizards.table.id}`);
+            let source = $("#wizards-table-template").html();
+            let template = Handlebars.compile(source);
+            table.html(template({
+                wizards: wizards,
+                class: settings.wizards.table.class,
+                id: settings.wizards.table.id
+            }));
 
-            for (let i = 0; i < wizards.length; i ++) {
-                $tbody.append(
-                    $("<tr/>").attr({"data-wizard-id": wizards[i].id}).append(
-                        $("<td/>").text(i + 1),
-                        $("<td/>").text(wizards[i].name),
-                        $("<td/>").append(
-                            $("<div/>").addClass("col-xs-6").append($("<button/>").addClass("btn btn-info form-control wizard-edit").text("Edit")),
-                            $("<div/>").addClass("col-xs-6").append($("<button/>").addClass("btn btn-danger form-control wizard-delete").text("Del"))
-                        )
-                    )
-                )
-            }
-        })
+            table.on("click", "button.wizard-edit", (event) => {
+                let $record = $(event.target).parents("tr");
+                let wizardId = $record.attr("data-wizard-id");
+
+                DataStorage.Wizards.find(wizardId, (wizard) => {
+                    renderNewWizardForm(wizard);
+                });
+            }).on("click", "button.wizard-delete", (event) => {
+                let $record = $(event.target).parents("tr");
+                let wizardId = $record.attr("data-wizard-id");
+
+                DataStorage.Wizards.remove(wizardId, () => {
+                    renderWizardsTable();
+                });
+            });
+        });
     }
 
     /**
@@ -677,22 +653,32 @@ let QuestionGenerator = (() => {
     const renderSubjectsTable = () => {
         DataStorage.Subjects.get(_selected_wizard, (subjects) => {
             _subjects = subjects;
-            let $tbody = $(`#${settings.subjects.table.id} tbody`);
-            $tbody.children().remove();
+            let table = $(`#${settings.subjects.table.id}`);
+            let source = $("#subjects-table-template").html();
+            let template = Handlebars.compile(source);
+            table.html(template({
+                subjects: subjects,
+                class: settings.subjects.table.class,
+                id: settings.subjects.table.id
+            }));
 
-            for (let i = 0; i < subjects.length; i ++) {
-                $tbody.append(
-                    $("<tr/>").attr({"data-subject-id": subjects[i].id}).append(
-                        $("<td/>").text(i + 1),
-                        $("<td/>").text(subjects[i].question),
-                        $("<td/>").text(subjects[i].type_name),
-                        $("<td/>").append(
-                            $("<div/>").addClass("col-xs-6").append($("<button/>").addClass("btn btn-info form-control subject-edit").text("Edit")),
-                            $("<div/>").addClass("col-xs-6").append($("<button/>").addClass("btn btn-danger form-control subject-delete").text("Del"))
-                        )
-                    )
-                )
-            }
+            table.on("click", "button.subject-edit", (event) => {
+                let $record = $(event.target).parents("tr");
+                let id = $record.attr("data-subject-id");
+
+                DataStorage.Subjects.find(id, (subject) => {
+                    renderNewSubjectForm(subject);
+                    goTo(settings.newSubject.panel.id);
+                });
+            }).on("click", "button.subject-delete", (event) => {
+                let $record = $(event.target).parents("tr");
+                let id = $record.attr("data-subject-id");
+
+                DataStorage.Subjects.remove(id, () => {
+                    renderSubjectsPanel();
+                    goTo(settings.subjects.panel.id);
+                });
+            })
         })
     }
 
@@ -756,19 +742,7 @@ let QuestionGenerator = (() => {
             ).appendTo(containerPanel);
 
         //  Initializing wizards table.
-        let table = $("<table/>").addClass(settings.wizards.table.class).attr({
-                id: settings.wizards.table.id
-            }),
-            tHead = $("<thead/>"),
-            tHeadRecord = $("<tr/>"),
-            tBody = $("<tbody/>");
-
-            tHeadRecord.append(
-                $("<th/>").text("#"),
-                $("<th/>").text("Wizard Name"),
-                $("<th/>").text("Actions")
-            ).appendTo(tHead);
-            table.append(tHead, tBody);
+        let table = $("<table/>").attr({id: settings.wizards.table.id}).addClass(settings.wizards.table.class);
 
         panelBody.append(table);
         // $_wizardsTable = table.DataTable();
@@ -779,23 +753,6 @@ let QuestionGenerator = (() => {
         newButton.click(() => {
             renderNewWizardForm();
         });
-
-        table.on("click", "button.wizard-edit", (event) => {
-            let $record = $(event.target).parents("tr");
-            let wizardId = $record.attr("data-wizard-id");
-
-            DataStorage.Wizards.find(wizardId, (wizard) => {
-                renderNewWizardForm(wizard);
-            });
-        }).on("click", "button.wizard-delete", (event) => {
-            let $record = $(event.target).parents("tr");
-            let wizardId = $record.attr("data-wizard-id");
-
-            DataStorage.Wizards.remove(wizardId, () => {
-                renderWizardsTable();
-            });
-            // $(event.target).parents("tr").remove();
-        })
 
         renderWizardsTable();
     }
