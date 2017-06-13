@@ -130,7 +130,7 @@ let QuestionGenerator = (() => {
 
         //  Redrawing tables
         if (step == settings.wizards.panel.id) {
-            renderWizardsTable();
+            updateWizardsTable();
         }
     }
 
@@ -230,7 +230,7 @@ let QuestionGenerator = (() => {
      */
     const renderSubjectsPanel = (wizardName) => {
         //  Initializing container panel.
-        if ($(`#${settings.subjects.panel.id}`).length == 0) {
+        // if ($(`#${settings.subjects.panel.id}`).length == 0) {
             let containerPanel = $("<div/>").addClass(settings.subjects.panel.class).attr({
                     id: settings.subjects.panel.id
                 }),
@@ -269,7 +269,7 @@ let QuestionGenerator = (() => {
             backToWizardsButton.click(() => {
                 goTo(settings.wizards.panel.id);
             });
-        }
+        // }
         renderSubjectsTable();
         goTo(settings.subjects.panel.id);
     }
@@ -290,12 +290,6 @@ let QuestionGenerator = (() => {
         if ($(`#${settings.newSubject.panel.id}`).length > 0) {
             panel = $(`#${settings.newSubject.panel.id}`).eq(0);
             panel.remove();
-            // backToSubjectsButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.backButton.id}`).eq(0);
-            // createSubjectButton = $(`#${settings.newSubject.panel.id} button#${settings.newSubject.createButton.id}`).eq(0);
-            // questionInput = $(`#${settings.newSubject.panel.id} input#${settings.newSubject.questionInput.id}`).eq(0);
-            // typeSelect = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.typeSelect.id}`).eq(0);
-            // answersContainer = $(`#${settings.newSubject.panel.id} select#${settings.newSubject.answersContainer.id}`).eq(0);
-            // answerDataInfoContainer = $(`#${settings.newSubject.panel.id} select#new-subject-data-info-container`).eq(0);
         }// else {
             panel = $("<div/>").addClass(settings.newSubject.panel.class).attr({id: settings.newSubject.panel.id});
             let panelHeader = $("<div/>").addClass("panel-heading").append(
@@ -456,40 +450,25 @@ let QuestionGenerator = (() => {
                 let values = type.value;
                 for (let i = 0; i < values.length; i ++) {
                     let $subjectsDropdown = getSubjectsDropdown();
+                    let source = $("#new-answer-option-template").html();
+                    let template = Handlebars.compile(source);
                     container.append(
-                        $("<div/>").addClass("form-group row answer-option").append(
-                            $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-6").append(
-                                $("<input/>").attr({
-                                    "data-id": "caption",
-                                    "placeholder": "Caption"
-                                }).val(values[i].caption).addClass("form-control")
-                            ),
-                            $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-6").append(
-                                $("<input/>").attr({
-                                    "data-id": "value",
-                                    "placeholder": "Value"
-                                }).val(values[i].value).addClass("form-control")
-                            ),
-                            $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
-                                $("<input/>").attr({
-                                    "type": "number", 
-                                    "placeholder": "Weight",
-                                    "data-id": "weight"
-                                }).val(values[i].weight).addClass("form-control")
-                            ),
-                            $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-4").append(
-                                // $("<select/>").attr({"data-id": "next"}).addClass("form-control").append(
-                                //     $("<option/>").val("aaa").text("AAA"),
-                                //     $("<option/>").val("bbb").text("BBB")
-                                // )
-                                $subjectsDropdown
-                            ),
-                            $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
-                                $("<button/>").addClass("btn btn-danger form-control").text("Remove")
-                            )
-                        )
+                        $("<div/>").addClass("form-group row answer-option").html(template({
+                            caption: "",
+                            value: "",
+                            weight: 0,
+                            subjects: []
+                        }))
                     )
                 }
+            }
+
+            if (type.type_name == "Drop Down" || type.type_name == "Multiple Choice") {
+                container.append(
+                    $("<div/>").addClass("form-group").append(
+                        $("<button/>").addClass("btn btn-default pull-right").attr({id: "btn-add-answer-option"}).text("Add new Answer Option")
+                    )
+                );
             }
             
             monitor.children().remove();
@@ -516,36 +495,26 @@ let QuestionGenerator = (() => {
             }
             for (let i = 0; i < values.length; i ++) {
                 let $subjectsDropdown = getSubjectsDropdown();
+                let source = $("#new-answer-option-template").html();
+                let template = Handlebars.compile(source);
+
                 container.append(
-                    $("<div/>").addClass("form-group row answer-option").append(
-                        $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-6").append(
-                            $("<input/>").attr({
-                                "data-id": "caption",
-                                "placeholder": "Caption"
-                            }).val(values[i].caption).addClass("form-control")
-                        ),
-                        $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-6").append(
-                            $("<input/>").attr({
-                                "data-id": "value",
-                                "placeholder": "Value"
-                            }).val(values[i].value).addClass("form-control")
-                        ),
-                        $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
-                            $("<input/>").attr({
-                                "type": "number", 
-                                "placeholder": "Weight",
-                                "data-id": "weight"
-                            }).val(values[i].weight).addClass("form-control")
-                        ),
-                        $("<div/>").addClass("col-lg-3 col-md-3 col-sm-sm-3 col-xs-4").append(
-                            $subjectsDropdown
-                        ),
-                        $("<div/>").addClass("col-lg-2 col-md-2 col-sm-sm-2 col-xs-4").append(
-                            $("<button/>").addClass("btn btn-danger form-control").text("Remove")
-                        )
-                    )
+                    $("<div/>").addClass("form-group row answer-option").html(template({
+                        caption: values[i].caption,
+                        value: values[i].value,
+                        weight: values[i].weight,
+                        subjects: []
+                    }))
                 )
             }
+        }
+
+        if (subject.type_name == "Drop Down" || type.type_name == "Multiple Choice") {
+            container.append(
+                $("<div/>").addClass("form-group").append(
+                    $("<button/>").addClass("btn btn-default pull-right").attr({id: "btn-add-answer-option"}).text("Add new Answer Option")
+                )
+            );
         }
         
         monitor.children().remove();
@@ -618,7 +587,7 @@ let QuestionGenerator = (() => {
     /**
      * Rerender wizards table with data pulled from data store.
      */
-    const renderWizardsTable = () => {
+    const updateWizardsTable = () => {
         DataStorage.Wizards.get((wizards) => {
             let table = $(`#${settings.wizards.table.id}`);
             let source = $("#wizards-table-template").html();
@@ -641,7 +610,7 @@ let QuestionGenerator = (() => {
                 let wizardId = $record.attr("data-wizard-id");
 
                 DataStorage.Wizards.remove(wizardId, () => {
-                    renderWizardsTable();
+                    updateWizardsTable();
                 });
             });
         });
@@ -723,38 +692,24 @@ let QuestionGenerator = (() => {
         //  Initializing container panel.
         let containerPanel = $("<div/>").addClass(settings.wizards.panel.class).attr({
                 id: settings.wizards.panel.id
-            }),
-            panelHeader = $("<div/>").addClass("panel-heading"),
-            newButton = $("<button/>").addClass("btn btn-default pull-right new-wizard")
-                .text(settings.wizards.panel.newButtonText).attr({id: settings.wizards.panel.newButtonID}),
-            panelBody = $("<div/>").addClass("panel-body"),
-            panelFooter = $("<div/>").addClass("panel-footer");
-
-            panelHeader.append(
-                $("<h3/>").text(settings.wizards.panel.title),
-                newButton
-            ).appendTo(containerPanel);
-
-            panelBody.appendTo(containerPanel);
-
-            panelFooter.append(
-                $("<button/>").addClass("btn btn-primary").text("Something")
-            ).appendTo(containerPanel);
-
-        //  Initializing wizards table.
-        let table = $("<table/>").attr({id: settings.wizards.table.id}).addClass(settings.wizards.table.class);
-
-        panelBody.append(table);
-        // $_wizardsTable = table.DataTable();
+            });
 
         $_container.append(containerPanel);
+        
+        let source = $("#wizards-list-template").html();
+        let template = Handlebars.compile(source);
+        containerPanel.html(template({
+            title: settings.wizards.panel.title,
+            class: settings.wizards.panel.class,
+            id: settings.wizards.panel.id
+        }));
 
         // Binding Event to new Button
-        newButton.click(() => {
+        containerPanel.on("click", `#${settings.wizards.panel.newButtonID}`, (event) => {
             renderNewWizardForm();
         });
 
-        renderWizardsTable();
+        updateWizardsTable();
     }
 
     /**
@@ -762,7 +717,42 @@ let QuestionGenerator = (() => {
      */
     const initComponents = () => {
         //  Render wizards list table
+        let source = $("#wizards-table-template").html();
+        let template = Handlebars.compile(source);
+        Handlebars.registerPartial("wizardsTable", template({
+            wizards: [],// wizards,
+            class: settings.wizards.table.class,
+            id: settings.wizards.table.id
+        }));
         initWizardsTable();
+
+        $(document).on("click", "button.answer-option-delete", (event) => {
+            event.preventDefault();
+            let $optionContainer = $(event.target).parents("div.row.answer-option");
+            let optionsCount = $optionContainer.parent().children("div.row.answer-option").length;
+
+            if (optionsCount < 2) {
+                alert("You should have an answer option at least.");
+            } else if (confirm("Are you sure to delete this option?")) {
+                $optionContainer.remove();
+            }
+        }).on("click", "button#btn-add-answer-option", (event) => {
+            event.preventDefault();
+            let $panelBody = $(event.target).parents(".panel-body");
+            let source = $("#new-answer-option-template").html();
+            let template = Handlebars.compile(source);
+
+            $panelBody.find("div.answer-option").last().after(
+                $("<div/>").addClass("form-group row answer-option").html(
+                    template({
+                        caption: "",
+                        value: "",
+                        weight: 0,
+                        subjects: []
+                    })
+                )
+            )
+        })
     }
 
     /**
