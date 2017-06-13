@@ -224,25 +224,26 @@ let QuestionGenerator = (() => {
             goTo(settings.subjects.panel.id);
         });
 
-        createSubjectButton.click((event) => {
-            if (questionInput.val() !== "") {
-                let params = {
-                    id: event.target.getAttribute("data-id"),
-                    wizard_id: _selected_wizard,
-                    question: questionInput.val().trim(),
-                    type_id: parseInt(typeSelect.val()),
-                    answers: extractValuesFromAnswersConfig()
-                }
-                if (event.target.getAttribute("data-action") == "create") {
-                    createSubject(params);
-                } else if (event.target.getAttribute("data-action") == "update") {
-                    updateSubject(params);
-                }
-            } else {
-                alert("Question can't be empty!");
-            }
-            //  Creating a new wizard
-        });
+        // createSubjectButton.click((event) => {
+        //     event.preventDefault();
+        //     if (questionInput.val() !== "") {
+        //         let params = {
+        //             id: event.target.getAttribute("data-id"),
+        //             wizard_id: _selected_wizard,
+        //             question: questionInput.val().trim(),
+        //             type_id: parseInt(typeSelect.val()),
+        //             answers: extractValuesFromAnswersConfig()
+        //         }
+        //         if (event.target.getAttribute("data-action") == "create") {
+        //             createSubject(params);
+        //         } else if (event.target.getAttribute("data-action") == "update") {
+        //             updateSubject(params);
+        //         }
+        //     } else {
+        //         alert("Question can't be empty!");
+        //     }
+        //     //  Creating a new wizard
+        // });
 
         typeSelect.change((event) => {
             renderNewAnswerOptions(event.target.value, answersContainer, dataInfoContainer);
@@ -603,7 +604,26 @@ let QuestionGenerator = (() => {
                     subjects: []
                 }))
             )
-        })
+        }).on("click", `#${settings.newSubject.createButton.id}`, (event) => {
+            event.preventDefault();
+            if ($(`#${settings.newSubject.questionInput.id}`).val() !== "") {
+                let params = {
+                    id: event.target.getAttribute("data-id"),
+                    wizard_id: _selected_wizard,
+                    question: $(`#${settings.newSubject.questionInput.id}`).val().trim(),
+                    type_id: parseInt($(`#${settings.newSubject.typeSelect.id}`).val()),
+                    answers: extractValuesFromAnswersConfig()
+                }
+                if (event.target.getAttribute("data-action") == "create") {
+                    createSubject(params);
+                } else if (event.target.getAttribute("data-action") == "update") {
+                    updateSubject(params);
+                }
+            } else {
+                alert("Question can't be empty!");
+            }
+            //  Creating a new wizard
+        });
     }
 
     /**
