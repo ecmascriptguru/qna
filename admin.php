@@ -15,6 +15,47 @@ require("config/env.php");
         <div class="container">
             <h3>Question and Answer Generation</h3>
             <div id="tool-container">
+                <div class="panel panel-default" id="wizards-panel">
+                </div>
+
+                <div class="panel panel-default active" id="new-wizard-panel">
+                    <div class="panel-heading">
+                        <h3>Create a new Wizard</h3>
+                    </div>
+                    
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="new-wizard-name-input">Wizard Name</label>
+                            <input class="form-control" id="new-wizard-name-input" placeholder="Wizard Name">
+                        </div>
+                    </div>
+                    
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                                <button class="btn btn-default form-control" id="new-wizard-back-button">Back to List</button>
+                            </div>
+                            <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+                                <button class="btn btn-primary form-control" id="new-wizard-create-button" data-action="create" data-id="1">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default active" id="subjects-panel">
+                    <div class="panel-heading">
+                        <h3>subjects List</h3>
+                        <button class="btn btn-default pull-right new-subject" id="new-subject-button">New Subject</button>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-striped table-bordered" id="subjects-table">
+                                             -->
+                        </table>
+                    </div>
+                    <div class="panel-footer">
+                        <button class="btn btn-default" id="subjects-panel-back-to-wizards">Back To Wizards</button>
+                    </div>
+                </div>
             </div>
         </div>
         <footer>
