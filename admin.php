@@ -205,6 +205,7 @@ require("config/env.php");
                     {{#each subjects}}
                     <option value="{{id}}">{{question}}</option>
                     {{/each}}
+                    <option value="create_new_and_link">Create to Link</option>
                 </select>
             </div>
             <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-4">

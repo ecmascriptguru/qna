@@ -11,6 +11,8 @@
             right: 15px;
         }
 
+table tbody tr td {
+    vertical-align: middle !important;}
     table#wizards-table th:first-child {
         width: 80px;}
     table#wizards-table th:nth-child(3) {

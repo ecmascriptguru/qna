@@ -7,6 +7,7 @@
 let QuestionGenerator = (() => {
     let _data = [],
         _something = null,
+        _subjectsStack = [],
         _apiBaseUrl = null,
         _selected_wizard = null,
         _subjects = [],
@@ -104,6 +105,9 @@ let QuestionGenerator = (() => {
                 id: "new-subject-answers-container",
                 class: "",
                 title: ""
+            },
+            dataInfoContainer: {
+                id: "new-subject-data-info-container"
             }
         }
     }
@@ -149,22 +153,6 @@ let QuestionGenerator = (() => {
             goTo();
         });
 
-        createWizardButton.click((event) => {
-            if (wizardNameInput.val() !== "") {
-                let action = event.target.getAttribute("data-action");
-                let id = event.target.getAttribute("data-id");
-
-                if (action == "create") {
-                    createWizard(wizardNameInput.val())
-                } else if (action == "update") {
-                    updateWizard(id, wizardNameInput.val());
-                }
-            } else {
-                alert("Wizard Name can't be empty!");
-            }
-            //  Creating a new wizard
-        });
-
         if (!wizard) {
             wizardNameInput.val("");
             createWizardButton.attr({"data-action": "create"});
@@ -186,13 +174,6 @@ let QuestionGenerator = (() => {
         let containerPanel = $(`#${settings.subjects.panel.id}`),
             newButton = $(`#${settings.subjects.panel.newButton.id}`),
             backToWizardsButton = $(`#subjects-panel-back-to-wizards`);
-
-        newButton.click(() => {
-            renderNewSubjectForm()
-        });
-        backToWizardsButton.click(() => {
-            goTo(settings.wizards.panel.id);
-        });
 
         updateSubjectsTable();
         goTo(settings.subjects.panel.id);
@@ -220,41 +201,12 @@ let QuestionGenerator = (() => {
             }));
         });
 
-        backToSubjectsButton.click(() => {
-            goTo(settings.subjects.panel.id);
-        });
-
-        // createSubjectButton.click((event) => {
-        //     event.preventDefault();
-        //     if (questionInput.val() !== "") {
-        //         let params = {
-        //             id: event.target.getAttribute("data-id"),
-        //             wizard_id: _selected_wizard,
-        //             question: questionInput.val().trim(),
-        //             type_id: parseInt(typeSelect.val()),
-        //             answers: extractValuesFromAnswersConfig()
-        //         }
-        //         if (event.target.getAttribute("data-action") == "create") {
-        //             createSubject(params);
-        //         } else if (event.target.getAttribute("data-action") == "update") {
-        //             updateSubject(params);
-        //         }
-        //     } else {
-        //         alert("Question can't be empty!");
-        //     }
-        //     //  Creating a new wizard
-        // });
-
-        typeSelect.change((event) => {
-            renderNewAnswerOptions(event.target.value, answersContainer, dataInfoContainer);
-        });
-
         if (subject) {
             createSubjectButton.attr({
                 "data-id": subject.id,
                 "data-action": "update"
             });
-            questionInput.val(subject.question);//.change();
+            questionInput.val(subject.question);
             typeSelect.val(subject.type_id);
             renderExistingAnswerOptions(subject, answersContainer, dataInfoContainer);
         } else {
@@ -304,19 +256,21 @@ let QuestionGenerator = (() => {
             container.children().remove();
             if (type) {
                 let values = type.value;
-                for (let i = 0; i < values.length; i ++) {
-                    let $subjectsDropdown = getSubjectsDropdown();
-                    let source = $("#new-answer-option-template").html();
-                    let template = Handlebars.compile(source);
-                    container.append(
-                        $(template({
-                            caption: "",
-                            value: "",
-                            weight: 0,
-                            subjects: []
-                        }))
-                    )
-                }
+                DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+                    for (let i = 0; i < values.length; i ++) {
+                        let $subjectsDropdown = getSubjectsDropdown();
+                        let source = $("#new-answer-option-template").html();
+                        let template = Handlebars.compile(source);
+                        container.append(
+                            $(template({
+                                caption: "",
+                                value: "",
+                                weight: 0,
+                                subjects: subjects
+                            }))
+                        )
+                    }
+                });
             }
 
             if (type.type_name == "Drop Down" || type.type_name == "Multiple Choice") {
@@ -349,20 +303,25 @@ let QuestionGenerator = (() => {
             } else if (typeof subject.answers == "object") {
                 values = subject.answers;
             }
-            for (let i = 0; i < values.length; i ++) {
-                let $subjectsDropdown = getSubjectsDropdown();
-                let source = $("#new-answer-option-template").html();
-                let template = Handlebars.compile(source);
 
-                container.append(
-                    $(template({
-                        caption: values[i].caption,
-                        value: values[i].value,
-                        weight: values[i].weight,
-                        subjects: []
-                    }))
-                )
-            }
+            DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+                subjects = subjects.filter(item => item.id != subject.id);
+
+                for (let i = 0; i < values.length; i ++) {
+                    let $subjectsDropdown = getSubjectsDropdown();
+                    let source = $("#new-answer-option-template").html();
+                    let template = Handlebars.compile(source);
+
+                    container.append(
+                        $(template({
+                            caption: values[i].caption,
+                            value: values[i].value,
+                            weight: values[i].weight,
+                            subjects: subjects
+                        }))
+                    )
+                }
+            });
         }
 
         if (subject.type_name == "Drop Down" || subject.type_name == "Multiple Choice") {
@@ -453,22 +412,6 @@ let QuestionGenerator = (() => {
                 class: settings.wizards.table.class,
                 id: settings.wizards.table.id
             }));
-
-            table.on("click", "button.wizard-edit", (event) => {
-                let $record = $(event.target).parents("tr");
-                let wizardId = $record.attr("data-wizard-id");
-
-                DataStorage.Wizards.find(wizardId, (wizard) => {
-                    renderNewWizardForm(wizard);
-                });
-            }).on("click", "button.wizard-delete", (event) => {
-                let $record = $(event.target).parents("tr");
-                let wizardId = $record.attr("data-wizard-id");
-
-                DataStorage.Wizards.remove(wizardId, () => {
-                    updateWizardsTable();
-                });
-            });
         });
     }
 
@@ -486,24 +429,6 @@ let QuestionGenerator = (() => {
                 class: settings.subjects.table.class,
                 id: settings.subjects.table.id
             }));
-
-            table.on("click", "button.subject-edit", (event) => {
-                let $record = $(event.target).parents("tr");
-                let id = $record.attr("data-subject-id");
-
-                DataStorage.Subjects.find(id, (subject) => {
-                    renderNewSubjectForm(subject);
-                    goTo(settings.newSubject.panel.id);
-                });
-            }).on("click", "button.subject-delete", (event) => {
-                let $record = $(event.target).parents("tr");
-                let id = $record.attr("data-subject-id");
-
-                DataStorage.Subjects.remove(id, () => {
-                    renderSubjectsPanel();
-                    goTo(settings.subjects.panel.id);
-                });
-            })
         })
     }
 
@@ -623,6 +548,58 @@ let QuestionGenerator = (() => {
                 alert("Question can't be empty!");
             }
             //  Creating a new wizard
+        }).on("click", `#${settings.newSubject.backButton.id}`, () => {
+            goTo(settings.subjects.panel.id);
+        }).on("click", "button.subject-edit", (event) => {
+            let $record = $(event.target).parents("tr");
+            let id = $record.attr("data-subject-id");
+
+            DataStorage.Subjects.find(id, (subject) => {
+                renderNewSubjectForm(subject);
+                goTo(settings.newSubject.panel.id);
+            });
+        }).on("click", "button.subject-delete", (event) => {
+            let $record = $(event.target).parents("tr");
+            let id = $record.attr("data-subject-id");
+
+            DataStorage.Subjects.remove(id, () => {
+                renderSubjectsPanel();
+                goTo(settings.subjects.panel.id);
+            });
+        }).on("click", "button.wizard-edit", (event) => {
+            let $record = $(event.target).parents("tr");
+            let wizardId = $record.attr("data-wizard-id");
+
+            DataStorage.Wizards.find(wizardId, (wizard) => {
+                renderNewWizardForm(wizard);
+            });
+        }).on("click", "button.wizard-delete", (event) => {
+            let $record = $(event.target).parents("tr");
+            let wizardId = $record.attr("data-wizard-id");
+
+            DataStorage.Wizards.remove(wizardId, () => {
+                updateWizardsTable();
+            });
+        }).on("click", `#${settings.subjects.panel.newButton.id}`, () => {
+            renderNewSubjectForm()
+        }).on("click", `#subjects-panel-back-to-wizards`, () => {
+            goTo(settings.wizards.panel.id);
+        }).on("click", `#${settings.newWizard.panel.id} button#${settings.newWizard.createButton.id}`, (event) => {
+            if (wizardNameInput.val() !== "") {
+                let action = event.target.getAttribute("data-action");
+                let id = event.target.getAttribute("data-id");
+
+                if (action == "create") {
+                    createWizard(wizardNameInput.val())
+                } else if (action == "update") {
+                    updateWizard(id, wizardNameInput.val());
+                }
+            } else {
+                alert("Wizard Name can't be empty!");
+            }
+            //  Creating a new wizard
+        }).on("change", `#${settings.newSubject.typeSelect.id}`, (event) => {
+            renderNewAnswerOptions(event.target.value, $(`#${settings.newSubject.answersContainer.id}`), $(`#${settings.newSubject.dataInfoContainer.id}`));
         });
     }
 
