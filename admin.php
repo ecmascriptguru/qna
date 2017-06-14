@@ -207,13 +207,13 @@ require("config/env.php");
 
     <script id="new-answer-option-template" type="text/x-handlebars-template">
         <div class="form-group row answer-option">
-            <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-6">
+            <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-2">
                 <input data-id="caption" placeholder="Caption" value="{{caption}}" class="form-control">
             </div>
-            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-6">
+            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-2">
                 <input data-id="value" placeholder="Value" class="form-control" value="{{value}}">
             </div>
-            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-4">
+            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-2">
                 <input type="number" placeholder="Weight" data-id="weight" class="form-control" value="{{weight}}">
             </div>
             <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-4">
@@ -229,7 +229,7 @@ require("config/env.php");
                     <!--<option value="create_new_and_link">Create to Link</option>-->
                 </select>
             </div>
-            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-4">
+            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-2">
                 <button class="btn btn-danger form-control answer-option-delete">Remove</button>
             </div>
         </div>

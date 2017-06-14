@@ -642,7 +642,7 @@ let QuestionGenerator = (() => {
                 let starts_with = $(`#${settings.newWizard.initiativeSubject.id}`).val();
 
                 if (action == "create") {
-                    createWizard(wizardNameInput.val(), starts_with.val())
+                    createWizard(wizardNameInput.val(), starts_with)
                 } else if (action == "update") {
                     updateWizard(id, wizardNameInput.val(), starts_with);
                 }
