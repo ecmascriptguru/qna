@@ -99,7 +99,7 @@ let DataStorage = (() => {
          * Find a Answer Type with ID.
          * @param {number} id 
          * @param {function} callback 
-         * @return {array}
+         * @return {object}
          */
         const find = (id, callback) => {
             for( let i = 0; i < _types.length; i ++) {
@@ -264,19 +264,19 @@ let DataStorage = (() => {
          * @param {function} callback 
          * @return {number}
          */
-        const addSubject = (params, callback) => {
+        const createSubject = (params, callback) => {
             let tempSubject = {
                 id: _offset,
                 question: params.question || "No title",
                 type_id: params.type_id || 1,
                 wizard_id: params.wizard_id,
-                answers: JSON.stringify(params.answers)
+                answers: JSON.stringify(params.answers || AnswerTypes.find(1).value)
             };
             _subjects.push(tempSubject);
             _offset++;
 
             if (typeof callback === "function") {
-                callback();
+                callback(tempSubject);
             } else {
                 return offset -1;
             }
@@ -316,9 +316,14 @@ let DataStorage = (() => {
             let flag = false;
             for (let i = 0; i < _subjects.length; i ++) {
                 if (_subjects[i].id == id) {
-                    _subjects[i].question = params.question;
-                    _subjects[i].type_id = params.type_id;
-                    _subjects[i].answers = params.answers;
+                    for (let p in _subjects[i]) {
+                        if (params[p]) {
+                            _subjects[i][p] = params[p];
+                        }
+                    }
+                    // _subjects[i].question = params.question;
+                    // _subjects[i].type_id = params.type_id;
+                    // _subjects[i].answers = params.answers;
                     flag = true;
                     break;
                 }
@@ -347,7 +352,7 @@ let DataStorage = (() => {
         return {
             get: get,
             find: findSubject,
-            insert: addSubject,
+            insert: createSubject,
             update: updateSubject,
             remove: deleteSubject
         }

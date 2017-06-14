@@ -312,11 +312,16 @@ let QuestionGenerator = (() => {
                     let source = $("#new-answer-option-template").html();
                     let template = Handlebars.compile(source);
 
+                    for (let j = 0; j < subjects.length; j ++) {
+                        subjects[j].selected = (subjects[j].id == values[i].next);
+                    }
+
                     container.append(
                         $(template({
                             caption: values[i].caption,
                             value: values[i].value,
                             weight: values[i].weight,
+                            next: values[i].next,
                             subjects: subjects
                         }))
                     )
@@ -382,7 +387,11 @@ let QuestionGenerator = (() => {
      */
     const createSubject = (params) => {
         DataStorage.Subjects.insert(params, () => {
-            renderSubjectsPanel();
+            if (_subjectsStack.length == 0) {
+                renderSubjectsPanel();
+            } else {
+                renderNewSubjectForm(_subjectsStack.pop());
+            }
             updateLocalSubjects();
         });
     }
@@ -394,7 +403,11 @@ let QuestionGenerator = (() => {
     const updateSubject = (params) => {
         DataStorage.Subjects.update(params.id, params, (response) => {
             updateLocalSubjects(() => {
-                renderSubjectsPanel();
+                if (_subjectsStack.length == 0) {
+                    renderSubjectsPanel();
+                } else {
+                    renderNewSubjectForm(_subjectsStack.pop());
+                }
             })
         })
     }
@@ -599,8 +612,28 @@ let QuestionGenerator = (() => {
             }
             //  Creating a new wizard
         }).on("change", `#${settings.newSubject.typeSelect.id}`, (event) => {
-            renderNewAnswerOptions(event.target.value, $(`#${settings.newSubject.answersContainer.id}`), $(`#${settings.newSubject.dataInfoContainer.id}`));
-        });
+            renderNewAnswerOptions(
+                event.target.value, 
+                $(`#${settings.newSubject.answersContainer.id}`), 
+                $(`#${settings.newSubject.dataInfoContainer.id}`)
+            );
+        }).on("change", `div.answer-option select`, (event) => {
+            if (event.target.value == "create_new_and_link") {
+                DataStorage.Subjects.insert({
+                    wizard_id: _selected_wizard
+                }, (subject) => {
+                    $(event.target).append(
+                        $("<option/>").text(subject.question).val(subject.id)
+                    );
+                    $(event.target).val(subject.id).change();
+                    if ($(`#${settings.newSubject.questionInput.id}`).val() == "") {
+                        $(`#${settings.newSubject.questionInput.id}`).val("No title")
+                    }
+
+                    $(`#${settings.newSubject.createButton.id}`).click();
+                })
+            }
+        })
     }
 
     /**

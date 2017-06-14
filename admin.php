@@ -77,7 +77,7 @@ require("config/env.php");
                         </div>
                         <div class="form-group" id="new-subject-data-info-container">
                             Selected Type Info.
-                            <pre>[{"caption":"","value":1,"min":1,"max":100,"weight":100,"next":null}]</pre>
+                            <pre></pre>
                         </div>
                         <div id="new-subject-answers-container">
                             <div class="form-group row answer-option">
@@ -203,7 +203,11 @@ require("config/env.php");
                 <select class="form-control" data-id="next">
                     <option value="">Select a next subject</option>
                     {{#each subjects}}
-                    <option value="{{id}}">{{question}}</option>
+                    <option value="{{id}}" 
+                        {{#if selected}} 
+                            selected 
+                        {{/if}}
+                    >{{question}}</option>
                     {{/each}}
                     <option value="create_new_and_link">Create to Link</option>
                 </select>
