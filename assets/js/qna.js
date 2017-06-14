@@ -51,6 +51,12 @@ let QuestionGenerator = (() => {
                 id: "new-wizard-name-input",
                 class: "form-control",
                 title: "Wizard Name"
+            },
+            initiativeSubject: {
+                container_id: "wizard-starting-subject-container",
+                id: "wizard-starting-subject",
+                class: "form-control",
+                title: "Initiative Subject"
             }
         },
         subjects: {
@@ -147,7 +153,11 @@ let QuestionGenerator = (() => {
         let panel = $(`#${settings.newWizard.panel.id}`).eq(0);
             backToWizardsButton = $(`#${settings.newWizard.panel.id} button#${settings.newWizard.backButton.id}`).eq(0);
             createWizardButton = $(`#${settings.newWizard.panel.id} button#${settings.newWizard.createButton.id}`).eq(0);
-            wizardNameInput = $(`#${settings.newWizard.panel.id} input#${settings.newWizard.nameInput.id}`).eq(0);
+            wizardNameInput = $(`#${settings.newWizard.panel.id} input#${settings.newWizard.nameInput.id}`).eq(0),
+            startingSubjectSelect = $(`#${settings.newWizard.initiativeSubject.container_id}`).eq(0);
+
+        let source = $("#wizard-starting-question-template").html();
+        let template = Handlebars.compile(source);
 
         backToWizardsButton.click(() => {
             goTo();
@@ -156,9 +166,29 @@ let QuestionGenerator = (() => {
         if (!wizard) {
             wizardNameInput.val("");
             createWizardButton.attr({"data-action": "create"});
+
+            DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+                startingSubjectSelect.html(
+                    $(template({
+                        subjects: subjects
+                    }))
+                );
+            });
         } else {
             wizardNameInput.val(wizard.name);
             createWizardButton.attr({"data-action": "update", "data-id": wizard.id});
+            
+            DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+                for (let i = 0; i < subjects.length; i ++) {
+                    subjects[i].selected = (subjects[i].id == wizard.starts_with);
+                }
+
+                startingSubjectSelect.html(
+                    $(template({
+                        subjects: subjects
+                    }))
+                );
+            });
         }
         goTo(settings.newWizard.panel.id);
     }
@@ -346,10 +376,14 @@ let QuestionGenerator = (() => {
     /**
      * Create a new Wizard with name property. This method will call the temp object to manage mock database.
      * @param {string} name
+     * @param {number} starts_with
      */
-    const createWizard = (name) => {
+    const createWizard = (name, starts_with) => {
         //  Code to create wizard here. Callback function should be used here.
-        DataStorage.Wizards.insert(name, (response) => {
+        DataStorage.Wizards.insert({
+                name,
+                starts_with
+            }, (response) => {
             _selected_wizard = response.id;
             renderSubjectsPanel(name);
         });
@@ -359,9 +393,13 @@ let QuestionGenerator = (() => {
      * Update an existing wizard.
      * @param {number} id
      * @param {string} name
+     * @param {number} starts_with
      */
-    const updateWizard = (id, name) => {
-        DataStorage.Wizards.update(id, name, () => {
+    const updateWizard = (id, name, starts_with) => {
+        DataStorage.Wizards.update(id, {
+                newName: name,
+                starts_with
+            }, () => {
             _selected_wizard = id;
             renderSubjectsPanel(name);
         });
@@ -601,11 +639,12 @@ let QuestionGenerator = (() => {
             if (wizardNameInput.val() !== "") {
                 let action = event.target.getAttribute("data-action");
                 let id = event.target.getAttribute("data-id");
+                let starts_with = $(`#${settings.newWizard.initiativeSubject.id}`).val();
 
                 if (action == "create") {
-                    createWizard(wizardNameInput.val())
+                    createWizard(wizardNameInput.val(), starts_with.val())
                 } else if (action == "update") {
-                    updateWizard(id, wizardNameInput.val());
+                    updateWizard(id, wizardNameInput.val(), starts_with);
                 }
             } else {
                 alert("Wizard Name can't be empty!");

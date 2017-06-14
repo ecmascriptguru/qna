@@ -129,11 +129,13 @@ let DataStorage = (() => {
         let _wizards = [
             {
                 id: 1,
-                name: "Demo Wizard 1"
+                name: "Demo Wizard 1",
+                starts_with: null
             },
             {
                 id: 2,
-                name: "Demo Wizard 2"
+                name: "Demo Wizard 2",
+                starts_with: null
             }
         ];
 
@@ -154,13 +156,14 @@ let DataStorage = (() => {
 
         /**
          * Create a new wizard with the given name parameter.
-         * @param {string} name 
+         * @param {object} name 
          * @param {function} callback 
          */
-        const addWizard = (name, callback) => {
+        const addWizard = (params, callback) => {
             wizard = {
                 id: _offset,
-                name: name
+                name: params.name,
+                starts_with: params.starts_with
             }
             _wizards.push(wizard);
             _offset++;
@@ -175,15 +178,16 @@ let DataStorage = (() => {
         /**
          * Update an existing wizard
          * @param {number} id 
-         * @param {string} newName 
+         * @param {object} params 
          * @param {function} callback 
          * @return {boolean}
          */
-        const updateWizard = (id, newName, callback) => {
+        const updateWizard = (id, params, callback) => {
             let flag = false;
             for (let i = 0; i < _wizards.length; i ++) {
                 if (_wizards[i].id == id) {
-                    _wizards[i].name = newName;
+                    _wizards[i].name = params.newName;
+                    _wizards[i].starts_with = params.starts_with;
                     flag = true;
                     break;
                 }

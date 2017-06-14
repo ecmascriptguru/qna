@@ -28,6 +28,9 @@ require("config/env.php");
                             <label for="new-wizard-name-input">Wizard Name</label>
                             <input class="form-control" id="new-wizard-name-input" placeholder="Wizard Name">
                         </div>
+
+                        <div class="form-group" id="wizard-starting-subject-container">
+                        </div>
                     </div>
                     
                     <div class="panel-footer">
@@ -120,6 +123,20 @@ require("config/env.php");
         </footer>
     </div>
 
+    <script id="wizard-starting-question-template" type="text/x-handlebars-template">
+        <!--<div class="form-group">-->
+            <label for="wizard-starting-subject">Starts with:</label>
+            <select id="wizard-starting-subject" class="form-control">
+                {{#each subjects}}
+                <option value="{{id}}" 
+                {{#if selected }}
+                    selected
+                {{/if}}>{{question}}</option>
+                {{/each}}
+            </select>
+        <!--</div>-->
+    </script>
+
     <script id="wizards-list-template" type="text/x-handlebars-template">
         <!--<div class="panel panel-default">-->
             <div class="panel-heading">
@@ -209,7 +226,7 @@ require("config/env.php");
                         {{/if}}
                     >{{question}}</option>
                     {{/each}}
-                    <option value="create_new_and_link">Create to Link</option>
+                    <!--<option value="create_new_and_link">Create to Link</option>-->
                 </select>
             </div>
             <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-4">
