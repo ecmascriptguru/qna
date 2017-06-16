@@ -293,6 +293,7 @@ require("config/env.php");
     <script src="assets/js/dataTables.bootstrap.min.js"></script>
     <script src="assets/js/handlebars.js"></script>
     <script src="assets/js/env.js"></script>
+    <script src="assets/js/mockData.js"></script>
     <script src="assets/js/storage.js"></script>
     <script src="assets/js/qna.js"></script>
     <script src="assets/js/admin.js"></script>

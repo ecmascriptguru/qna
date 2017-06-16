@@ -6,81 +6,7 @@
  */
 let DataStorage = (() => {
     let AnswerTypes = (() => {
-        const _types = [
-            {
-                id: 1,
-                type_name: "Text Field",
-                value: [{
-                    caption: "",
-                    value: "",
-                    weight: 100,
-                    next: null
-                }]
-            },
-            {
-                id: 2,
-                type_name: "Number Field",
-                value: [{
-                    caption: "",
-                    value: 1,
-                    min: 1,
-                    max: 100,
-                    weight: 100,
-                    next: null
-                }]
-            },
-            {
-                id: 3,
-                type_name: "Drop Down",
-                value: [{
-                        caption: "One",
-                        value: "one",
-                        weight: 50,
-                        next: null
-                    },
-                    {
-                        caption: "Two",
-                        value: "two",
-                        weight: 50,
-                        next: null
-                    }
-                ]
-            },
-            {
-                id: 4,
-                type_name: "Multiple Choice",
-                value: [{
-                        caption: "One",
-                        value: "one",
-                        weight: 50,
-                        next: null
-                    },
-                    {
-                        caption: "Two",
-                        value: "two",
-                        weight: 50,
-                        next: null
-                    }
-                ]
-            },
-            {
-                id: 5,
-                type_name: "Yes or No",
-                value: [{
-                        caption: "Yes",
-                        value: "yes",
-                        weight: 100,
-                        next: null
-                    },
-                    {
-                        caption: "No",
-                        value: "no",
-                        weight: 0,
-                        next: null
-                    }
-                ]
-            }
-        ];
+        const _types = Constants.types;
 
         /**
          * Getting all of Answer Types. Callback function can be null or empty
@@ -126,18 +52,7 @@ let DataStorage = (() => {
     })();
 
     let Wizards = (() => {
-        let _wizards = [
-            {
-                id: 1,
-                name: "Demo Wizard 1",
-                starts_with: null
-            },
-            {
-                id: 2,
-                name: "Demo Wizard 2",
-                starts_with: null
-            }
-        ];
+        let _wizards = Constants.wizards;
 
         let _offset = 3;
 
@@ -236,7 +151,7 @@ let DataStorage = (() => {
     })();
 
     let Subjects = (() => {
-        let _subjects = [];
+        let _subjects = Constants.subjects;
         let _offset = 1;
 
         /**
