@@ -45,14 +45,27 @@ require("config/env.php");
                     </div>
                 </div>
 
-                <div class="panel panel-default" id="subjects-panel">
+                <div id="subjects-panel" class="panel panel-default">
                     <div class="panel-heading">
                         <h3>subjects List</h3>
-                        <button class="btn btn-default pull-right new-subject" id="new-subject-button">New Subject</button>
                     </div>
                     <div class="panel-body">
-                        <table class="table table-striped table-bordered" id="subjects-table">
-                        </table>
+                        <ul class="nav nav-tabs">
+                            <li role="presentation" class="active"><a href="#tab-content-subjects">Subjects</a></li>
+                            <li role="presentation"><a href="#tab-content-analysis">Analysis</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" id="tab-content-subjects" class="tab-pane active">
+                                <button class="btn btn-default pull-right new-subject" id="new-subject-button">New Subject</button>
+                                <table class="table table-striped table-bordered" id="subjects-table">
+                                </table>
+                            </div>
+                            <div role="tabpanel" id="tab-content-analysis" class="tab-pane">
+                                <button class="btn btn-default pull-right new-analysis" id="new-analysis-button">New Analysis</button>
+                                <table class="table table-striped table-bordered" id="analysis-table">
+                                </table>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel-footer">
                         <button class="btn btn-default" id="subjects-panel-back-to-wizards">Back To Wizards</button>
@@ -236,25 +249,33 @@ require("config/env.php");
     </script>
 
     <script id="subjects-list-template" type="text/x-handlebars-template">
-        <!--<div class="panel panel-default">-->
-            <div class="panel-heading">
-                <h3>{{title}}</h3>
-                <button class="btn btn-default pull-right new-subject" id="new-subject-button">New Subject</button>
-            </div>
-            <div class="panel-body">
-                {{> subjectsTable }}
-            </div>
-            <div class="panel-footer">
-                <div class="row">
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
-                        <button class="btn btn-default form-control">Back to Wizards</button>
-                    </div>
-                    <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
-                        <button class="btn btn-primary form-control">Next</button>
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="#tab-content-subjects">Subjects</a></li>
+            <li role="presentation"><a href="#tab-content-analysis">Analysis</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="tab-content-subjects">
+                <div class="panel-heading">
+                    <h3>{{title}}</h3>
+                    <button class="btn btn-default pull-right new-subject" id="new-subject-button">New Subject</button>
+                </div>
+                <div class="panel-body">
+                    {{> subjectsTable }}
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                            <button class="btn btn-default form-control">Back to Wizards</button>
+                        </div>
+                        <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+                            <button class="btn btn-primary form-control">Next</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        <!--</div>-->
+            <div role="tabpanel" class="tab-pane active" id="tab-content-analysis">
+            </div>
+        </div>
     </script>
 
     <script id="subjects-table-template" type="text/x-handlebars-template">

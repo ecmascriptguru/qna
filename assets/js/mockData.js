@@ -530,5 +530,9 @@ let Constants = {
                 next: null
             }])
         },
+    ],
+
+    analysis: [
+        //
     ]
 }

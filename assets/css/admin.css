@@ -5,11 +5,14 @@
     .panel.panel-default .panel-heading {
         position: relative;}
         .panel.panel-default .panel-heading button.btn.new-subject,
+        .panel.panel-default .panel-heading button.btn.new-analysis,
         .panel.panel-default .panel-heading button.btn.new-wizard {
             position: absolute;
             top: 25px;
             right: 15px;
         }
+    .active .panel {
+        display: block;}
 
 table tbody tr td {
     vertical-align: middle !important;}

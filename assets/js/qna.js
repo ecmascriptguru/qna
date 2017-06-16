@@ -64,14 +64,23 @@ let QuestionGenerator = (() => {
                 id: "subjects-panel",
                 class: "panel panel-default",
                 title: "subjects List",
-                newButton: {
+                newSubjectButton: {
                     id: "new-subject-button",
                     title: "New Subject",
                     class: "btn btn-default pull-right new-subject"
+                },
+                newAnalysisButton: {
+                    id: "new-analysis-button",
+                    title: "New Analysis",
+                    class: "btn btn-default pull-right new-analysis"
                 }
             },
-            "table": {
+            "subjectsTable": {
                 id: "subjects-table",
+                class: "table table-striped table-bordered"
+            },
+            "analysisTable": {
+                id: "analysis-table",
                 class: "table table-striped table-bordered"
             }
         },
@@ -202,7 +211,7 @@ let QuestionGenerator = (() => {
     const renderSubjectsPanel = (wizardName) => {
         //  Initializing container panel.
         let containerPanel = $(`#${settings.subjects.panel.id}`),
-            newButton = $(`#${settings.subjects.panel.newButton.id}`),
+            newButton = $(`#${settings.subjects.panel.newSubjectButton.id}`),
             backToWizardsButton = $(`#subjects-panel-back-to-wizards`);
 
         updateSubjectsTable();
@@ -472,13 +481,27 @@ let QuestionGenerator = (() => {
     const updateSubjectsTable = () => {
         DataStorage.Subjects.get(_selected_wizard, (subjects) => {
             _subjects = subjects;
-            let table = $(`#${settings.subjects.table.id}`);
+            let table = $(`#${settings.subjects.subjectsTable.id}`);
             let source = $("#subjects-table-template").html();
             let template = Handlebars.compile(source);
             table.html(template({
                 subjects: subjects,
-                class: settings.subjects.table.class,
-                id: settings.subjects.table.id
+                class: settings.subjects.subjectsTable.class,
+                id: settings.subjects.subjectsTable.id
+            }));
+        })
+    }
+
+    const updateAnalysisTable = () => {
+        DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+            _subjects = subjects;
+            let table = $(`#${settings.subjects.subjectsTable.id}`);
+            let source = $("#subjects-table-template").html();
+            let template = Handlebars.compile(source);
+            table.html(template({
+                subjects: subjects,
+                class: settings.subjects.subjectsTable.class,
+                id: settings.subjects.subjectsTable.id
             }));
         })
     }
@@ -631,7 +654,7 @@ let QuestionGenerator = (() => {
             DataStorage.Wizards.remove(wizardId, () => {
                 updateWizardsTable();
             });
-        }).on("click", `#${settings.subjects.panel.newButton.id}`, () => {
+        }).on("click", `#${settings.subjects.panel.newSubjectButton.id}`, () => {
             renderNewSubjectForm()
         }).on("click", `#subjects-panel-back-to-wizards`, () => {
             goTo(settings.wizards.panel.id);
@@ -672,7 +695,12 @@ let QuestionGenerator = (() => {
                     $(`#${settings.newSubject.createButton.id}`).click();
                 })
             }
-        })
+        });
+
+        $(".nav-tabs li a").click((event) => {
+			event.preventDefault();
+			$(event.target).tab('show');
+		});
     }
 
     /**

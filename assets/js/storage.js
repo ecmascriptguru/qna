@@ -277,10 +277,140 @@ let DataStorage = (() => {
         }
     })();
 
+    let Analysis = (() => {
+        let _analytics = Constants.analysis;
+        let _offset = 1;
+
+        /**
+         * Get all Analytics.
+         * @param {number} wizard_id 
+         * @param {function} callback 
+         * @return {array}
+         */
+        const get = (wizard_id, callback) => {
+            let results = [];
+            for (let i = 0; i < _analytics.length; i ++) {
+                if (_analytics[i].wizard_id == wizard_id) {
+                    let type = AnswerTypes.find(_analytics[i].type_id);
+                    let cur = _analytics[i];
+                    cur.type_name = type.type_name;
+                    results.push(cur);
+                }
+            }
+            if (typeof callback === "function") {
+                callback(results);
+            } else {
+                return results;
+            }
+        }
+
+        /**
+         * Create a new Analysis.
+         * @param {object} params 
+         * @param {function} callback 
+         * @return {number}
+         */
+        const createAnalysis = (params, callback) => {
+            let tempAnalysis = {
+                id: _offset,
+                question: params.question || "No title",
+                type_id: params.type_id || 1,
+                wizard_id: params.wizard_id,
+                answers: JSON.stringify(params.answers || AnswerTypes.find(1).value)
+            };
+            _analytics.push(tempAnalysis);
+            _offset++;
+
+            if (typeof callback === "function") {
+                callback(tempAnalysis);
+            } else {
+                return offset -1;
+            }
+        }
+
+        /**
+         * Find an existing Analysis.
+         * @param {number} id 
+         * @param {function} callback 
+         * @return {object}
+         */
+        const findAnalysis = (id, callback) => {
+            let analysis = null;
+
+            for (let i = 0; i < _analytics.length; i ++) {
+                if (_analytics[i].id == id) {
+                    analysis = _analytics[i];
+                    break;
+                }
+            }
+
+            if (typeof callback === "function") {
+                callback(analysis);
+            } else {
+                return analysis;
+            }
+        }
+
+        /**
+         * Update an existing Analysis.
+         * @param {number} id 
+         * @param {object} params 
+         * @param {function} callback 
+         * @return {boolean}
+         */
+        const updateAnalysis = (id, params, callback) => {
+            let flag = false;
+            for (let i = 0; i < _analytics.length; i ++) {
+                if (_analytics[i].id == id) {
+                    for (let p in _analytics[i]) {
+                        if (params[p]) {
+                            _analytics[i][p] = params[p];
+                        }
+                    }
+                    // _analytics[i].question = params.question;
+                    // _analytics[i].type_id = params.type_id;
+                    // _analytics[i].answers = params.answers;
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (typeof callback == "function") {
+                callback({status: flag});
+            } else {
+                return flag;
+            }
+        }
+
+        /**
+         * Delete a Analysis with the ID.
+         * @param {number} id 
+         * @param {function} callback 
+         */
+        const deleteAnalysis = (id, callback) => {
+            _analytics = _analytics.filter(analysis => analysis.id != id);
+
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+
+        return {
+            get: get,
+            find: findAnalysis,
+            insert: createAnalysis,
+            update: updateAnalysis,
+            remove: deleteAnalysis
+        }
+    })();
+
+    
+
     return {
         Types: AnswerTypes,
         Wizards: Wizards,
-        Subjects: Subjects
+        Subjects: Subjects,
+        Analysis: Analysis
     }
     
 })();
