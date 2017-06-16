@@ -20,3 +20,5 @@ table tbody tr td {
         width: 80px;}
     table#wizards-table th:nth-child(3) {
         width: 240px;}
+    table th.actions-header {
+        width: 240px;}

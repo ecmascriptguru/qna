@@ -47,7 +47,7 @@ require("config/env.php");
 
                 <div id="subjects-panel" class="panel panel-default">
                     <div class="panel-heading">
-                        <h3>Manage Subject</h3>
+                        <h3>Manage Subjects and Analysis</h3>
                     </div>
                     <div class="panel-body">
                         <ul class="nav nav-tabs">
@@ -236,7 +236,7 @@ require("config/env.php");
                 <tr>
                     <th>#</th>
                     <th>Name</th>
-                    <th>Actions</th>
+                    <th class="actions-header">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -329,7 +329,7 @@ require("config/env.php");
                     <th>#</th>
                     <th>Question</th>
                     <th>Answer Type</th>
-                    <th>Actions</th>
+                    <th class="actions-header">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -360,7 +360,7 @@ require("config/env.php");
                     <th>Name</th>
                     <th>operator</th>
                     <th>Factors</th>
-                    <th>Actions</th>
+                    <th class="actions-header">Actions</th>
                 </tr>
             </thead>
             <tbody>

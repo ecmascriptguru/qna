@@ -548,6 +548,142 @@ let Constants = {
                     coeff: -1
                 }
             ])
-        }
+        },
+        {
+            id: 2,
+            wizard_id: 3,
+            name: "V2: Monthly property management fee.",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 5,
+                    coeff: 0.1
+                }
+            ])
+        },
+        {
+            id: 3,
+            wizard_id: 3,
+            name: "V3: Total owed:",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 10,
+                    coeff: 1
+                },
+                {
+                    id: 15,
+                    coeff: 1
+                }
+            ])
+        },
+        {
+            id: 4,
+            wizard_id: 3,
+            name: "V4: Total payment",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 11,
+                    coeff: 1
+                },
+                {
+                    id: 16,
+                    coeff: 1
+                }
+            ])
+        },
+        {
+            id: 5,
+            wizard_id: 3,
+            name: "V5: Cash Flow",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 5,
+                    coeff: 0.9
+                },
+                {
+                    id: 11,
+                    coeff: -1
+                },
+                {
+                    id: 16,
+                    coeff: -1
+                }
+            ])
+        },
+        {
+            id: 6,
+            wizard_id: 3,
+            name: "V6: Annual Cashflow Potential",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 5,
+                    coeff: 10.8
+                },
+                {
+                    id: 11,
+                    coeff: -12
+                },
+                {
+                    id: 16,
+                    coeff: -12
+                }
+            ])
+        },
+        {
+            id: 7,
+            wizard_id: 3,
+            name: "V7: Annual gross income potential",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 5,
+                    coeff: 12
+                }
+            ])
+        },
+        {
+            id: 8,
+            wizard_id: 3,
+            name: "V8: Annual net income potential",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 5,
+                    coeff: 10.8
+                },
+                {
+                    id: 11,
+                    coeff: -12
+                },
+                {
+                    id: 16,
+                    coeff: -12
+                }
+            ])
+        },
+        {
+            id: 9,
+            wizard_id: 3,
+            name: "V9: Annual income after estimated expenses",
+            operator: "+",
+            factors: JSON.stringify([
+                {
+                    id: 5,
+                    coeff: 9.8
+                },
+                {
+                    id: 11,
+                    coeff: -12
+                },
+                {
+                    id: 16,
+                    coeff: -12
+                }
+            ])
+        },
     ]
 }
