@@ -217,6 +217,8 @@ let QuestionGenerator = (() => {
                         subjects: subjects
                     }))
                 );
+
+                goTo(settings.newWizard.panel.id);
             });
         } else {
             wizardNameInput.val(wizard.name);
@@ -232,9 +234,11 @@ let QuestionGenerator = (() => {
                         subjects: subjects
                     }))
                 );
+
+                goTo(settings.newWizard.panel.id);
             });
         }
-        goTo(settings.newWizard.panel.id);
+        
     }
 
     /**
@@ -764,6 +768,7 @@ let QuestionGenerator = (() => {
 
         // Binding Event to new Button
         containerPanel.on("click", `#${settings.wizards.panel.newButtonID}`, (event) => {
+            _selected_wizard = null;
             renderNewWizardForm();
         });
 
@@ -903,6 +908,7 @@ let QuestionGenerator = (() => {
             let wizardId = $record.attr("data-wizard-id");
 
             DataStorage.Wizards.find(wizardId, (wizard) => {
+                _selected_wizard = wizardId;
                 renderNewWizardForm(wizard);
             });
         }).on("click", "button.wizard-delete", (event) => {
