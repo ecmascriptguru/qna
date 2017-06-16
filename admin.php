@@ -20,7 +20,7 @@ require("config/env.php");
 
                 <div class="panel panel-default" id="new-wizard-panel">
                     <div class="panel-heading">
-                        <h3>Create a new Wizard</h3>
+                        <h3>Create/Update a new Wizard</h3>
                     </div>
                     
                     <div class="panel-body">
@@ -47,7 +47,7 @@ require("config/env.php");
 
                 <div id="subjects-panel" class="panel panel-default">
                     <div class="panel-heading">
-                        <h3>subjects List</h3>
+                        <h3>Manage Subject</h3>
                     </div>
                     <div class="panel-body">
                         <ul class="nav nav-tabs">
@@ -74,7 +74,7 @@ require("config/env.php");
 
                 <div class="panel panel-default" id="new-subject-panel">
                     <div class="panel-heading">
-                        <h3>Create a new Subject</h3>
+                        <h3>Create/Update a new Subject</h3>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
@@ -129,6 +129,44 @@ require("config/env.php");
                         </div>
                     </div>
                 </div>
+
+                <div class="panel panel-default" id="new-analysis-panel">
+                    <div class="panel-heading">
+                        <h3>Create/Update a new Analysis</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="new-analysis-name-input">Enter Name.</label>
+                            <input class="form-control" id="new-analysis-name-input" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-analysis-operator-select">Select an operator</label>
+                            <select id="new-analysis-operator-select" class="form-control">
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="*">x</option>
+                                <option value="/">/</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="new-analysis-data-info-container">
+                            Selected Type Info.
+                            <pre></pre>
+                        </div>
+                        <div id="new-analysis-factors-container">
+                            
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                                <button class="btn btn-default form-control" id="new-analysis-back-button">Back to List</button>
+                            </div>
+                            <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+                                <button class="btn btn-primary form-control" id="new-analysis-create-button" data-action="create">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <footer>
@@ -175,6 +213,12 @@ require("config/env.php");
     <script id="add-new-answer-option-button" type="text/x-handlebars-template">
         <div class="form-group">
             <button class="btn btn-default pull-right" id="btn-add-answer-option">Add new Answer Option</button>
+        </div>
+    </script>
+
+    <script id="add-new-factor-option-button" type="text/x-handlebars-template">
+        <div class="form-group">
+            <button class="btn btn-default pull-right" id="btn-add-factor-option">Add new factor(operand)</button>
         </div>
     </script>
 
@@ -306,6 +350,63 @@ require("config/env.php");
                 {{/each}}
             </tbody>
         </table>
+    </script>
+
+    <script id="analysis-table-template" type="text/x-handlebars-template">
+        <table class="{{class}}" id="{{id}}">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>operator</th>
+                    <th>Factors</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each analytics}}
+                <tr data-analysis-id='{{id}}'>
+                    <td>{{@index}}</td>
+                    <td>{{name}}</td>
+                    <td>{{operator}}</td>
+                    <td><code>{{factors}}</code></td>
+                    <td>
+                        <div class="col-xs-6">
+                            <button class="btn btn-info form-control analysis-edit">Edit</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-danger form-control analysis-delete">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </script>
+
+    <script id="new-analysis-factor-option-template" type="text/x-handlebars-template">
+        <!--<div id="new-analysis-factors-container">-->
+            <div class="form-group row factor-option">
+                <div class="col-lg-2 col-md-3 col-sm-sm-3 col-xs-3">
+                    <input data-id="coeff" type="number" placeholder="Coefficient" value="{{coeff}}" class="form-control">
+                </div>
+                <div class="col-lg-8 col-md-6 col-sm-sm-6 col-xs-6">
+                    <select class="form-control" data-id="subject-id">
+                        {{#each subjects}}
+                        <option value="{{id}}" 
+                            {{#if selected}}
+                            selected
+                            {{/if}}
+                            >{{question}}
+                        </option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-sm-3 col-xs-3">
+                    <button class="btn btn-danger form-control factor-option-delete">Remove</button>
+                </div>
+            </div>
+        <!--</div>-->
     </script>
     
     <script src="assets/js/jquery.js"></script>

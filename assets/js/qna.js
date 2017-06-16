@@ -11,6 +11,7 @@ let QuestionGenerator = (() => {
         _apiBaseUrl = null,
         _selected_wizard = null,
         _subjects = [],
+        _analytics = [],
         $_container = null,
         $_wizardsTable = null;
 
@@ -63,7 +64,7 @@ let QuestionGenerator = (() => {
             "panel": {
                 id: "subjects-panel",
                 class: "panel panel-default",
-                title: "subjects List",
+                title: "Manage Wizard",
                 newSubjectButton: {
                     id: "new-subject-button",
                     title: "New Subject",
@@ -123,6 +124,40 @@ let QuestionGenerator = (() => {
             },
             dataInfoContainer: {
                 id: "new-subject-data-info-container"
+            }
+        },
+        newAnalysis: {
+            panel: {
+                id: "new-analysis-panel",
+                class: "panel panel-default",
+                title: "Create a new Analysis"
+            },
+            backButton: {
+                id: "new-analysis-back-button",
+                class: "btn btn-default form-control",
+                title: "Back to List"
+            },
+            createButton: {
+                id: "new-analysis-create-button",
+                class: "btn btn-primary form-control",
+                title: "Save Changes"
+            },
+            nameInput: {
+                id: "new-analysis-name-input",
+                class: "form-control",
+                title: "Enter analysis name."
+            },
+            operatorSelect: {
+                id: "new-analysis-operator-select",
+                class: "form-control"
+            },
+            factorsContainer: {
+                id: "new-analysis-factors-container",
+                class: "",
+                title: ""
+            },
+            dataInfoContainer: {
+                id: "new-analysis-data-info-container"
             }
         }
     }
@@ -215,6 +250,7 @@ let QuestionGenerator = (() => {
             backToWizardsButton = $(`#subjects-panel-back-to-wizards`);
 
         updateSubjectsTable();
+        updateAnalysisTable();
         goTo(settings.subjects.panel.id);
     }
 
@@ -261,7 +297,57 @@ let QuestionGenerator = (() => {
     }
 
     /**
+     * Render New Analysis Panel. Analysis parameter can be null/empty when you create a new Analysis.
+     * @param {object} analysis
+     */
+    const renderNewAnalysisForm = (analysis) => {
+        let panel = $(`#${settings.newAnalysis.panel.id}`),
+            backToAnalysissButton = $(`#${settings.newAnalysis.backButton.id}`),
+            createAnalysisButton = $(`#${settings.newAnalysis.createButton.id}`),
+            nameInput = $(`#${settings.newAnalysis.nameInput.id}`),
+            operatorSelect = $(`#${settings.newAnalysis.operatorSelect.id}`),
+            factorsContainer = $(`#${settings.newAnalysis.factorsContainer.id}`),
+            dataInfoContainer = $(`#new-analysis-data-info-container`);
+
+        DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+            if (analysis) {
+                createAnalysisButton.attr({
+                    "data-id": analysis.id,
+                    "data-action": "update"
+                });
+                nameInput.val(analysis.name);
+                operatorSelect.val(analysis.operator);
+                renderExistingFactorOptions(analysis, factorsContainer, dataInfoContainer);
+            } else {
+                createAnalysisButton.attr({
+                    "data-id": null,
+                    "data-action": "create"
+                });
+                nameInput.val("");
+                operatorSelect.val(1).change();
+                factorsContainer.children().remove();
+
+                let factorSource = $("#new-analysis-factor-option-template").html(),
+                    factorTemplate = Handlebars.compile(factorSource),
+                    addFactorButtonSource = $("#add-new-factor-option-button").html(),
+                    addFactorButtonTemplate = Handlebars.compile(addFactorButtonSource);
+
+                factorsContainer.append(
+                    $(factorTemplate({
+                        coeff: 1,
+                        subjects: subjects
+                    })),
+                    $(addFactorButtonTemplate())
+                );
+            }
+        });
+
+        goTo(settings.newAnalysis.panel.id);
+    }
+
+    /**
      * Extract values from answer types configuration. Not done yet.
+     * @return {array}
      */
     const extractValuesFromAnswersConfig = () => {
         let values = [];
@@ -280,6 +366,27 @@ let QuestionGenerator = (() => {
         }
 
         return values;
+    }
+
+    /**
+     * Extract factors from factor options
+     * @return {array}
+     */
+    const extractFactorsFromFactorOptionsConfig = () => {
+        let factors = [];
+        let $options = $(`#${settings.newAnalysis.factorsContainer.id} div.factor-option`);
+
+        for (let i = 0; i < $options.length; i ++) {
+            let curOption = $options.eq(i);
+            let factor = {
+                coeff: curOption.find("[data-id='coeff']").val(),
+                id: curOption.find("[data-id='subject-id']").val()
+            };
+
+            factors.push(factor);
+        }
+
+        return factors;
     }
 
     /**
@@ -383,6 +490,53 @@ let QuestionGenerator = (() => {
     }
 
     /**
+     * Render answer options from existing analysis's answer options.
+     * @param {object} analysis
+     * @param {object} container
+     * @param {object} monitor
+     */
+    const renderExistingFactorOptions = (analysis, container, monitor) => {
+        let factors = null;
+        container.children().remove();
+        if (analysis.factors) {
+            if (typeof analysis.factors == "string") {
+                factors = JSON.parse(analysis.factors || "[]");
+            } else if (typeof analysis.factors == "object") {
+                factors = analysis.factors;
+            }
+
+            DataStorage.Subjects.get(_selected_wizard, (subjects) => {
+                for (let i = 0; i < factors.length; i ++) {
+                    let source = $("#new-analysis-factor-option-template").html();
+                    let template = Handlebars.compile(source);
+
+                    for (let j = 0; j < subjects.length; j ++) {
+                        subjects[j].selected = (subjects[j].id == factors[i].id);
+                    }
+
+                    container.append(
+                        $(template({
+                            coeff: factors[i].coeff,
+                            subjects: subjects
+                        }))
+                    )
+                }
+            });
+        }
+
+        let source = $("#add-new-factor-option-button").html();
+        let template = Handlebars.compile(source);
+        container.append(
+            $(template())
+        );
+        
+        monitor.children().remove();
+        monitor.append(
+            $("<pre/>").text(JSON.stringify(factors || {}))
+        );
+    }
+
+    /**
      * Create a new Wizard with name property. This method will call the temp object to manage mock database.
      * @param {string} name
      * @param {number} starts_with
@@ -429,6 +583,20 @@ let QuestionGenerator = (() => {
     }
 
     /**
+     * Update local subject Database. can be called refreshing for analysis.
+     * @param {function} callback
+     */
+    const updateLocalAnalysis = (callback) => {
+        DataStorage.Analysis.get(_selected_wizard, (analysis) => {
+            _analysis = analysis;
+
+            if (typeof callback == "function") {
+                callback();
+            }
+        });
+    }
+
+    /**
      * Create a new subject with properties given by admin
      * @param {object} params
      */
@@ -455,6 +623,37 @@ let QuestionGenerator = (() => {
                 } else {
                     renderNewSubjectForm(_subjectsStack.pop());
                 }
+            })
+        })
+    }
+
+    /**
+     * Create a new analysis with properties given by admin
+     * @param {object} params
+     */
+    const createAnalysis = (params) => {
+        DataStorage.Analysis.insert(params, () => {
+            if (_subjectsStack.length == 0) {
+                renderSubjectsPanel();
+            }// else {
+            //    renderNewSubjectForm(_subjectsStack.pop());
+            //}
+            updateLocalAnalysis();
+        });
+    }
+
+    /**
+     * Update an existing analysis
+     * @param {object} params
+     */
+    const updateAnalysis = (params) => {
+        DataStorage.Analysis.update(params.id, params, (response) => {
+            updateLocalAnalysis(() => {
+                if (_subjectsStack.length == 0) {
+                    renderSubjectsPanel();
+                }// else {
+                //    renderNewSubjectForm(_subjectsStack.pop());
+                //}
             })
         })
     }
@@ -493,15 +692,15 @@ let QuestionGenerator = (() => {
     }
 
     const updateAnalysisTable = () => {
-        DataStorage.Subjects.get(_selected_wizard, (subjects) => {
-            _subjects = subjects;
-            let table = $(`#${settings.subjects.subjectsTable.id}`);
-            let source = $("#subjects-table-template").html();
+        DataStorage.Analysis.get(_selected_wizard, (analytics) => {
+            _analytics = analytics;
+            let table = $(`#${settings.subjects.analysisTable.id}`);
+            let source = $("#analysis-table-template").html();
             let template = Handlebars.compile(source);
             table.html(template({
-                subjects: subjects,
-                class: settings.subjects.subjectsTable.class,
-                id: settings.subjects.subjectsTable.id
+                analytics: analytics,
+                class: settings.subjects.analysisTable.class,
+                id: settings.subjects.analysisTable.id
             }));
         })
     }
@@ -589,6 +788,16 @@ let QuestionGenerator = (() => {
             } else if (confirm("Are you sure to delete this option?")) {
                 $optionContainer.remove();
             }
+        }).on("click", "button.factor-option-delete", (event) => {
+            event.preventDefault();
+            let $optionContainer = $(event.target).parents("div.row.factor-option");
+            let optionsCount = $optionContainer.parent().children("div.row.factor-option").length;
+
+            if (optionsCount < 2) {
+                alert("You should have an factor option at least.");
+            } else if (confirm("Are you sure to delete this option?")) {
+                $optionContainer.remove();
+            }
         }).on("click", "button#btn-add-answer-option", (event) => {
             event.preventDefault();
             let $panelBody = $(event.target).parents(".panel-body");
@@ -600,7 +809,19 @@ let QuestionGenerator = (() => {
                     caption: "",
                     value: "",
                     weight: 0,
-                    subjects: []
+                    subjects: _subjects
+                }))
+            )
+        }).on("click", "button#btn-add-factor-option", (event) => {
+            event.preventDefault();
+            let $container = $(event.target).parents(`#${settings.newAnalysis.factorsContainer.id}`);
+            let source = $("#new-analysis-factor-option-template").html();
+            let template = Handlebars.compile(source);
+
+            $container.find("div.factor-option").last().after(
+                $(template({
+                    coeff: 1,
+                    subjects: _subjects
                 }))
             )
         }).on("click", `#${settings.newSubject.createButton.id}`, (event) => {
@@ -622,7 +843,28 @@ let QuestionGenerator = (() => {
                 alert("Question can't be empty!");
             }
             //  Creating a new wizard
+        }).on("click", `#${settings.newAnalysis.createButton.id}`, (event) => {
+            event.preventDefault();
+            if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "") {
+                let params = {
+                    id: event.target.getAttribute("data-id"),
+                    wizard_id: _selected_wizard,
+                    name: $(`#${settings.newAnalysis.nameInput.id}`).val().trim(),
+                    operator: $(`#${settings.newAnalysis.operatorSelect.id}`).val(),
+                    factors: extractFactorsFromFactorOptionsConfig()
+                }
+                if (event.target.getAttribute("data-action") == "create") {
+                    createAnalysis(params);
+                } else if (event.target.getAttribute("data-action") == "update") {
+                    updateAnalysis(params);
+                }
+            } else {
+                alert("Name can't be empty!");
+            }
+            //  Creating a new wizard
         }).on("click", `#${settings.newSubject.backButton.id}`, () => {
+            goTo(settings.subjects.panel.id);
+        }).on("click", `#${settings.newAnalysis.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
         }).on("click", "button.subject-edit", (event) => {
             let $record = $(event.target).parents("tr");
@@ -632,11 +874,27 @@ let QuestionGenerator = (() => {
                 renderNewSubjectForm(subject);
                 goTo(settings.newSubject.panel.id);
             });
+        }).on("click", "button.analysis-edit", (event) => {
+            let $record = $(event.target).parents("tr");
+            let id = $record.attr("data-analysis-id");
+
+            DataStorage.Analysis.find(id, (analysis) => {
+                renderNewAnalysisForm(analysis);
+                goTo(settings.newAnalysis.panel.id);
+            });
         }).on("click", "button.subject-delete", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-subject-id");
 
             DataStorage.Subjects.remove(id, () => {
+                renderSubjectsPanel();
+                goTo(settings.subjects.panel.id);
+            });
+        }).on("click", "button.analysis-delete", (event) => {
+            let $record = $(event.target).parents("tr");
+            let id = $record.attr("data-analysis-id");
+
+            DataStorage.Analysis.remove(id, () => {
                 renderSubjectsPanel();
                 goTo(settings.subjects.panel.id);
             });
@@ -656,6 +914,8 @@ let QuestionGenerator = (() => {
             });
         }).on("click", `#${settings.subjects.panel.newSubjectButton.id}`, () => {
             renderNewSubjectForm()
+        }).on("click", `#${settings.subjects.panel.newAnalysisButton.id}`, () => {
+            renderNewAnalysisForm();
         }).on("click", `#subjects-panel-back-to-wizards`, () => {
             goTo(settings.wizards.panel.id);
         }).on("click", `#${settings.newWizard.panel.id} button#${settings.newWizard.createButton.id}`, (event) => {

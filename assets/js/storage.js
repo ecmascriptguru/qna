@@ -291,9 +291,7 @@ let DataStorage = (() => {
             let results = [];
             for (let i = 0; i < _analytics.length; i ++) {
                 if (_analytics[i].wizard_id == wizard_id) {
-                    let type = AnswerTypes.find(_analytics[i].type_id);
                     let cur = _analytics[i];
-                    cur.type_name = type.type_name;
                     results.push(cur);
                 }
             }
@@ -313,10 +311,10 @@ let DataStorage = (() => {
         const createAnalysis = (params, callback) => {
             let tempAnalysis = {
                 id: _offset,
-                question: params.question || "No title",
-                type_id: params.type_id || 1,
+                name: params.name || "No title",
                 wizard_id: params.wizard_id,
-                answers: JSON.stringify(params.answers || AnswerTypes.find(1).value)
+                operator: params.operator,
+                factors: (typeof params.factors == "string") ? params.factors : JSON.stringify(params.factors)
             };
             _analytics.push(tempAnalysis);
             _offset++;
@@ -364,12 +362,9 @@ let DataStorage = (() => {
                 if (_analytics[i].id == id) {
                     for (let p in _analytics[i]) {
                         if (params[p]) {
-                            _analytics[i][p] = params[p];
+                            _analytics[i][p] = (typeof params[p] == "object") ? JSON.stringify(params[p]) : params[p];
                         }
                     }
-                    // _analytics[i].question = params.question;
-                    // _analytics[i].type_id = params.type_id;
-                    // _analytics[i].answers = params.answers;
                     flag = true;
                     break;
                 }

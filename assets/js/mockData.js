@@ -533,6 +533,22 @@ let Constants = {
     ],
 
     analysis: [
-        //
+        {
+            id: 1,
+            wizard_id: 3,
+            name: "V1: calculates difference between asking price and value",
+            operator: "+",
+            factors: JSON.stringify(
+                [
+                    {
+                        id: 1,
+                        coeff: 1
+                    },
+                    {
+                        id: 2,
+                        coeff: -1
+                    }
+                ])
+        }
     ]
 }
