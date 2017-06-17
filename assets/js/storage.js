@@ -4,13 +4,14 @@
  * ecmascript.guru@gmail.com
  * Created At June 10, 2017
  */
+let env = QNAConfig.env;
 let DataStorage = (() => {
     /**
      * Send Ajax Request
      * @param {string} url 
      * @param {object} params 
      * @param {function} success 
-     * @param {function} failture 
+     * @param {function} failure 
      */
     const sendRequest = (url, params, success, failure) => {
         $.ajax({
@@ -41,22 +42,29 @@ let DataStorage = (() => {
 
         /**
          * Getting all of Answer Types. Callback function can be null or empty
-         * @param {function} callback 
-         * @return {array}
+         * @param {function} success
+         * @param {function} failure
+         * @return {void}
          */
         const get = (success, failure) => {
-            
-            sendRequest(QNAConfig.baseUrl(), {
-                end_point: "types",
-                action: "get_all",
-                params: JSON.stringify({})
-            }, (response) => {
-                if (response.status) {
-                    success(response.types);
-                } else {
-                    success([]);
-                }
-            }, failure);
+            if (env == "demo") {
+                if (typeof success === "function")
+                    success(_types);
+                else
+                    return _types;
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "types",
+                    action: "get_all",
+                    params: JSON.stringify({})
+                }, (response) => {
+                    if (response.status) {
+                        success(response.types);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
+            }
         }
 
         /**
@@ -66,33 +74,36 @@ let DataStorage = (() => {
          * @return {object}
          */
         const find = (id, success, failure) => {
-            sendRequest(QNAConfig.baseUrl(), {
-                end_point: "types",
-                action: "get",
-                id: id,
-                params: JSON.stringify({})
-            }, (response) => {
-                if (response.status) {
-                    success(response.type);
-                } else {
-                    success({});
+            if (env === "demo") {
+                for( let i = 0; i < _types.length; i ++) {
+                    if (_types[i].id == parseInt(id)) {
+                        if (typeof callback === "function") {
+                            callback(_types[i]);
+                            return false;
+                        } else {
+                            return _types[i];
+                        }
+                    }
                 }
-            }, failure);
-            // for( let i = 0; i < _types.length; i ++) {
-            //     if (_types[i].id == parseInt(id)) {
-            //         if (typeof callback === "function") {
-            //             callback(_types[i]);
-            //             return false;
-            //         } else {
-            //             return _types[i];
-            //         }
-            //     }
-            // }
-            // if (typeof callback === "function") {
-            //     callback(null);
-            // } else {
-            //     return null;
-            // }
+                if (typeof callback === "function") {
+                    callback(null);
+                } else {
+                    return null;
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "types",
+                    action: "get",
+                    id: id,
+                    params: JSON.stringify({})
+                }, (response) => {
+                    if (response.status) {
+                        success(response.type);
+                    } else {
+                        success({});
+                    }
+                }, failure);
+            }   
         }
 
         return {
@@ -108,86 +119,174 @@ let DataStorage = (() => {
 
         /**
          * Getting all of Question and Answer Wizards
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {array}
          */
-        const get = (callback) => {
-            if (typeof callback === "function") {
-                callback(_wizards);
+        const get = (success, failure) => {
+            if (env === "demo") {
+                if (typeof success === "function") {
+                    success(_wizards);
+                } else {
+                    return _wizards;
+                }
             } else {
-                return _wizards;
-            }
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "get_all",
+                    params: JSON.stringify({})
+                }, (response) => {
+                    if (response.status) {
+                        success(response.wizards);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
+            }   
         }
 
         /**
          * Create a new wizard with the given name parameter.
          * @param {object} name 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          */
-        const addWizard = (params, callback) => {
-            wizard = {
-                id: _offset,
-                name: params.name,
-                starts_with: params.starts_with
-            }
-            _wizards.push(wizard);
-            _offset++;
+        const addWizard = (params, success, failure) => {
+            if (env === "demo") {
+                wizard = {
+                    id: _offset,
+                    name: params.name,
+                    starts_with: params.starts_with
+                }
 
-            if (typeof callback === "function") {
-                callback({id: _offset - 1});
+                _wizards.push(wizard);
+                _offset++;
+
+                if (typeof success === "function") {
+                    success({id: _offset - 1});
+                } else {
+                    return _offset - 1;
+                }
             } else {
-                return _offset - 1;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "create",
+                    params: JSON.stringify({
+                        name: params.name,
+                        starts_with: params.starts_with
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.wizard_id);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
             }
+                
         }
 
         /**
          * Update an existing wizard
          * @param {number} id 
          * @param {object} params 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {boolean}
          */
-        const updateWizard = (id, params, callback) => {
-            let flag = false;
-            for (let i = 0; i < _wizards.length; i ++) {
-                if (_wizards[i].id == id) {
-                    _wizards[i].name = params.newName;
-                    _wizards[i].starts_with = params.starts_with;
-                    flag = true;
-                    break;
+        const updateWizard = (id, params, success, failure) => {
+            if (env === "demo") {
+                let flag = false;
+                for (let i = 0; i < _wizards.length; i ++) {
+                    if (_wizards[i].id == id) {
+                        _wizards[i].name = params.newName;
+                        _wizards[i].starts_with = params.starts_with;
+                        flag = true;
+                        break;
+                    }
                 }
-            }
-            
-            if (typeof callback == "function") {
-                callback(flag);
+                
+                if (typeof success == "function") {
+                    success(flag);
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "update",
+                    params: JSON.stringify({
+                        id: id,
+                        name: params.name,
+                        starts_with: params.starts_with
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.wizard_id);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
             }
         }
 
         /**
          * Retrieve wizards with ID.
          * @param {number} id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          */
-        const findWizard = (id, callback) => {
-            for (let i = 0; i < _wizards.length; i ++) {
-                if (_wizards[i].id == id) {
-                    if (typeof callback === "function") {
-                        callback(_wizards[i]);
-                        break;
+        const findWizard = (id, success, failure) => {
+            if (env === "demo") {
+                for (let i = 0; i < _wizards.length; i ++) {
+                    if (_wizards[i].id == id) {
+                        if (typeof success === "function") {
+                            success(_wizards[i]);
+                            break;
+                        }
                     }
                 }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "get",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.wizard);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
             }
         }
 
         /**
          * 
          * @param {number} id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          */
-        const deleteWizard = (id, callback) => {
-            _wizards = _wizards.filter(wizard => wizard.id != id);
-            if (typeof callback == "function") {
-                callback();
+        const deleteWizard = (id, success, failure) => {
+            if (env === "demo") {
+                _wizards = _wizards.filter(wizard => wizard.id != id);
+                if (typeof success == "function") {
+                    success();
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "delete",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.status);
+                    } else {
+                        success(false);
+                    }
+                }, failure);
             }
         }
 
@@ -207,23 +306,38 @@ let DataStorage = (() => {
         /**
          * Get all Subjects.
          * @param {number} wizard_id 
-         * @param {function} callback 
-         * @return {array}
+         * @param {function} success
+         * @param {function}  failure
+         * @return {void}
          */
-        const get = (wizard_id, callback) => {
-            let results = [];
-            for (let i = 0; i < _subjects.length; i ++) {
-                if (_subjects[i].wizard_id == wizard_id) {
-                    let type = AnswerTypes.find(_subjects[i].type_id);
-                    let cur = _subjects[i];
-                    cur.type_name = type.type_name;
-                    results.push(cur);
+        const get = (wizard_id, success, failure) => {
+            if (env === "demo") {
+                let results = [];
+                for (let i = 0; i < _subjects.length; i ++) {
+                    if (_subjects[i].wizard_id == wizard_id) {
+                        let type = AnswerTypes.find(_subjects[i].type_id);
+                        let cur = _subjects[i];
+                        cur.type_name = type.type_name;
+                        results.push(cur);
+                    }
                 }
-            }
-            if (typeof callback === "function") {
-                callback(results);
+                if (typeof callback === "function") {
+                    callback(results);
+                } else {
+                    return results;
+                }
             } else {
-                return results;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "get_all",
+                    params: JSON.stringify({})
+                }, (response) => {
+                    if (response.status) {
+                        success(response.types);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
             }
         }
 

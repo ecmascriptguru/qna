@@ -21,8 +21,8 @@ function get_all_wizards($conn) {
  *  Creating a new fresh wizard
  */
 function create_wizard($conn, $params) {
-    $query = "INSERT INTO `qna_wizards` (name)
-                VALUES ('{$params->name}')";
+    $query = "INSERT INTO `qna_wizards` (name, starts_with)
+                VALUES ('{$params->name}', '{$params->starts_with}')";
 
     if ($conn->query($query) === TRUE) {
         return [
@@ -64,7 +64,7 @@ function get_wizard($conn, $params) {
  *  updating a wizard
  */
 function update_wizard($conn, $params) {
-    $query = "UPDATE `qna_wizards` SET name='{$params->name}' WHERE id={$params->id}";
+    $query = "UPDATE `qna_wizards` SET name='{$params->name}', starts_with='{$params->starts_with}' WHERE id={$params->id}";
 
     if ($conn->query($query) === TRUE) {
         return [
