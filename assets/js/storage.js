@@ -346,91 +346,164 @@ let DataStorage = (() => {
         /**
          * Create a new subject.
          * @param {object} params 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {number}
          */
-        const createSubject = (params, callback) => {
-            let tempSubject = {
-                id: _offset,
-                question: params.question || "No title",
-                type_id: params.type_id || 1,
-                wizard_id: params.wizard_id,
-                answers: JSON.stringify(params.answers || AnswerTypes.find(1).value)
-            };
-            _subjects.push(tempSubject);
-            _offset++;
+        const createSubject = (params, success, failure) => {
+            if (env === "demo") {
+                let tempSubject = {
+                    id: _offset,
+                    question: params.question || "No title",
+                    type_id: params.type_id || 1,
+                    wizard_id: params.wizard_id,
+                    answers: JSON.stringify(params.answers || [{ caption: "", value: "", weight: 100, next: null }])
+                };
+                _subjects.push(tempSubject);
+                _offset++;
 
-            if (typeof callback === "function") {
-                callback(tempSubject);
+                if (typeof success === "function") {
+                    success(tempSubject);
+                } else {
+                    return offset -1;
+                }
             } else {
-                return offset -1;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "subjects",
+                    action: "create",
+                    params: JSON.stringify({
+                        question: params.question || "No title",
+                        type_id: params.type_id || 1,
+                        wizard_id: params.wizard_id,
+                        answers: JSON.stringify(params.answers || [{ caption: "", value: "", weight: 100, next: null }])
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.subject_id);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
             }
         }
 
         /**
          * Find an existing Subject.
          * @param {number} id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {object}
          */
-        const findSubject = (id, callback) => {
-            let subject = null;
+        const findSubject = (id, success, failure) => {
+            if (env === "demo") {
+                let subject = null;
 
-            for (let i = 0; i < _subjects.length; i ++) {
-                if (_subjects[i].id == id) {
-                    subject = _subjects[i];
-                    break;
+                for (let i = 0; i < _subjects.length; i ++) {
+                    if (_subjects[i].id == id) {
+                        subject = _subjects[i];
+                        break;
+                    }
                 }
-            }
 
-            if (typeof callback === "function") {
-                callback(subject);
+                if (typeof success === "function") {
+                    success(subject);
+                } else {
+                    return subject;
+                }
             } else {
-                return subject;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "subjects",
+                    action: "get",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.subject);
+                    } else {
+                        success({});
+                    }
+                }, failure);
             }
+                
         }
 
         /**
          * Update an existing subject.
          * @param {number} id 
          * @param {object} params 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {boolean}
          */
-        const updateSubject = (id, params, callback) => {
-            let flag = false;
-            for (let i = 0; i < _subjects.length; i ++) {
-                if (_subjects[i].id == id) {
-                    for (let p in _subjects[i]) {
-                        if (params[p]) {
-                            _subjects[i][p] = params[p];
+        const updateSubject = (id, params, success) => {
+            if (env === "demo") {
+                let flag = false;
+                for (let i = 0; i < _subjects.length; i ++) {
+                    if (_subjects[i].id == id) {
+                        for (let p in _subjects[i]) {
+                            if (params[p]) {
+                                _subjects[i][p] = params[p];
+                            }
                         }
+                        flag = true;
+                        break;
                     }
-                    // _subjects[i].question = params.question;
-                    // _subjects[i].type_id = params.type_id;
-                    // _subjects[i].answers = params.answers;
-                    flag = true;
-                    break;
                 }
-            }
 
-            if (typeof callback == "function") {
-                callback({status: flag});
+                if (typeof success == "function") {
+                    success({status: flag});
+                } else {
+                    return flag;
+                }
             } else {
-                return flag;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "subjects",
+                    action: "update",
+                    params: JSON.stringify({
+                        id: id,
+                        question: params.question || "No title",
+                        type_id: params.type_id || 1,
+                        wizard_id: params.wizard_id,
+                        answers: JSON.stringify(params.answers || [{ caption: "", value: "", weight: 100, next: null }])
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response);
+                    } else {
+                        success(false);
+                    }
+                }, failure);
             }
         }
 
         /**
          * Delete a subject with the ID.
          * @param {number} id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          */
-        const deleteSubject = (id, callback) => {
-            _subjects = _subjects.filter(subject => subject.id != id);
+        const deleteSubject = (id, success) => {
+            if (env === "demo") {
+                _subjects = _subjects.filter(subject => subject.id != id);
 
-            if (typeof callback === "function") {
-                callback();
+                if (typeof success === "function") {
+                    success();
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "subjects",
+                    action: "delete",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.subject);
+                    } else {
+                        success({});
+                    }
+                }, failure);
             }
         }
 
