@@ -215,7 +215,7 @@ let DataStorage = (() => {
                     action: "update",
                     params: JSON.stringify({
                         id: id,
-                        name: params.name,
+                        name: params.newName,
                         starts_with: params.starts_with
                     })
                 }, (response) => {
@@ -328,12 +328,14 @@ let DataStorage = (() => {
                 }
             } else {
                 sendRequest(QNAConfig.baseUrl(), {
-                    end_point: "wizards",
+                    end_point: "subjects",
                     action: "get_all",
-                    params: JSON.stringify({})
+                    params: JSON.stringify({
+                        wizard_id: wizard_id
+                    })
                 }, (response) => {
                     if (response.status) {
-                        success(response.types);
+                        success(response.subjects);
                     } else {
                         success([]);
                     }
