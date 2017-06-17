@@ -420,15 +420,15 @@ let QuestionGenerator = (() => {
                             }))
                         )
                     }
-                });
-            }
 
-            if (type.type_name == "Drop Down" || type.type_name == "Multiple Choice") {
-                let source = $("#add-new-answer-option-button").html();
-                let template = Handlebars.compile(source);
-                container.append(
-                    $(template())
-                );
+                    if (type.type_name == "Drop Down" || type.type_name == "Multiple Choice") {
+                        let source = $("#add-new-answer-option-button").html();
+                        let template = Handlebars.compile(source);
+                        container.append(
+                            $(template())
+                        );
+                    }
+                });
             }
             
             monitor.children().remove();

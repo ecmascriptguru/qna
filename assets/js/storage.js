@@ -59,7 +59,13 @@ let DataStorage = (() => {
                     params: JSON.stringify({})
                 }, (response) => {
                     if (response.status) {
-                        success(response.types);
+                        let types = response.types;
+                        for (let i = 0; i < types.length; i ++) {
+                            if (typeof types[i].value == "string") {
+                                types[i].value = JSON.parse(types[i].value);
+                            }
+                        }
+                        success(types);
                     } else {
                         success([]);
                     }
@@ -98,6 +104,9 @@ let DataStorage = (() => {
                     params: JSON.stringify({})
                 }, (response) => {
                     if (response.status) {
+                        if (typeof response.type.value == "string") {
+                            response.type.value = JSON.parse(response.type.value);
+                        }
                         success(response.type);
                     } else {
                         success({});
@@ -419,6 +428,11 @@ let DataStorage = (() => {
                     })
                 }, (response) => {
                     if (response.status) {
+                        let subject = response.subject;
+
+                        if (typeof subject.answers == "string") {
+                            subject.answers = JSON.parse(subject.answers);
+                        }
                         success(response.subject);
                     } else {
                         success({});
@@ -436,7 +450,7 @@ let DataStorage = (() => {
          * @param {function} failure
          * @return {boolean}
          */
-        const updateSubject = (id, params, success) => {
+        const updateSubject = (id, params, success, failure) => {
             if (env === "demo") {
                 let flag = false;
                 for (let i = 0; i < _subjects.length; i ++) {

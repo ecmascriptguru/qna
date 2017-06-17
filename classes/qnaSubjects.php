@@ -84,7 +84,7 @@ function update_subject($conn, $params) {
         $value = $type['value'];
     }
 
-    $query = "UPDATE `qna_subjects` SET question='{$params->question}', type_id={$params->type_id}, value='{$value}' WHERE id={$params->id}";
+    $query = "UPDATE `qna_subjects` SET question='{$params->question}', type_id={$params->type_id}, answers='{$params->answers}' WHERE id={$params->id}";
     
     if ($conn->query($query) === TRUE) {
         return [
