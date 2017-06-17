@@ -27,6 +27,13 @@ switch($end_point) {
                 'status' => true,
                 'types' => $types
             ]);
+        } else if ($action == "get") {
+            $id = $DATA['id'];
+            $type = get_type($conn, $id);
+            echo json_encode([
+                'status' => true,
+                'type' => $type
+            ]);
         }
         break;
 

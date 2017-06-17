@@ -5,6 +5,37 @@
  * Created At June 10, 2017
  */
 let DataStorage = (() => {
+    /**
+     * Send Ajax Request
+     * @param {string} url 
+     * @param {object} params 
+     * @param {function} success 
+     * @param {function} failture 
+     */
+    const sendRequest = (url, params, success, failure) => {
+        $.ajax({
+            url: url,
+            method: "post",
+            data: params,
+            success: (response) => {
+                response = JSON.parse(response);
+                if (typeof success === "function") {
+                    success(response);
+                } else {
+                    console.log(response);
+                }
+            },
+            error: (xhr, status, err) => {
+                if (typeof failure === "function") {
+                    failure(xhr, status, err);
+                }
+            }
+        });
+    };
+
+    /**
+     * Answer Types
+     */
     let AnswerTypes = (() => {
         const _types = Constants.types;
 
@@ -13,12 +44,19 @@ let DataStorage = (() => {
          * @param {function} callback 
          * @return {array}
          */
-        const get = (callback) => {
-            if (typeof callback === "function") {
-                callback(_types);
-            } else {
-                return _types;
-            }
+        const get = (success, failure) => {
+            
+            sendRequest(QNAConfig.baseUrl(), {
+                end_point: "types",
+                action: "get_all",
+                params: JSON.stringify({})
+            }, (response) => {
+                if (response.status) {
+                    success(response.types);
+                } else {
+                    success([]);
+                }
+            }, failure);
         }
 
         /**
@@ -27,22 +65,34 @@ let DataStorage = (() => {
          * @param {function} callback 
          * @return {object}
          */
-        const find = (id, callback) => {
-            for( let i = 0; i < _types.length; i ++) {
-                if (_types[i].id == parseInt(id)) {
-                    if (typeof callback === "function") {
-                        callback(_types[i]);
-                        return false;
-                    } else {
-                        return _types[i];
-                    }
+        const find = (id, success, failure) => {
+            sendRequest(QNAConfig.baseUrl(), {
+                end_point: "types",
+                action: "get",
+                id: id,
+                params: JSON.stringify({})
+            }, (response) => {
+                if (response.status) {
+                    success(response.type);
+                } else {
+                    success({});
                 }
-            }
-            if (typeof callback === "function") {
-                callback(null);
-            } else {
-                return null;
-            }
+            }, failure);
+            // for( let i = 0; i < _types.length; i ++) {
+            //     if (_types[i].id == parseInt(id)) {
+            //         if (typeof callback === "function") {
+            //             callback(_types[i]);
+            //             return false;
+            //         } else {
+            //             return _types[i];
+            //         }
+            //     }
+            // }
+            // if (typeof callback === "function") {
+            //     callback(null);
+            // } else {
+            //     return null;
+            // }
         }
 
         return {
