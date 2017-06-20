@@ -23,7 +23,7 @@ function get_all_calculations($conn, $params) {
  */
 function create_calculation($conn, $params) {
     $query = "INSERT INTO `qna_calculations` (name, wizard_id, operator, factors)
-                VALUES ('{$params->name}', {$params->wizard_id}, {$params->operator}, '{$params->factors}')";
+                VALUES ('{$params->name}', {$params->wizard_id}, '{$params->operator}', '{$params->factors}')";
 
     if ($conn->query($query) === TRUE) {
         return [
@@ -65,20 +65,7 @@ function get_calculation($conn, $params) {
  *  updating a calculation
  */
 function update_calculation($conn, $params) {
-    if(isset($params->value)) {
-        $value = $params->value;
-    }
-
-    if (empty($value) || $value == "") {
-        $type_id = $params->type_id;
-        if (!isset($type_id) || empty($type_id)) {
-            $type_id = 1;
-        }
-        $type = get_type($conn, $params->type_id);
-        $value = $type['value'];
-    }
-
-    $query = "UPDATE `qna_calculations` SET name='{$params->name}', operator={$params->operator}, factors='{$params->factors}' WHERE id={$params->id}";
+    $query = "UPDATE `qna_calculations` SET name='{$params->name}', operator='{$params->operator}', factors='{$params->factors}' WHERE id={$params->id}";
     
     if ($conn->query($query) === TRUE) {
         return [

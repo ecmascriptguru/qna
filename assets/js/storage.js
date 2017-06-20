@@ -513,9 +513,9 @@ let DataStorage = (() => {
                     })
                 }, (response) => {
                     if (response.status) {
-                        success(response.subject);
+                        success(response.status);
                     } else {
-                        success({});
+                        success(false);
                     }
                 }, failure);
             }
@@ -564,7 +564,7 @@ let DataStorage = (() => {
                     })
                 }, (response) => {
                     if (response.status) {
-                        success(response.subjects);
+                        success(response.calculations);
                     } else {
                         success([]);
                     }
@@ -581,21 +581,41 @@ let DataStorage = (() => {
          * @return {number}
          */
         const createCalculation = (params, success, failure) => {
-            let tempCalculation = {
-                id: _offset,
-                name: params.name || "No title",
-                wizard_id: params.wizard_id,
-                operator: params.operator,
-                factors: (typeof params.factors == "string") ? params.factors : JSON.stringify(params.factors)
-            };
-            _analytics.push(tempCalculation);
-            _offset++;
+            if (env === "demo") {
+                let tempCalculation = {
+                    id: _offset,
+                    name: params.name || "No title",
+                    wizard_id: params.wizard_id,
+                    operator: params.operator,
+                    factors: (typeof params.factors == "string") ? params.factors : JSON.stringify(params.factors)
+                };
+                _analytics.push(tempCalculation);
+                _offset++;
 
-            if (typeof success === "function") {
-                success(tempCalculation);
+                if (typeof success === "function") {
+                    success(tempCalculation);
+                } else {
+                    return offset -1;
+                }
             } else {
-                return offset -1;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "calculations",
+                    action: "create",
+                    params: JSON.stringify({
+                        name: params.name,
+                        wizard_id: params.wizard_id,
+                        operator: params.operator,
+                        factors: JSON.stringify(params.factors)
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.subject_id);
+                    } else {
+                        success(null);
+                    }
+                }, failure);
             }
+                
         }
 
         /**
@@ -606,19 +626,35 @@ let DataStorage = (() => {
          * @return {object}
          */
         const findCalculation = (id, success, failure) => {
-            let calculation = null;
+            if (env === "demo") {
+                let calculation = null;
 
-            for (let i = 0; i < _analytics.length; i ++) {
-                if (_analytics[i].id == id) {
-                    calculation = _analytics[i];
-                    break;
+                for (let i = 0; i < _analytics.length; i ++) {
+                    if (_analytics[i].id == id) {
+                        calculation = _analytics[i];
+                        break;
+                    }
                 }
-            }
 
-            if (typeof success === "function") {
-                success(calculation);
+                if (typeof success === "function") {
+                    success(calculation);
+                } else {
+                    return calculation;
+                }
             } else {
-                return calculation;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "calculations",
+                    action: "get",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.calculation);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
             }
         }
 
@@ -631,24 +667,44 @@ let DataStorage = (() => {
          * @return {boolean}
          */
         const updateCalculation = (id, params, success, failure) => {
-            let flag = false;
-            for (let i = 0; i < _analytics.length; i ++) {
-                if (_analytics[i].id == id) {
-                    for (let p in _analytics[i]) {
-                        if (params[p]) {
-                            _analytics[i][p] = (typeof params[p] == "object") ? JSON.stringify(params[p]) : params[p];
+            if (env === "demo") {
+                let flag = false;
+                for (let i = 0; i < _analytics.length; i ++) {
+                    if (_analytics[i].id == id) {
+                        for (let p in _analytics[i]) {
+                            if (params[p]) {
+                                _analytics[i][p] = (typeof params[p] == "object") ? JSON.stringify(params[p]) : params[p];
+                            }
                         }
+                        flag = true;
+                        break;
                     }
-                    flag = true;
-                    break;
                 }
-            }
 
-            if (typeof success == "function") {
-                success({status: flag});
+                if (typeof success == "function") {
+                    success({status: flag});
+                } else {
+                    return flag;
+                }
             } else {
-                return flag;
+                params.id = id;
+
+                if (typeof params.factors == "object") {
+                    params.factors = JSON.stringify(params.factors);
+                }
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "calculations",
+                    action: "update",
+                    params: JSON.stringify(params)
+                }, (response) => {
+                    if (response.status) {
+                        success(response.status);
+                    } else {
+                        success(false);
+                    }
+                }, failure);
             }
+                
         }
 
         /**
@@ -658,10 +714,26 @@ let DataStorage = (() => {
          * @param {function} failure
          */
         const deleteCalculation = (id, success, failure) => {
-            _analytics = _analytics.filter(calculation => calculation.id != id);
+            if (env === "demo") {
+                _analytics = _analytics.filter(calculation => calculation.id != id);
 
-            if (typeof success === "function") {
-                success();
+                if (typeof success === "function") {
+                    success();
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "calculations",
+                    action: "delete",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.status);
+                    } else {
+                        success(false);
+                    }
+                }, failure);
             }
         }
 

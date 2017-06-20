@@ -11,7 +11,7 @@ let QuestionGenerator = (() => {
         _apiBaseUrl = null,
         _selected_wizard = null,
         _subjects = [],
-        _analytics = [],
+        _calculations = [],
         $_container = null,
         $_wizardsTable = null;
 
@@ -524,14 +524,15 @@ let QuestionGenerator = (() => {
                         }))
                     )
                 }
+
+                let newFactorButtonSource = $("#add-new-factor-option-button").html();
+                let newFactorTemplate = Handlebars.compile(newFactorButtonSource);
+                
+                container.append(
+                    $(newFactorTemplate())
+                )
             });
         }
-
-        let source = $("#add-new-factor-option-button").html();
-        let template = Handlebars.compile(source);
-        container.append(
-            $(template())
-        );
         
         monitor.children().remove();
         monitor.append(
@@ -636,12 +637,14 @@ let QuestionGenerator = (() => {
      */
     const createCalculation = (params) => {
         DataStorage.Calculations.insert(params, () => {
-            if (_subjectsStack.length == 0) {
-                renderSubjectsPanel();
-            }// else {
+            // if (_subjectsStack.length == 0) {
+            //     renderSubjectsPanel();
+            // }// else {
             //    renderNewSubjectForm(_subjectsStack.pop());
             //}
-            updateLocalCalculations();
+            updateLocalCalculations(() => {
+                renderSubjectsPanel();
+            });
         });
     }
 
@@ -695,13 +698,13 @@ let QuestionGenerator = (() => {
     }
 
     const updateCalculationTable = () => {
-        DataStorage.Calculations.get(_selected_wizard, (analytics) => {
-            _analytics = analytics;
+        DataStorage.Calculations.get(_selected_wizard, (calculations) => {
+            _calculations = calculations;
             let table = $(`#${settings.subjects.calculationTable.id}`);
             let source = $("#calculation-table-template").html();
             let template = Handlebars.compile(source);
             table.html(template({
-                analytics: analytics,
+                calculations: _calculations,
                 class: settings.subjects.calculationTable.class,
                 id: settings.subjects.calculationTable.id
             }));

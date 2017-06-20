@@ -364,7 +364,7 @@ require("config/env.php");
                 </tr>
             </thead>
             <tbody>
-                {{#each analytics}}
+                {{#each calculations}}
                 <tr data-calculation-id='{{id}}'>
                     <td>{{@index}}</td>
                     <td>{{name}}</td>
