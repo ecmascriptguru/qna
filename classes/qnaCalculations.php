@@ -2,10 +2,10 @@
 
 require_once("qnaTypes.php");
 /**
- *  Getting all subjects for a subject
+ *  Getting all calculations for a wizard
  */
-function get_all_subjects($conn, $params) {
-    $query = "SELECT * FROM `qna_subjects` WHERE wizard_id='{$params->wizard_id}';";
+function get_all_calculations($conn, $params) {
+    $query = "SELECT * FROM `qna_calculations` WHERE wizard_id='{$params->wizard_id}';";
     $result = $conn->query($query);
     $results = array();
 
@@ -19,36 +19,30 @@ function get_all_subjects($conn, $params) {
 }
 
 /**
- *  Creating a new fresh subject
+ *  Creating a new fresh calculation
  */
-function create_subject($conn, $params) {
-    $type_id = $params->type_id;
-    if (!isset($type_id) || empty($type_id)) {
-        $type_id = 1;
-    }
-    $type = get_type($conn, $params->type_id);
-
-    $query = "INSERT INTO `qna_subjects` (question, wizard_id, type_id, answers)
-                VALUES ('{$params->question}', {$params->wizard_id}, {$type['id']}, '{$type['value']}')";
+function create_calculation($conn, $params) {
+    $query = "INSERT INTO `qna_calculations` (name, wizard_id, operator, factors)
+                VALUES ('{$params->name}', {$params->wizard_id}, {$params->operator}, '{$params->factors}')";
 
     if ($conn->query($query) === TRUE) {
         return [
             'status' => true,
-            'subject_id' => $conn->insert_id
+            'calculation_id' => $conn->insert_id
         ];
     } else {
         return [
             'status' => false,
-            'subject_id' => null
+            'calculation_id' => null
         ];
     }
 }
 
 /**
- *  Getting subject with a ID
+ *  Getting calculation with a ID
  */
-function get_subject($conn, $params) {
-    $query = "SELECT * FROM `qna_subjects` WHERE `id`={$params->id}";
+function get_calculation($conn, $params) {
+    $query = "SELECT * FROM `qna_calculations` WHERE `id`={$params->id}";
 
     $result = $conn->query($query);
     $results = array();
@@ -57,20 +51,20 @@ function get_subject($conn, $params) {
         $row = $result->fetch_assoc();
         return [
             'status' => true,
-            'subject' => $row
+            'calculation' => $row
         ];
     } else {
         return [
             'status' => false,
-            'subject' => null
+            'calculation' => null
         ];
     }
 }
 
 /**
- *  updating a subject
+ *  updating a calculation
  */
-function update_subject($conn, $params) {
+function update_calculation($conn, $params) {
     if(isset($params->value)) {
         $value = $params->value;
     }
@@ -84,7 +78,7 @@ function update_subject($conn, $params) {
         $value = $type['value'];
     }
 
-    $query = "UPDATE `qna_subjects` SET question='{$params->question}', type_id={$params->type_id}, answers='{$params->answers}' WHERE id={$params->id}";
+    $query = "UPDATE `qna_calculations` SET name='{$params->name}', operator={$params->operator}, factors='{$params->factors}' WHERE id={$params->id}";
     
     if ($conn->query($query) === TRUE) {
         return [
@@ -98,10 +92,10 @@ function update_subject($conn, $params) {
 }
 
 /**
- *  Deleting a subject
+ *  Deleting a calculation
  */
-function delete_subject($conn, $params) {
-    $query = "DELETE FROM `qna_subjects` WHERE id={$params->id}";
+function delete_calculation($conn, $params) {
+    $query = "DELETE FROM `qna_calculations` WHERE id={$params->id}";
 
     if ($conn->query($query) === TRUE) {
         return [

@@ -532,7 +532,7 @@ let Constants = {
         },
     ],
 
-    analysis: [
+    calculations: [
         {
             id: 1,
             wizard_id: 3,

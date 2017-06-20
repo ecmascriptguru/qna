@@ -497,7 +497,7 @@ let DataStorage = (() => {
          * @param {function} success 
          * @param {function} failure
          */
-        const deleteSubject = (id, success) => {
+        const deleteSubject = (id, success, failure) => {
             if (env === "demo") {
                 _subjects = _subjects.filter(subject => subject.id != id);
 
@@ -530,86 +530,107 @@ let DataStorage = (() => {
         }
     })();
 
-    let Analysis = (() => {
-        let _analytics = Constants.analysis;
+    let Calculations = (() => {
+        let _analytics = Constants.calculations;
         let _offset = 1;
 
         /**
          * Get all Analytics.
          * @param {number} wizard_id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {array}
          */
-        const get = (wizard_id, callback) => {
-            let results = [];
-            for (let i = 0; i < _analytics.length; i ++) {
-                if (_analytics[i].wizard_id == wizard_id) {
-                    let cur = _analytics[i];
-                    results.push(cur);
+        const get = (wizard_id, success, failure) => {
+            if (env === "demo") {
+                let results = [];
+                for (let i = 0; i < _analytics.length; i ++) {
+                    if (_analytics[i].wizard_id == wizard_id) {
+                        let cur = _analytics[i];
+                        results.push(cur);
+                    }
                 }
-            }
-            if (typeof callback === "function") {
-                callback(results);
+                if (typeof success === "function") {
+                    success(results);
+                } else {
+                    return results;
+                }
             } else {
-                return results;
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "calculations",
+                    action: "get_all",
+                    params: JSON.stringify({
+                        wizard_id: wizard_id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.subjects);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
             }
+                
         }
 
         /**
-         * Create a new Analysis.
+         * Create a new Calculation.
          * @param {object} params 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {number}
          */
-        const createAnalysis = (params, callback) => {
-            let tempAnalysis = {
+        const createCalculation = (params, success, failure) => {
+            let tempCalculation = {
                 id: _offset,
                 name: params.name || "No title",
                 wizard_id: params.wizard_id,
                 operator: params.operator,
                 factors: (typeof params.factors == "string") ? params.factors : JSON.stringify(params.factors)
             };
-            _analytics.push(tempAnalysis);
+            _analytics.push(tempCalculation);
             _offset++;
 
-            if (typeof callback === "function") {
-                callback(tempAnalysis);
+            if (typeof success === "function") {
+                success(tempCalculation);
             } else {
                 return offset -1;
             }
         }
 
         /**
-         * Find an existing Analysis.
+         * Find an existing Calculation.
          * @param {number} id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {object}
          */
-        const findAnalysis = (id, callback) => {
-            let analysis = null;
+        const findCalculation = (id, success, failure) => {
+            let calculation = null;
 
             for (let i = 0; i < _analytics.length; i ++) {
                 if (_analytics[i].id == id) {
-                    analysis = _analytics[i];
+                    calculation = _analytics[i];
                     break;
                 }
             }
 
-            if (typeof callback === "function") {
-                callback(analysis);
+            if (typeof success === "function") {
+                success(calculation);
             } else {
-                return analysis;
+                return calculation;
             }
         }
 
         /**
-         * Update an existing Analysis.
+         * Update an existing Calculation.
          * @param {number} id 
          * @param {object} params 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {boolean}
          */
-        const updateAnalysis = (id, params, callback) => {
+        const updateCalculation = (id, params, success, failure) => {
             let flag = false;
             for (let i = 0; i < _analytics.length; i ++) {
                 if (_analytics[i].id == id) {
@@ -623,32 +644,33 @@ let DataStorage = (() => {
                 }
             }
 
-            if (typeof callback == "function") {
-                callback({status: flag});
+            if (typeof success == "function") {
+                success({status: flag});
             } else {
                 return flag;
             }
         }
 
         /**
-         * Delete a Analysis with the ID.
+         * Delete a Calculation with the ID.
          * @param {number} id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          */
-        const deleteAnalysis = (id, callback) => {
-            _analytics = _analytics.filter(analysis => analysis.id != id);
+        const deleteCalculation = (id, success, failure) => {
+            _analytics = _analytics.filter(calculation => calculation.id != id);
 
-            if (typeof callback === "function") {
-                callback();
+            if (typeof success === "function") {
+                success();
             }
         }
 
         return {
             get: get,
-            find: findAnalysis,
-            insert: createAnalysis,
-            update: updateAnalysis,
-            remove: deleteAnalysis
+            find: findCalculation,
+            insert: createCalculation,
+            update: updateCalculation,
+            remove: deleteCalculation
         }
     })();
 
@@ -658,7 +680,7 @@ let DataStorage = (() => {
         Types: AnswerTypes,
         Wizards: Wizards,
         Subjects: Subjects,
-        Analysis: Analysis
+        Calculations: Calculations
     }
     
 })();

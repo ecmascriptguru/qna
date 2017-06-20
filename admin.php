@@ -47,12 +47,12 @@ require("config/env.php");
 
                 <div id="subjects-panel" class="panel panel-default">
                     <div class="panel-heading">
-                        <h3>Manage Subjects and Analysis</h3>
+                        <h3>Manage Subjects and Calculations</h3>
                     </div>
                     <div class="panel-body">
                         <ul class="nav nav-tabs">
                             <li role="presentation" class="active"><a href="#tab-content-subjects">Subjects</a></li>
-                            <li role="presentation"><a href="#tab-content-analysis">Analysis</a></li>
+                            <li role="presentation"><a href="#tab-content-calculation">Calculations</a></li>
                         </ul>
                         <div class="tab-content">
                             <div role="tabpanel" id="tab-content-subjects" class="tab-pane active">
@@ -60,9 +60,9 @@ require("config/env.php");
                                 <table class="table table-striped table-bordered" id="subjects-table">
                                 </table>
                             </div>
-                            <div role="tabpanel" id="tab-content-analysis" class="tab-pane">
-                                <button class="btn btn-default pull-right new-analysis" id="new-analysis-button">New Analysis</button>
-                                <table class="table table-striped table-bordered" id="analysis-table">
+                            <div role="tabpanel" id="tab-content-calculation" class="tab-pane">
+                                <button class="btn btn-default pull-right new-calculation" id="new-calculation-button">New Calculation</button>
+                                <table class="table table-striped table-bordered" id="calculation-table">
                                 </table>
                             </div>
                         </div>
@@ -130,39 +130,39 @@ require("config/env.php");
                     </div>
                 </div>
 
-                <div class="panel panel-default" id="new-analysis-panel">
+                <div class="panel panel-default" id="new-calculation-panel">
                     <div class="panel-heading">
-                        <h3>Create/Update a new Analysis</h3>
+                        <h3>Create/Update a Calculation</h3>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
-                            <label for="new-analysis-name-input">Enter Name.</label>
-                            <input class="form-control" id="new-analysis-name-input" placeholder="Name">
+                            <label for="new-calculation-name-input">Enter Name.</label>
+                            <input class="form-control" id="new-calculation-name-input" placeholder="Name">
                         </div>
                         <div class="form-group">
-                            <label for="new-analysis-operator-select">Select an operator</label>
-                            <select id="new-analysis-operator-select" class="form-control">
+                            <label for="new-calculation-operator-select">Select an operator</label>
+                            <select id="new-calculation-operator-select" class="form-control">
                                 <option value="+">+</option>
                                 <option value="-">-</option>
                                 <option value="*">x</option>
                                 <option value="/">/</option>
                             </select>
                         </div>
-                        <div class="form-group" id="new-analysis-data-info-container">
+                        <div class="form-group" id="new-calculation-data-info-container">
                             Selected Type Info.
                             <pre></pre>
                         </div>
-                        <div id="new-analysis-factors-container">
+                        <div id="new-calculation-factors-container">
                             
                         </div>
                     </div>
                     <div class="panel-footer">
                         <div class="row">
                             <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
-                                <button class="btn btn-default form-control" id="new-analysis-back-button">Back to List</button>
+                                <button class="btn btn-default form-control" id="new-calculation-back-button">Back to List</button>
                             </div>
                             <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
-                                <button class="btn btn-primary form-control" id="new-analysis-create-button" data-action="create">Save Changes</button>
+                                <button class="btn btn-primary form-control" id="new-calculation-create-button" data-action="create">Save Changes</button>
                             </div>
                         </div>
                     </div>
@@ -295,7 +295,7 @@ require("config/env.php");
     <script id="subjects-list-template" type="text/x-handlebars-template">
         <ul class="nav nav-tabs">
             <li role="presentation" class="active"><a href="#tab-content-subjects">Subjects</a></li>
-            <li role="presentation"><a href="#tab-content-analysis">Analysis</a></li>
+            <li role="presentation"><a href="#tab-content-calculation">Calculations</a></li>
         </ul>
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="tab-content-subjects">
@@ -317,7 +317,7 @@ require("config/env.php");
                     </div>
                 </div>
             </div>
-            <div role="tabpanel" class="tab-pane active" id="tab-content-analysis">
+            <div role="tabpanel" class="tab-pane active" id="tab-content-calculation">
             </div>
         </div>
     </script>
@@ -352,7 +352,7 @@ require("config/env.php");
         </table>
     </script>
 
-    <script id="analysis-table-template" type="text/x-handlebars-template">
+    <script id="calculation-table-template" type="text/x-handlebars-template">
         <table class="{{class}}" id="{{id}}">
             <thead>
                 <tr>
@@ -365,17 +365,17 @@ require("config/env.php");
             </thead>
             <tbody>
                 {{#each analytics}}
-                <tr data-analysis-id='{{id}}'>
+                <tr data-calculation-id='{{id}}'>
                     <td>{{@index}}</td>
                     <td>{{name}}</td>
                     <td>{{operator}}</td>
                     <td><code>{{factors}}</code></td>
                     <td>
                         <div class="col-xs-6">
-                            <button class="btn btn-info form-control analysis-edit">Edit</button>
+                            <button class="btn btn-info form-control calculation-edit">Edit</button>
                         </div>
                         <div class="col-xs-6">
-                            <button class="btn btn-danger form-control analysis-delete">Delete</button>
+                            <button class="btn btn-danger form-control calculation-delete">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -384,8 +384,8 @@ require("config/env.php");
         </table>
     </script>
 
-    <script id="new-analysis-factor-option-template" type="text/x-handlebars-template">
-        <!--<div id="new-analysis-factors-container">-->
+    <script id="new-calculation-factor-option-template" type="text/x-handlebars-template">
+        <!--<div id="new-calculation-factors-container">-->
             <div class="form-group row factor-option">
                 <div class="col-lg-2 col-md-3 col-sm-sm-3 col-xs-3">
                     <input data-id="coeff" type="number" placeholder="Coefficient" value="{{coeff}}" class="form-control">

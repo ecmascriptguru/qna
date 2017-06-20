@@ -6,6 +6,7 @@ require("../config/db-config.php");
 require("../classes/qnaTypes.php");
 require("../classes/qnaWizards.php");
 require("../classes/qnaSubjects.php");
+require("../classes/qnaCalculations.php");
 require("../classes/qnaResults.php");
 
 if (!isset($_POST) || empty($_POST)) {
@@ -86,6 +87,33 @@ switch($end_point) {
             echo json_encode($return);
         } else if ($action == "delete") {
             $return = delete_subject($conn, $params);
+
+            echo json_encode($return);
+        }
+        break;
+
+    case "calculations":
+        if ($action == "get_all") {
+            $calculations = get_all_calculations($conn, $params);
+
+            echo json_encode([
+                'status' => true,
+                'calculations' => $calculations
+            ]);
+        } else if ($action == "create") {
+            $return = create_calculation($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "get") {
+            $return = get_calculation($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "update") {
+            $return = update_calculation($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "delete") {
+            $return = delete_calculation($conn, $params);
 
             echo json_encode($return);
         }

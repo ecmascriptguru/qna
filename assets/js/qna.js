@@ -70,18 +70,18 @@ let QuestionGenerator = (() => {
                     title: "New Subject",
                     class: "btn btn-default pull-right new-subject"
                 },
-                newAnalysisButton: {
-                    id: "new-analysis-button",
-                    title: "New Analysis",
-                    class: "btn btn-default pull-right new-analysis"
+                newCalculationButton: {
+                    id: "new-calculation-button",
+                    title: "New Calculation",
+                    class: "btn btn-default pull-right new-calculation"
                 }
             },
             "subjectsTable": {
                 id: "subjects-table",
                 class: "table table-striped table-bordered"
             },
-            "analysisTable": {
-                id: "analysis-table",
+            "calculationTable": {
+                id: "calculation-table",
                 class: "table table-striped table-bordered"
             }
         },
@@ -126,38 +126,38 @@ let QuestionGenerator = (() => {
                 id: "new-subject-data-info-container"
             }
         },
-        newAnalysis: {
+        newCalculation: {
             panel: {
-                id: "new-analysis-panel",
+                id: "new-calculation-panel",
                 class: "panel panel-default",
-                title: "Create a new Analysis"
+                title: "Create a new Calculation"
             },
             backButton: {
-                id: "new-analysis-back-button",
+                id: "new-calculation-back-button",
                 class: "btn btn-default form-control",
                 title: "Back to List"
             },
             createButton: {
-                id: "new-analysis-create-button",
+                id: "new-calculation-create-button",
                 class: "btn btn-primary form-control",
                 title: "Save Changes"
             },
             nameInput: {
-                id: "new-analysis-name-input",
+                id: "new-calculation-name-input",
                 class: "form-control",
-                title: "Enter analysis name."
+                title: "Enter calculation name."
             },
             operatorSelect: {
-                id: "new-analysis-operator-select",
+                id: "new-calculation-operator-select",
                 class: "form-control"
             },
             factorsContainer: {
-                id: "new-analysis-factors-container",
+                id: "new-calculation-factors-container",
                 class: "",
                 title: ""
             },
             dataInfoContainer: {
-                id: "new-analysis-data-info-container"
+                id: "new-calculation-data-info-container"
             }
         }
     }
@@ -254,7 +254,7 @@ let QuestionGenerator = (() => {
             backToWizardsButton = $(`#subjects-panel-back-to-wizards`);
 
         updateSubjectsTable();
-        updateAnalysisTable();
+        updateCalculationTable();
         goTo(settings.subjects.panel.id);
     }
 
@@ -301,29 +301,28 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Render New Analysis Panel. Analysis parameter can be null/empty when you create a new Analysis.
-     * @param {object} analysis
+     * Render New Calculation Panel. Calculation parameter can be null/empty when you create a new Calculation.
+     * @param {object} calculation
      */
-    const renderNewAnalysisForm = (analysis) => {
-        let panel = $(`#${settings.newAnalysis.panel.id}`),
-            backToAnalysissButton = $(`#${settings.newAnalysis.backButton.id}`),
-            createAnalysisButton = $(`#${settings.newAnalysis.createButton.id}`),
-            nameInput = $(`#${settings.newAnalysis.nameInput.id}`),
-            operatorSelect = $(`#${settings.newAnalysis.operatorSelect.id}`),
-            factorsContainer = $(`#${settings.newAnalysis.factorsContainer.id}`),
-            dataInfoContainer = $(`#new-analysis-data-info-container`);
+    const renderNewCalculationForm = (calculation) => {
+        let panel = $(`#${settings.newCalculation.panel.id}`),
+            createCalculationButton = $(`#${settings.newCalculation.createButton.id}`),
+            nameInput = $(`#${settings.newCalculation.nameInput.id}`),
+            operatorSelect = $(`#${settings.newCalculation.operatorSelect.id}`),
+            factorsContainer = $(`#${settings.newCalculation.factorsContainer.id}`),
+            dataInfoContainer = $(`#new-calculation-data-info-container`);
 
         DataStorage.Subjects.get(_selected_wizard, (subjects) => {
-            if (analysis) {
-                createAnalysisButton.attr({
-                    "data-id": analysis.id,
+            if (calculation) {
+                createCalculationButton.attr({
+                    "data-id": calculation.id,
                     "data-action": "update"
                 });
-                nameInput.val(analysis.name);
-                operatorSelect.val(analysis.operator);
-                renderExistingFactorOptions(analysis, factorsContainer, dataInfoContainer);
+                nameInput.val(calculation.name);
+                operatorSelect.val(calculation.operator);
+                renderExistingFactorOptions(calculation, factorsContainer, dataInfoContainer);
             } else {
-                createAnalysisButton.attr({
+                createCalculationButton.attr({
                     "data-id": null,
                     "data-action": "create"
                 });
@@ -331,7 +330,7 @@ let QuestionGenerator = (() => {
                 operatorSelect.val(1).change();
                 factorsContainer.children().remove();
 
-                let factorSource = $("#new-analysis-factor-option-template").html(),
+                let factorSource = $("#new-calculation-factor-option-template").html(),
                     factorTemplate = Handlebars.compile(factorSource),
                     addFactorButtonSource = $("#add-new-factor-option-button").html(),
                     addFactorButtonTemplate = Handlebars.compile(addFactorButtonSource);
@@ -346,7 +345,7 @@ let QuestionGenerator = (() => {
             }
         });
 
-        goTo(settings.newAnalysis.panel.id);
+        goTo(settings.newCalculation.panel.id);
     }
 
     /**
@@ -378,7 +377,7 @@ let QuestionGenerator = (() => {
      */
     const extractFactorsFromFactorOptionsConfig = () => {
         let factors = [];
-        let $options = $(`#${settings.newAnalysis.factorsContainer.id} div.factor-option`);
+        let $options = $(`#${settings.newCalculation.factorsContainer.id} div.factor-option`);
 
         for (let i = 0; i < $options.length; i ++) {
             let curOption = $options.eq(i);
@@ -494,24 +493,24 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Render answer options from existing analysis's answer options.
-     * @param {object} analysis
+     * Render answer options from existing calculation's answer options.
+     * @param {object} calculation
      * @param {object} container
      * @param {object} monitor
      */
-    const renderExistingFactorOptions = (analysis, container, monitor) => {
+    const renderExistingFactorOptions = (calculation, container, monitor) => {
         let factors = null;
         container.children().remove();
-        if (analysis.factors) {
-            if (typeof analysis.factors == "string") {
-                factors = JSON.parse(analysis.factors || "[]");
-            } else if (typeof analysis.factors == "object") {
-                factors = analysis.factors;
+        if (calculation.factors) {
+            if (typeof calculation.factors == "string") {
+                factors = JSON.parse(calculation.factors || "[]");
+            } else if (typeof calculation.factors == "object") {
+                factors = calculation.factors;
             }
 
             DataStorage.Subjects.get(_selected_wizard, (subjects) => {
                 for (let i = 0; i < factors.length; i ++) {
-                    let source = $("#new-analysis-factor-option-template").html();
+                    let source = $("#new-calculation-factor-option-template").html();
                     let template = Handlebars.compile(source);
 
                     for (let j = 0; j < subjects.length; j ++) {
@@ -587,12 +586,12 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Update local subject Database. can be called refreshing for analysis.
+     * Update local subject Database. can be called refreshing for calculation.
      * @param {function} callback
      */
-    const updateLocalAnalysis = (callback) => {
-        DataStorage.Analysis.get(_selected_wizard, (analysis) => {
-            _analysis = analysis;
+    const updateLocalCalculations = (callback) => {
+        DataStorage.Calculations.get(_selected_wizard, (calculation) => {
+            _calculation = calculation;
 
             if (typeof callback == "function") {
                 callback();
@@ -632,27 +631,27 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * Create a new analysis with properties given by admin
+     * Create a new calculation with properties given by admin
      * @param {object} params
      */
-    const createAnalysis = (params) => {
-        DataStorage.Analysis.insert(params, () => {
+    const createCalculation = (params) => {
+        DataStorage.Calculations.insert(params, () => {
             if (_subjectsStack.length == 0) {
                 renderSubjectsPanel();
             }// else {
             //    renderNewSubjectForm(_subjectsStack.pop());
             //}
-            updateLocalAnalysis();
+            updateLocalCalculations();
         });
     }
 
     /**
-     * Update an existing analysis
+     * Update an existing calculation
      * @param {object} params
      */
-    const updateAnalysis = (params) => {
-        DataStorage.Analysis.update(params.id, params, (response) => {
-            updateLocalAnalysis(() => {
+    const updateCalculation = (params) => {
+        DataStorage.Calculations.update(params.id, params, (response) => {
+            updateLocalCalculations(() => {
                 if (_subjectsStack.length == 0) {
                     renderSubjectsPanel();
                 }// else {
@@ -695,16 +694,16 @@ let QuestionGenerator = (() => {
         })
     }
 
-    const updateAnalysisTable = () => {
-        DataStorage.Analysis.get(_selected_wizard, (analytics) => {
+    const updateCalculationTable = () => {
+        DataStorage.Calculations.get(_selected_wizard, (analytics) => {
             _analytics = analytics;
-            let table = $(`#${settings.subjects.analysisTable.id}`);
-            let source = $("#analysis-table-template").html();
+            let table = $(`#${settings.subjects.calculationTable.id}`);
+            let source = $("#calculation-table-template").html();
             let template = Handlebars.compile(source);
             table.html(template({
                 analytics: analytics,
-                class: settings.subjects.analysisTable.class,
-                id: settings.subjects.analysisTable.id
+                class: settings.subjects.calculationTable.class,
+                id: settings.subjects.calculationTable.id
             }));
         })
     }
@@ -819,8 +818,8 @@ let QuestionGenerator = (() => {
             )
         }).on("click", "button#btn-add-factor-option", (event) => {
             event.preventDefault();
-            let $container = $(event.target).parents(`#${settings.newAnalysis.factorsContainer.id}`);
-            let source = $("#new-analysis-factor-option-template").html();
+            let $container = $(event.target).parents(`#${settings.newCalculation.factorsContainer.id}`);
+            let source = $("#new-calculation-factor-option-template").html();
             let template = Handlebars.compile(source);
 
             $container.find("div.factor-option").last().after(
@@ -848,20 +847,20 @@ let QuestionGenerator = (() => {
                 alert("Question can't be empty!");
             }
             //  Creating a new wizard
-        }).on("click", `#${settings.newAnalysis.createButton.id}`, (event) => {
+        }).on("click", `#${settings.newCalculation.createButton.id}`, (event) => {
             event.preventDefault();
-            if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "") {
+            if ($(`#${settings.newCalculation.nameInput.id}`).val() !== "") {
                 let params = {
                     id: event.target.getAttribute("data-id"),
                     wizard_id: _selected_wizard,
-                    name: $(`#${settings.newAnalysis.nameInput.id}`).val().trim(),
-                    operator: $(`#${settings.newAnalysis.operatorSelect.id}`).val(),
+                    name: $(`#${settings.newCalculation.nameInput.id}`).val().trim(),
+                    operator: $(`#${settings.newCalculation.operatorSelect.id}`).val(),
                     factors: extractFactorsFromFactorOptionsConfig()
                 }
                 if (event.target.getAttribute("data-action") == "create") {
-                    createAnalysis(params);
+                    createCalculation(params);
                 } else if (event.target.getAttribute("data-action") == "update") {
-                    updateAnalysis(params);
+                    updateCalculation(params);
                 }
             } else {
                 alert("Name can't be empty!");
@@ -869,7 +868,7 @@ let QuestionGenerator = (() => {
             //  Creating a new wizard
         }).on("click", `#${settings.newSubject.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
-        }).on("click", `#${settings.newAnalysis.backButton.id}`, () => {
+        }).on("click", `#${settings.newCalculation.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
         }).on("click", "button.subject-edit", (event) => {
             let $record = $(event.target).parents("tr");
@@ -879,13 +878,13 @@ let QuestionGenerator = (() => {
                 renderNewSubjectForm(subject);
                 goTo(settings.newSubject.panel.id);
             });
-        }).on("click", "button.analysis-edit", (event) => {
+        }).on("click", "button.calculation-edit", (event) => {
             let $record = $(event.target).parents("tr");
-            let id = $record.attr("data-analysis-id");
+            let id = $record.attr("data-calculation-id");
 
-            DataStorage.Analysis.find(id, (analysis) => {
-                renderNewAnalysisForm(analysis);
-                goTo(settings.newAnalysis.panel.id);
+            DataStorage.Calculations.find(id, (calculation) => {
+                renderNewCalculationForm(calculation);
+                goTo(settings.newCalculation.panel.id);
             });
         }).on("click", "button.subject-delete", (event) => {
             let $record = $(event.target).parents("tr");
@@ -895,11 +894,11 @@ let QuestionGenerator = (() => {
                 renderSubjectsPanel();
                 goTo(settings.subjects.panel.id);
             });
-        }).on("click", "button.analysis-delete", (event) => {
+        }).on("click", "button.calculation-delete", (event) => {
             let $record = $(event.target).parents("tr");
-            let id = $record.attr("data-analysis-id");
+            let id = $record.attr("data-calculation-id");
 
-            DataStorage.Analysis.remove(id, () => {
+            DataStorage.Calculations.remove(id, () => {
                 renderSubjectsPanel();
                 goTo(settings.subjects.panel.id);
             });
@@ -920,8 +919,8 @@ let QuestionGenerator = (() => {
             });
         }).on("click", `#${settings.subjects.panel.newSubjectButton.id}`, () => {
             renderNewSubjectForm()
-        }).on("click", `#${settings.subjects.panel.newAnalysisButton.id}`, () => {
-            renderNewAnalysisForm();
+        }).on("click", `#${settings.subjects.panel.newCalculationButton.id}`, () => {
+            renderNewCalculationForm();
         }).on("click", `#subjects-panel-back-to-wizards`, () => {
             goTo(settings.wizards.panel.id);
         }).on("click", `#${settings.newWizard.panel.id} button#${settings.newWizard.createButton.id}`, (event) => {
