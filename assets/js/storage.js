@@ -76,23 +76,24 @@ let DataStorage = (() => {
         /**
          * Find a Answer Type with ID.
          * @param {number} id 
-         * @param {function} callback 
+         * @param {function} success 
+         * @param {function} failure
          * @return {object}
          */
         const find = (id, success, failure) => {
             if (env === "demo") {
                 for( let i = 0; i < _types.length; i ++) {
                     if (_types[i].id == parseInt(id)) {
-                        if (typeof callback === "function") {
-                            callback(_types[i]);
+                        if (typeof success === "function") {
+                            success(_types[i]);
                             return false;
                         } else {
                             return _types[i];
                         }
                     }
                 }
-                if (typeof callback === "function") {
-                    callback(null);
+                if (typeof success === "function") {
+                    success(null);
                 } else {
                     return null;
                 }
@@ -330,8 +331,8 @@ let DataStorage = (() => {
                         results.push(cur);
                     }
                 }
-                if (typeof callback === "function") {
-                    callback(results);
+                if (typeof success === "function") {
+                    success(results);
                 } else {
                     return results;
                 }
@@ -530,12 +531,15 @@ let DataStorage = (() => {
         }
     })();
 
+    /**
+     * Calculations made with answers given by leads
+     */
     let Calculations = (() => {
-        let _analytics = Constants.calculations;
+        let _calculations = Constants.calculations;
         let _offset = 1;
 
         /**
-         * Get all Analytics.
+         * Get all Calculations.
          * @param {number} wizard_id 
          * @param {function} success 
          * @param {function} failure
@@ -544,9 +548,9 @@ let DataStorage = (() => {
         const get = (wizard_id, success, failure) => {
             if (env === "demo") {
                 let results = [];
-                for (let i = 0; i < _analytics.length; i ++) {
-                    if (_analytics[i].wizard_id == wizard_id) {
-                        let cur = _analytics[i];
+                for (let i = 0; i < _calculations.length; i ++) {
+                    if (_calculations[i].wizard_id == wizard_id) {
+                        let cur = _calculations[i];
                         results.push(cur);
                     }
                 }
@@ -589,7 +593,7 @@ let DataStorage = (() => {
                     operator: params.operator,
                     factors: (typeof params.factors == "string") ? params.factors : JSON.stringify(params.factors)
                 };
-                _analytics.push(tempCalculation);
+                _calculations.push(tempCalculation);
                 _offset++;
 
                 if (typeof success === "function") {
@@ -629,9 +633,9 @@ let DataStorage = (() => {
             if (env === "demo") {
                 let calculation = null;
 
-                for (let i = 0; i < _analytics.length; i ++) {
-                    if (_analytics[i].id == id) {
-                        calculation = _analytics[i];
+                for (let i = 0; i < _calculations.length; i ++) {
+                    if (_calculations[i].id == id) {
+                        calculation = _calculations[i];
                         break;
                     }
                 }
@@ -669,11 +673,11 @@ let DataStorage = (() => {
         const updateCalculation = (id, params, success, failure) => {
             if (env === "demo") {
                 let flag = false;
-                for (let i = 0; i < _analytics.length; i ++) {
-                    if (_analytics[i].id == id) {
-                        for (let p in _analytics[i]) {
+                for (let i = 0; i < _calculations.length; i ++) {
+                    if (_calculations[i].id == id) {
+                        for (let p in _calculations[i]) {
                             if (params[p]) {
-                                _analytics[i][p] = (typeof params[p] == "object") ? JSON.stringify(params[p]) : params[p];
+                                _calculations[i][p] = (typeof params[p] == "object") ? JSON.stringify(params[p]) : params[p];
                             }
                         }
                         flag = true;
@@ -715,7 +719,7 @@ let DataStorage = (() => {
          */
         const deleteCalculation = (id, success, failure) => {
             if (env === "demo") {
-                _analytics = _analytics.filter(calculation => calculation.id != id);
+                _calculations = _calculations.filter(calculation => calculation.id != id);
 
                 if (typeof success === "function") {
                     success();
@@ -746,13 +750,231 @@ let DataStorage = (() => {
         }
     })();
 
-    
+    /**
+     * Analyses made with answers given by leads
+     */
+    let Analyses = (() => {
+        let _analyses = Constants.analyses;
+        let _offset = 1;
+
+        /**
+         * Get all analyses.
+         * @param {number} wizard_id 
+         * @param {function} success 
+         * @param {function} failure
+         * @return {array}
+         */
+        const get = (wizard_id, success, failure) => {
+            if (env === "demo") {
+                let results = [];
+                for (let i = 0; i < _analyses.length; i ++) {
+                    if (_analyses[i].wizard_id == wizard_id) {
+                        let cur = _analyses[i];
+                        results.push(cur);
+                    }
+                }
+                if (typeof success === "function") {
+                    success(results);
+                } else {
+                    return results;
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "analyses",
+                    action: "get_all",
+                    params: JSON.stringify({
+                        wizard_id: wizard_id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.analyses);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
+            }
+                
+        }
+
+        /**
+         * Create a new Analysis.
+         * @param {object} params 
+         * @param {function} success 
+         * @param {function} failure
+         * @return {number}
+         */
+        const createAnalysis = (params, success, failure) => {
+            if (env === "demo") {
+                let tempAnalysis = {
+                    id: _offset,
+                    name: params.name || "No title",
+                    wizard_id: params.wizard_id,
+                    operator: params.operator,
+                    factors: (typeof params.factors == "string") ? params.factors : JSON.stringify(params.factors)
+                };
+                _analyses.push(tempAnalysis);
+                _offset++;
+
+                if (typeof success === "function") {
+                    success(tempAnalysis);
+                } else {
+                    return offset -1;
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "analyses",
+                    action: "create",
+                    params: JSON.stringify({
+                        name: params.name,
+                        wizard_id: params.wizard_id,
+                        operator: params.operator,
+                        factors: JSON.stringify(params.factors)
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.subject_id);
+                    } else {
+                        success(null);
+                    }
+                }, failure);
+            }
+                
+        }
+
+        /**
+         * Find an existing Analysis.
+         * @param {number} id 
+         * @param {function} success 
+         * @param {function} failure
+         * @return {object}
+         */
+        const findAnalysis = (id, success, failure) => {
+            if (env === "demo") {
+                let analysis = null;
+
+                for (let i = 0; i < _analyses.length; i ++) {
+                    if (_analyses[i].id == id) {
+                        analysis = _analyses[i];
+                        break;
+                    }
+                }
+
+                if (typeof success === "function") {
+                    success(analysis);
+                } else {
+                    return analysis;
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "analyses",
+                    action: "get",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.analysis);
+                    } else {
+                        success([]);
+                    }
+                }, failure);
+            }
+        }
+
+        /**
+         * Update an existing analysis.
+         * @param {number} id 
+         * @param {object} params 
+         * @param {function} success 
+         * @param {function} failure
+         * @return {boolean}
+         */
+        const updateAnalysis = (id, params, success, failure) => {
+            if (env === "demo") {
+                let flag = false;
+                for (let i = 0; i < _analyses.length; i ++) {
+                    if (_analyses[i].id == id) {
+                        for (let p in _analyses[i]) {
+                            if (params[p]) {
+                                _analyses[i][p] = (typeof params[p] == "object") ? JSON.stringify(params[p]) : params[p];
+                            }
+                        }
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (typeof success == "function") {
+                    success({status: flag});
+                } else {
+                    return flag;
+                }
+            } else {
+                params.id = id;
+
+                if (typeof params.factors == "object") {
+                    params.factors = JSON.stringify(params.factors);
+                }
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "analyses",
+                    action: "update",
+                    params: JSON.stringify(params)
+                }, (response) => {
+                    if (response.status) {
+                        success(response.status);
+                    } else {
+                        success(false);
+                    }
+                }, failure);
+            }
+                
+        }
+
+        /**
+         * Delete a Analysis with the ID.
+         * @param {number} id 
+         * @param {function} success 
+         * @param {function} failure
+         */
+        const deleteAnalysis = (id, success, failure) => {
+            if (env === "demo") {
+                _analyses = _analyses.filter(analysis => analysis.id != id);
+
+                if (typeof success === "function") {
+                    success();
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "analyses",
+                    action: "delete",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.status);
+                    } else {
+                        success(false);
+                    }
+                }, failure);
+            }
+        }
+
+        return {
+            get: get,
+            find: findAnalysis,
+            insert: createAnalysis,
+            update: updateAnalysis,
+            remove: deleteAnalysis
+        }
+    })();
 
     return {
         Types: AnswerTypes,
         Wizards: Wizards,
         Subjects: Subjects,
-        Calculations: Calculations
+        Calculations: Calculations,
+        Analysis: Analyses
     }
     
 })();

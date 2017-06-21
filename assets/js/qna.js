@@ -12,6 +12,7 @@ let QuestionGenerator = (() => {
         _selected_wizard = null,
         _subjects = [],
         _calculations = [],
+        _analyses = [],
         $_container = null,
         $_wizardsTable = null;
 
@@ -82,6 +83,10 @@ let QuestionGenerator = (() => {
             },
             "calculationTable": {
                 id: "calculation-table",
+                class: "table table-striped table-bordered"
+            },
+            "analysesTable": {
+                id: "analyses-table",
                 class: "table table-striped table-bordered"
             }
         },
@@ -163,16 +168,7 @@ let QuestionGenerator = (() => {
     }
 
     /**
-     * TEST FUNCTION THAT CHECKS IF IT DOES WORK OR NOT.
-     */
-    const renderSomething = () => {
-        $_container.append(
-            $("<center><h2>Admin Library does work now.</h2></center>")
-        );
-    };
-
-    /**
-     * Go to Next Step
+     * Go to a given Step
      * @param {string} step
      */
     const goTo = (step) => {
@@ -255,6 +251,7 @@ let QuestionGenerator = (() => {
 
         updateSubjectsTable();
         updateCalculationTable();
+        updateAnalysesTable();
         goTo(settings.subjects.panel.id);
     }
 
@@ -527,7 +524,7 @@ let QuestionGenerator = (() => {
 
                 let newFactorButtonSource = $("#add-new-factor-option-button").html();
                 let newFactorTemplate = Handlebars.compile(newFactorButtonSource);
-                
+
                 container.append(
                     $(newFactorTemplate())
                 )
@@ -697,6 +694,9 @@ let QuestionGenerator = (() => {
         })
     }
 
+    /**
+     * Render Calculations talbe with data pulled from data store.
+     */
     const updateCalculationTable = () => {
         DataStorage.Calculations.get(_selected_wizard, (calculations) => {
             _calculations = calculations;
@@ -707,6 +707,23 @@ let QuestionGenerator = (() => {
                 calculations: _calculations,
                 class: settings.subjects.calculationTable.class,
                 id: settings.subjects.calculationTable.id
+            }));
+        })
+    }
+
+    /**
+     * Render Analyses talbe with data pulled from data store.
+     */
+    const updateAnalysesTable = () => {
+        DataStorage.Analysis.get(_selected_wizard, (analyses) => {
+            _analyses = analyses;
+            let table = $(`#${settings.subjects.analysesTable.id}`);
+            let source = $("#analyses-table-template").html();
+            let template = Handlebars.compile(source);
+            table.html(template({
+                analyses: _analyses,
+                class: settings.subjects.analysesTable.class,
+                id: settings.subjects.analysesTable.id
             }));
         })
     }
@@ -887,6 +904,14 @@ let QuestionGenerator = (() => {
 
             DataStorage.Calculations.find(id, (calculation) => {
                 renderNewCalculationForm(calculation);
+                goTo(settings.newCalculation.panel.id);
+            });
+        }).on("click", "button.analysis-edit", (event) => {
+            let $record = $(event.target).parents("tr");
+            let id = $record.attr("data-analysis-id");
+
+            DataStorage.Analysis.find(id, (analysis) => {
+                renderNewCalculationForm(analysis);
                 goTo(settings.newCalculation.panel.id);
             });
         }).on("click", "button.subject-delete", (event) => {

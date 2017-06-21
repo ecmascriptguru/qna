@@ -685,5 +685,23 @@ let Constants = {
                 }
             ])
         },
+    ],
+
+    analyses: [
+        {
+            id: 1,
+            wizard_id: 3,
+            name: "First analysis",
+            condition: JSON.stringify({
+                subs: [{
+                    id: 2,
+                    value: ""
+                }],
+                cals:[{
+                    id: 3
+                }]
+            }),
+            result: "Something here {{sub_0}} on {{cal_0}}"
+        }
     ]
 }

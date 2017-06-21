@@ -53,6 +53,7 @@ require("config/env.php");
                         <ul class="nav nav-tabs">
                             <li role="presentation" class="active"><a href="#tab-content-subjects">Subjects</a></li>
                             <li role="presentation"><a href="#tab-content-calculation">Calculations</a></li>
+                            <li role="presentation"><a href="#tab-content-analysis">Analysis</a></li>
                         </ul>
                         <div class="tab-content">
                             <div role="tabpanel" id="tab-content-subjects" class="tab-pane active">
@@ -63,6 +64,11 @@ require("config/env.php");
                             <div role="tabpanel" id="tab-content-calculation" class="tab-pane">
                                 <button class="btn btn-default pull-right new-calculation" id="new-calculation-button">New Calculation</button>
                                 <table class="table table-striped table-bordered" id="calculation-table">
+                                </table>
+                            </div>
+                            <div role="tabpanel" id="tab-content-analysis" class="tab-pane">
+                                <button class="btn btn-default pull-right new-analysis" id="new-analysis-button">New Analysis</button>
+                                <table class="table table-striped table-bordered" id="analyses-table">
                                 </table>
                             </div>
                         </div>
@@ -376,6 +382,38 @@ require("config/env.php");
                         </div>
                         <div class="col-xs-6">
                             <button class="btn btn-danger form-control calculation-delete">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </script>
+
+    <script id="analyses-table-template" type="text/x-handlebars-template">
+        <table class="{{class}}" id="{{id}}">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Condition</th>
+                    <th>Result</th>
+                    <th class="actions-header">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each analyses}}
+                <tr data-analysis-id='{{id}}'>
+                    <td>{{@index}}</td>
+                    <td>{{name}}</td>
+                    <td><code>{{condition}}</code></td>
+                    <td><code>{{result}}</code></td>
+                    <td>
+                        <div class="col-xs-6">
+                            <button class="btn btn-info form-control analysis-edit">Edit</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-danger form-control analysis-delete">Delete</button>
                         </div>
                     </td>
                 </tr>
