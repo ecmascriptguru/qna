@@ -173,6 +173,81 @@ require("config/env.php");
                         </div>
                     </div>
                 </div>
+
+                <div class="panel panel-default" id="new-analysis-panel">
+                    <div class="panel-heading">
+                        <h3>Create/Update an Analysis</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="new-analysis-name-input">Enter Name.</label>
+                            <input class="form-control" id="new-analysis-name-input" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <label for="new-analysis-calculation-select">Select a Calculation</label>
+                                    <select id="new-analysis-calculation-select" class="form-control">
+                                        
+                                    </select>
+                                    <script id="new-anlysis-calculation-select-template" type="text/x-handlebars-template">
+                                        {{#each calculations}}
+                                        <option value="{{id}}">{{name}}</option>
+                                        {{/each}}
+                                    </script>
+                                    <button class="btn btn-default pull-right">Add this calculation</button>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <label for="new-analysis-subject-select">Select a subject</label>
+                                            <select id="new-analysis-subject-select" class="form-control">
+                                                
+                                            </select>
+                                            <script id="new-analysis-subject-select-template" type="text/x-handlebars-template">
+                                                {{#each subjects}}
+                                                <option value="{{id}}">{{question}}</option>
+                                                {{/each}}
+                                            </script>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label for="new-analysis-answers-select">Answers</label>
+                                            <select id="new-analysis-answers-select" class="form-control">
+                                                
+                                            </select>
+                                            <script id="new-analysis-answers-select-template" type="text/x-handlebars-template">
+                                                {{#each values}}
+                                                <option value="{{value}}">{{caption}}=>{{value}}</option>
+                                                {{/each}}
+                                            </script>
+                                        </div>
+                                    </div>
+                                    <button id="new-analysis-subject-add" class="btn btn-default pull-right">Add this Subject option</button>
+                                </div>
+                                <input type="hidden" id="new-analysis-condition-value" value="{subjects:[], calculations:[]}" />
+                                <input type="hidden" id="new-analysis-result-value" value="" />
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="new-analysis-data-info-container">
+                            Selected Type Info.
+                            <pre></pre>
+                        </div>
+                        <div id="new-analysis-conditions-container">
+                            
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                                <button class="btn btn-default form-control" id="new-analysis-back-button">Back to List</button>
+                            </div>
+                            <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+                                <button class="btn btn-primary form-control" id="new-analysis-create-button" data-action="create">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <footer>

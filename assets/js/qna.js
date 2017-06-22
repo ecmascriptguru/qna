@@ -75,6 +75,11 @@ let QuestionGenerator = (() => {
                     id: "new-calculation-button",
                     title: "New Calculation",
                     class: "btn btn-default pull-right new-calculation"
+                },
+                newAnalysisButton: {
+                    id: "new-analysis-button",
+                    title: "New Analysis",
+                    class: "btn btn-default pull-right new-analysis"
                 }
             },
             "subjectsTable": {
@@ -163,6 +168,43 @@ let QuestionGenerator = (() => {
             },
             dataInfoContainer: {
                 id: "new-calculation-data-info-container"
+            }
+        },
+        newAnalysis: {
+            panel: {
+                id: "new-analysis-panel",
+                class: "panel panel-default",
+                title: "Create a new analysis"
+            },
+            backButton: {
+                id: "new-analysis-back-button",
+                class: "btn btn-default form-control",
+                title: "Back to List"
+            },
+            createButton: {
+                id: "new-analysis-create-button",
+                class: "btn btn-primary form-control",
+                title: "Save Changes"
+            },
+            nameInput: {
+                id: "new-analysis-name-input",
+                class: "form-control",
+                title: "Enter analysis name."
+            },
+            subjectSelect: {
+                id: "new-analysis-subject-select",
+                class: "form-control"
+            },
+            answersSelect: {
+                id: "new-analysis-answers-select",
+                class: "form-control"
+            },
+            calculationSelect: {
+                id: "new-analysis-calculation-select",
+                class: "form-control"
+            },
+            dataInfoContainer: {
+                id: "new-analysis-data-info-container"
             }
         }
     }
@@ -343,6 +385,54 @@ let QuestionGenerator = (() => {
         });
 
         goTo(settings.newCalculation.panel.id);
+    }
+
+
+    /**
+     * Render New Analysis Panel. Analysis parameter can be null/empty when you create a new Analysis.
+     * @param {object} Analysis
+     */
+    const renderNewAnalysisForm = (analysis) => {
+        let panel = $(`#${settings.newAnalysis.panel.id}`),
+            createAnalaysisButton = $(`#${settings.newAnalysis.createButton.id}`),
+            nameInput = $(`#${settings.newAnalysis.nameInput.id}`),
+            subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
+            answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`),
+            calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`),
+            dataInfoContainer = $(`#new-analysis-data-info-container`);
+
+        DataStorage.Analysis.options(_selected_wizard, (options) => {
+            let calculationSelectSource = $("#new-anlysis-calculation-select-template").html(),
+                calculationSelectTemplate = Handlebars.compile(calculationSelectSource),
+                subjectSelectSource = $("#new-analysis-subject-select-template").html(),
+                subjectSelectTemplate = Handlebars.compile(subjectSelectSource),
+                answersSelectSource = $("#new-analysis-answers-select-template").html(),
+                answersSelectTemplate = Handlebars.compile(answersSelectSource);
+
+            subjectSelect.html(subjectSelectTemplate({
+                subjects: options.subjects
+            }));
+
+            calculationSelect.html(calculationSelectTemplate({
+                calculations: options.calculations
+            }));
+
+            if (analysis) {
+                createAnalaysisButton.attr({
+                    "data-id": analysis.id,
+                    "data-action": "update"
+                });
+                nameInput.val(analysis.name);
+            } else {
+                createAnalaysisButton.attr({
+                    "data-id": null,
+                    "data-action": "create"
+                });
+                nameInput.val("");
+            }
+        });
+
+        goTo(settings.newAnalysis.panel.id);
     }
 
     /**
@@ -886,9 +976,30 @@ let QuestionGenerator = (() => {
                 alert("Name can't be empty!");
             }
             //  Creating a new wizard
+        }).on("click", `#${settings.newAnalysis.createButton.id}`, (event) => {
+            event.preventDefault();
+            if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "") {
+                let params = {
+                    id: event.target.getAttribute("data-id"),
+                    wizard_id: _selected_wizard,
+                    name: $(`#${settings.newAnalysis.nameInput.id}`).val().trim(),
+                    operator: $(`#${settings.newAnalysis.operatorSelect.id}`).val(),
+                    factors: extractFactorsFromFactorOptionsConfig()
+                }
+                if (event.target.getAttribute("data-action") == "create") {
+                    // createCalculation(params);
+                } else if (event.target.getAttribute("data-action") == "update") {
+                    // updateCalculation(params);
+                }
+            } else {
+                alert("Name can't be empty!");
+            }
+            //  Creating a new wizard
         }).on("click", `#${settings.newSubject.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
         }).on("click", `#${settings.newCalculation.backButton.id}`, () => {
+            goTo(settings.subjects.panel.id);
+        }).on("click", `#${settings.newAnalysis.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
         }).on("click", "button.subject-edit", (event) => {
             let $record = $(event.target).parents("tr");
@@ -949,6 +1060,8 @@ let QuestionGenerator = (() => {
             renderNewSubjectForm()
         }).on("click", `#${settings.subjects.panel.newCalculationButton.id}`, () => {
             renderNewCalculationForm();
+        }).on("click", `#${settings.subjects.panel.newAnalysisButton.id}`, () => {
+            renderNewAnalysisForm();
         }).on("click", `#subjects-panel-back-to-wizards`, () => {
             goTo(settings.wizards.panel.id);
         }).on("click", `#${settings.newWizard.panel.id} button#${settings.newWizard.createButton.id}`, (event) => {
@@ -988,6 +1101,25 @@ let QuestionGenerator = (() => {
                     $(`#${settings.newSubject.createButton.id}`).click();
                 })
             }
+        }).on("change", $(`#${settings.newAnalysis.subjectSelect.id}`), (event) => {
+            event.preventDefault();
+            if (event.target.getAttribute("id") != settings.newAnalysis.subjectSelect.id) {
+                return false;
+            }
+            let curSelectedSubjectId = event.target.value;
+
+            DataStorage.Subjects.find(curSelectedSubjectId, (subject) => {
+                let source = $("#new-analysis-answers-select-template").html(),
+                    template = Handlebars.compile(source),
+                    answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
+
+                let values = (typeof subject.answers == "object") ? subject.answers : JSON.parse(subject.answers);
+                answersSelect.html(
+                    $(template({
+                        values: values
+                    }))
+                );
+            })
         });
 
         $(".nav-tabs li a").click((event) => {

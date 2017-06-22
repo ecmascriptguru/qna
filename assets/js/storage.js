@@ -758,6 +758,32 @@ let DataStorage = (() => {
         let _offset = 1;
 
         /**
+         * Get subjects and calculations belong to a wizard. This will be used to create analyses.
+         * @param {number} wizard_id 
+         * @param {function} success 
+         * @param {function} failure 
+         */
+        const getOptions = (wizard_id, success, failure) => {
+            let subjects = [];
+            let calculations = [];
+            if (env === "demo") {
+                subjects = Subjects.get(wizard_id);
+                calculations = Calculations.get(wizard_id);
+
+                if (typeof success === "function") {
+                    success({subjects, calculations});
+                } else {
+                    return {
+                        subjects,
+                        calculations
+                    };
+                }
+            } else {
+                alert("Some code to be written!");
+            }
+        }
+
+        /**
          * Get all analyses.
          * @param {number} wizard_id 
          * @param {function} success 
@@ -962,6 +988,7 @@ let DataStorage = (() => {
 
         return {
             get: get,
+            options: getOptions,
             find: findAnalysis,
             insert: createAnalysis,
             update: updateAnalysis,
