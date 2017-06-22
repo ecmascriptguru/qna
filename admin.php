@@ -195,7 +195,7 @@ require("config/env.php");
                                         <option value="{{id}}">{{name}}</option>
                                         {{/each}}
                                     </script>
-                                    <button class="btn btn-default pull-right">Add this calculation</button>
+                                    <button class="btn btn-default pull-right" id="new-analysis-calculation-add-button">Add this calculation</button>
                                 </div>
                                 <div class="col-xs-6">
                                     <div class="row">
@@ -222,7 +222,7 @@ require("config/env.php");
                                             </script>
                                         </div>
                                     </div>
-                                    <button id="new-analysis-subject-add" class="btn btn-default pull-right">Add this Subject option</button>
+                                    <button id="new-analysis-subject-add-button" class="btn btn-default pull-right">Add this Subject option</button>
                                 </div>
                                 <input type="hidden" id="new-analysis-condition-value" value="{subjects:[], calculations:[]}" />
                                 <input type="hidden" id="new-analysis-result-value" value="" />

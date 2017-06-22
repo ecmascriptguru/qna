@@ -195,6 +195,10 @@ let QuestionGenerator = (() => {
                 id: "new-analysis-subject-select",
                 class: "form-control"
             },
+            subjectAddButton: {
+                id: "new-analysis-subject-add-button",
+                class: "btn btn-default"
+            },
             answersSelect: {
                 id: "new-analysis-answers-select",
                 class: "form-control"
@@ -203,8 +207,18 @@ let QuestionGenerator = (() => {
                 id: "new-analysis-calculation-select",
                 class: "form-control"
             },
+            calculationAddButton: {
+                id: "new-analysis-calculation-add-button",
+                class: "btn btn-default"
+            },
             dataInfoContainer: {
                 id: "new-analysis-data-info-container"
+            },
+            hiddenConditionInput: {
+                id: "new-analysis-condition-value"
+            },
+            hiddenResultInput: {
+                id: "new-analysis-result-value"
             }
         }
     }
@@ -1120,6 +1134,23 @@ let QuestionGenerator = (() => {
                     }))
                 );
             })
+        }).on("click", $(`#${settings.newAnalysis.subjectAddButton.id}`), (event) => {
+            let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
+                $subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
+                $answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
+
+            let objCondition = JSON.parse($condition.val()),
+                subId = parseInt($subjectSelect.val()),
+                answer = $answersSelect.val();
+
+            objCondition.subjects.push({
+                id,
+                answer
+            });
+            $condition.val(JSON.stringify(objCondition));
+            //  Code to render subject/answer configuration
+        }).on("click", $(`#${settings.newAnalysis.calculationAddButton.id}`), (event) => {
+            //
         });
 
         $(".nav-tabs li a").click((event) => {
