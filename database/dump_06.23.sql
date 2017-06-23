@@ -44,7 +44,7 @@ CREATE TABLE `qna_answers` (
   `value` text NOT NULL,
   `estimation` float NOT NULL DEFAULT '100',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 /*Data for the table `qna_answers` */
 
@@ -77,7 +77,7 @@ CREATE TABLE `qna_results` (
   `wizard_id` int(10) DEFAULT NULL,
   `analysis` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC;
 
 /*Data for the table `qna_results` */
 
@@ -94,7 +94,7 @@ CREATE TABLE `qna_subjects` (
   `type_id` int(10) unsigned NOT NULL DEFAULT '1',
   `answers` text CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 /*Data for the table `qna_subjects` */
 
@@ -109,7 +109,7 @@ CREATE TABLE `qna_types` (
   `type_name` varchar(50) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 /*Data for the table `qna_types` */
 
@@ -124,7 +124,7 @@ CREATE TABLE `qna_wizards` (
   `name` varchar(255) CHARACTER SET utf8 NOT NULL,
   `starts_with` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 /*Data for the table `qna_wizards` */
 

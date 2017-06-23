@@ -7,7 +7,7 @@ if ($env === "dev") {
     $DB_NAME = "qna";
 } else {
     $DB_HOST = "localhost";
-    $DB_USERNAME = "alexdev";
+    $DB_USERNAME = "alexdev_root";
     $DB_PASSWORD = "dKLB?iDe&PwI";
     $DB_NAME = "alexdev_qna";
 }
