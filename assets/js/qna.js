@@ -1300,6 +1300,9 @@ let QuestionGenerator = (() => {
             }
             let curSelectedSubjectId = event.target.value;
 
+            if (curSelectedSubjectId == "") {
+                return false;
+            }
             DataStorage.Subjects.find(curSelectedSubjectId, (subject) => {
                 let source = $("#new-analysis-answers-select-template").html(),
                     template = Handlebars.compile(source),

@@ -205,6 +205,7 @@ require("config/env.php");
                                                 
                                             </select>
                                             <script id="new-analysis-subject-select-template" type="text/x-handlebars-template">
+                                                <option value="">Select one</option>
                                                 {{#each subjects}}
                                                 <option value="{{id}}">{{question}}</option>
                                                 {{/each}}
