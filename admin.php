@@ -224,8 +224,11 @@ require("config/env.php");
                                     </div>
                                     <button id="new-analysis-subject-add-button" class="btn btn-default pull-right">Add this Subject option</button>
                                 </div>
-                                <input type="hidden" id="new-analysis-condition-value" value="{subjects:[], calculations:[]}" />
-                                <input type="hidden" id="new-analysis-result-value" value="" />
+                                <input type="hidden" id="new-analysis-condition-value" value='{"subjects":[],"calculations":[]}' />
+                            </div>
+
+                            <div class="row" id="">
+
                             </div>
                         </div>
 
@@ -233,8 +236,47 @@ require("config/env.php");
                             Selected Type Info.
                             <pre></pre>
                         </div>
-                        <div id="new-analysis-conditions-container">
+                        <div id="new-analysis-conditions-container" class="form-group">
                             
+                        </div>
+                        <script id="new-analysis-condition-subject-template" type="text/x-handlebars-template">
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    {{id}}
+                                </div>
+                                <div class="col-xs-4">
+                                    {{question}}
+                                </div>
+                                <div class="col-xs-3">
+                                    {{answer}}
+                                </div>
+                                <div class="col-xs-3">
+                                    <button class="btn btn-danger form-control condition-subject-delete">Delete</button>
+                                </div>
+                            </div>
+                        </script>
+                        <script id="new-analysis-condition-calculation-template" type="text/x-handlebars-template">
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    {{id}}
+                                </div>
+                                <div class="col-xs-4">
+                                    {{name}}
+                                </div>
+                                <div class="col-xs-3">
+                                </div>
+                                <div class="col-xs-3">
+                                    <button class="btn btn-danger form-control condition-subject-delete">Delete</button>
+                                </div>
+                            </div>
+                        </script>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <input type="text" id="new-analysis-result-value" value="" class="form-control" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="panel-footer">

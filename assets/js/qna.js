@@ -214,6 +214,10 @@ let QuestionGenerator = (() => {
             dataInfoContainer: {
                 id: "new-analysis-data-info-container"
             },
+            conditionsContainer: {
+                id: "new-analysis-conditions-container",
+                class: "form-group"
+            },
             hiddenConditionInput: {
                 id: "new-analysis-condition-value"
             },
@@ -447,6 +451,43 @@ let QuestionGenerator = (() => {
         });
 
         goTo(settings.newAnalysis.panel.id);
+    }
+
+    /**
+     * Render conditions for a specific analysis. The condition consists of subject/answers and calculations
+     * @param {object} condition 
+     */
+    const renderAnalysisConditionFields = (condition) => {
+        let subjects = condition.subjects || [];
+        let calculations = condition.calculations || [];
+        let $container = $(`#${settings.newAnalysis.conditionsContainer.id}`);
+
+        $container.children().remove();
+
+        for (let i = 0; i < subjects.length; i ++) {
+            let source = $("#new-analysis-condition-subject-template").html(),
+                template = Handlebars.compile(source);
+
+            $container.append(
+                $(template({
+                    id: subjects[i].id,
+                    question: "Not sure?",
+                    answer: subjects[i].answer
+                }))
+            );
+        }
+
+        for (let i = 0; i < calculations.length; i ++) {
+            let source = $("#new-analysis-condition-calculation-template").html(),
+                template = Handlebars.compile(source);
+
+            $container.append(
+                $(template({
+                    id: calculations[i],
+                    name: "Not sure?"
+                }))
+            );
+        }
     }
 
     /**
@@ -1047,6 +1088,50 @@ let QuestionGenerator = (() => {
                 renderSubjectsPanel();
                 goTo(settings.subjects.panel.id);
             });
+        }).on("click", $(`button#${settings.newAnalysis.subjectAddButton.id}`), () => {
+            let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
+                $subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
+                $answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
+
+            let objCondition = JSON.parse($condition.val()),
+                subId = parseInt($subjectSelect.val()),
+                answer = $answersSelect.val();
+
+            if (event.target.id != settings.newAnalysis.subjectAddButton.id) {
+                return false;
+            }
+
+            if (!answer) {
+                alert("Answer option should not be empty.");
+                return false;
+            }
+
+            objCondition.subjects.push({
+                id: subId,
+                answer
+            });
+            $condition.val(JSON.stringify(objCondition));
+            renderAnalysisConditionFields(objCondition);
+            //  Code to render subject/answer configuration
+        }).on("click", $(`#${settings.newAnalysis.calculationAddButton.id}`), (event) => {
+            let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
+                $calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`);
+
+            let objCondition = JSON.parse($condition.val()),
+                calId = parseInt($calculationSelect.val());
+
+            if (event.target.id != settings.newAnalysis.calculationAddButton.id) {
+                return false;
+            }
+
+            if (!calId || objCondition.calculations.indexOf(calId) > -1) {
+                alert("Wrong parameter.");
+                return false;
+            }
+
+            objCondition.calculations.push(calId);
+            $condition.val(JSON.stringify(objCondition));
+            renderAnalysisConditionFields(objCondition);
         }).on("click", "button.calculation-delete", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-calculation-id");
@@ -1133,24 +1218,7 @@ let QuestionGenerator = (() => {
                         values: values
                     }))
                 );
-            })
-        }).on("click", $(`#${settings.newAnalysis.subjectAddButton.id}`), (event) => {
-            let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
-                $subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
-                $answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
-
-            let objCondition = JSON.parse($condition.val()),
-                subId = parseInt($subjectSelect.val()),
-                answer = $answersSelect.val();
-
-            objCondition.subjects.push({
-                id,
-                answer
             });
-            $condition.val(JSON.stringify(objCondition));
-            //  Code to render subject/answer configuration
-        }).on("click", $(`#${settings.newAnalysis.calculationAddButton.id}`), (event) => {
-            //
         });
 
         $(".nav-tabs li a").click((event) => {

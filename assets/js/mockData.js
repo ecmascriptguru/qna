@@ -693,11 +693,11 @@ let Constants = {
             wizard_id: 3,
             name: "First analysis",
             condition: JSON.stringify({
-                subs: [{
+                subjects: [{
                     id: 2,
                     answer: ""
                 }],
-                cals:[{
+                calculations:[{
                     id: 3
                 }]
             }),
