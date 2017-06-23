@@ -779,7 +779,22 @@ let DataStorage = (() => {
                     };
                 }
             } else {
-                alert("Some code to be written!");
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "analyses",
+                    action: "option",
+                    params: JSON.stringify({
+                        wizard_id: wizard_id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.option);
+                    } else {
+                        success({
+                            subjects: [],
+                            calculations: []
+                        });
+                    }
+                }, failure);
             }
         }
 
@@ -853,8 +868,8 @@ let DataStorage = (() => {
                     params: JSON.stringify({
                         name: params.name,
                         wizard_id: params.wizard_id,
-                        operator: params.operator,
-                        factors: JSON.stringify(params.factors)
+                        result: params.result,
+                        condition: (typeof params.condition == "string") ? params.condition : JSON.stringify(params.condition)
                     })
                 }, (response) => {
                     if (response.status) {

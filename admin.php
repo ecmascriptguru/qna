@@ -260,7 +260,7 @@ require("config/env.php");
                                     {{name}}
                                 </div>
                                 <div class="col-xs-4 factors">
-                                    <code>{{factors}}</code>
+                                    <code>{{operator}}</code>
                                 </div>
                                 <div class="col-xs-2">
                                     <button class="btn btn-danger form-control condition-subject-delete">Delete</button>

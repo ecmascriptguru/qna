@@ -7,6 +7,7 @@ require("../classes/qnaTypes.php");
 require("../classes/qnaWizards.php");
 require("../classes/qnaSubjects.php");
 require("../classes/qnaCalculations.php");
+require("../classes/qnaAnalyses.php");
 require("../classes/qnaResults.php");
 
 if (!isset($_POST) || empty($_POST)) {
@@ -114,6 +115,40 @@ switch($end_point) {
             echo json_encode($return);
         } else if ($action == "delete") {
             $return = delete_calculation($conn, $params);
+
+            echo json_encode($return);
+        }
+        break;
+
+    case "analyses":
+        if ($action == "option") {
+            $result = get_analysis_options($conn, $params);
+
+            echo json_encode([
+                'status'=> true,
+                'option' => $result
+            ]);
+        } else if ($action == "get_all") {
+            $analyses = get_all_analyses($conn, $params);
+
+            echo json_encode([
+                'status' => true,
+                'analyses' => $analyses
+            ]);
+        } else if ($action == "create") {
+            $return = create_analysis($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "get") {
+            $return = get_analysis($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "update") {
+            $return = update_analysis($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "delete") {
+            $return = delete_analysis($conn, $params);
 
             echo json_encode($return);
         }

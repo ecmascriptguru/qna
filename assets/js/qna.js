@@ -445,7 +445,7 @@ let QuestionGenerator = (() => {
                 nameInput.val(analysis.name);
                 resultInput.val(analysis.result);
                 hiddenConditionInput.val(analysis.condition || JSON.stringify({subjects:[], calculations:[]}));
-                renderAnalysisConditionFields(JSON.parse(hiddenConditionInput.val()));
+                renderAnalysisConditionFields(JSON.parse(analysis.condition));
             } else {
                 createAnalaysisButton.attr({
                     "data-id": null,
@@ -454,6 +454,7 @@ let QuestionGenerator = (() => {
                 nameInput.val("");
                 resultInput.val("");
                 hiddenConditionInput.val(JSON.stringify({subjects:[], calculations:[]}));
+                renderAnalysisConditionFields(JSON.stringify({subjects:[], calculations:[]}));
             }
         });
 
@@ -1202,7 +1203,11 @@ let QuestionGenerator = (() => {
             }
 
             DataStorage.Calculations.find(calId, (cal) => {
-                objCondition.calculations.push(cal);
+                objCondition.calculations.push({
+                    id: cal.id,
+                    name: cal.name,
+                    operator: cal.operator
+                });
                 $condition.val(JSON.stringify(objCondition));
                 renderAnalysisConditionFields(objCondition);
             })
