@@ -835,8 +835,8 @@ let DataStorage = (() => {
                     id: _offset,
                     name: params.name || "No title",
                     wizard_id: params.wizard_id,
-                    operator: params.operator,
-                    factors: (typeof params.factors == "string") ? params.factors : JSON.stringify(params.factors)
+                    result: params.result,
+                    condition: (typeof params.condition == "string") ? params.condition : JSON.stringify(params.condition)
                 };
                 _analyses.push(tempAnalysis);
                 _offset++;
@@ -967,7 +967,7 @@ let DataStorage = (() => {
                 _analyses = _analyses.filter(analysis => analysis.id != id);
 
                 if (typeof success === "function") {
-                    success();
+                    success(true);
                 }
             } else {
                 sendRequest(QNAConfig.baseUrl(), {

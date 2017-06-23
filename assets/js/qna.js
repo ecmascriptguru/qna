@@ -221,7 +221,7 @@ let QuestionGenerator = (() => {
             hiddenConditionInput: {
                 id: "new-analysis-condition-value"
             },
-            hiddenResultInput: {
+            resultInput: {
                 id: "new-analysis-result-value"
             }
         }
@@ -417,6 +417,8 @@ let QuestionGenerator = (() => {
             subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
             answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`),
             calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`),
+            hiddenConditionInput = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
+            resultInput = $(`#${settings.newAnalysis.resultInput.id}`),
             dataInfoContainer = $(`#new-analysis-data-info-container`);
 
         DataStorage.Analysis.options(_selected_wizard, (options) => {
@@ -441,12 +443,17 @@ let QuestionGenerator = (() => {
                     "data-action": "update"
                 });
                 nameInput.val(analysis.name);
+                resultInput.val(analysis.result);
+                hiddenConditionInput.val(analysis.condition || JSON.stringify({subjects:[], calculations:[]}));
+                renderAnalysisConditionFields(JSON.parse(hiddenConditionInput.val()));
             } else {
                 createAnalaysisButton.attr({
                     "data-id": null,
                     "data-action": "create"
                 });
                 nameInput.val("");
+                resultInput.val("");
+                hiddenConditionInput.val(JSON.stringify({subjects:[], calculations:[]}));
             }
         });
 
@@ -755,8 +762,8 @@ let QuestionGenerator = (() => {
      * @param {function} callback
      */
     const updateLocalCalculations = (callback) => {
-        DataStorage.Calculations.get(_selected_wizard, (calculation) => {
-            _calculation = calculation;
+        DataStorage.Calculations.get(_selected_wizard, (calculations) => {
+            _calculations = calculations;
 
             if (typeof callback == "function") {
                 callback();
@@ -828,12 +835,43 @@ let QuestionGenerator = (() => {
         })
     }
 
-    const createAnalysis = (params) => {
-        //
+    /**
+     * Update local subject Database. can be called refreshing for analyses.
+     * @param {function} callback
+     */
+    const updateLocalAnalyses = (callback) => {
+        DataStorage.Analysis.get(_selected_wizard, (analyses) => {
+            _analyses = analyses;
+
+            if (typeof callback == "function") {
+                callback();
+            }
+        });
     }
 
-    const updateAnalysis = (params) => {
+    /**
+     * Create a new analysis.
+     * @param {object} params 
+     */
+    const createAnalysis = (params) => {
         //
+        DataStorage.Analysis.insert(params, () => {
+            updateLocalAnalyses(() => {
+                renderSubjectsPanel();
+            })
+        });
+    }
+
+    /**
+     * Update an existing analysis.
+     * @param {object} params 
+     */
+    const updateAnalysis = (params) => {
+        DataStorage.Analysis.update(params.id, params, () => {
+            updateLocalAnalyses(() => {
+                renderSubjectsPanel();
+            })
+        });
     }
 
     /**
@@ -1063,13 +1101,13 @@ let QuestionGenerator = (() => {
             //  Creating a new wizard
         }).on("click", `#${settings.newAnalysis.createButton.id}`, (event) => {
             event.preventDefault();
-            if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "" && $(`#${settings.newAnalysis.hiddenResultInput.id}`).val() != "") {
+            if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "" && $(`#${settings.newAnalysis.resultInput.id}`).val() != "") {
                 let params = {
                     id: event.target.getAttribute("data-id"),
                     wizard_id: _selected_wizard,
                     name: $(`#${settings.newAnalysis.nameInput.id}`).val().trim(),
                     condition: $(`#${settings.newAnalysis.hiddenConditionInput.id}`).val().trim(),
-                    result: $(`#${settings.newAnalysis.hiddenResultInput.id}`).val().trim()
+                    result: $(`#${settings.newAnalysis.resultInput.id}`).val().trim()
                 };
 
                 if (event.target.getAttribute("data-action") == "create") {
@@ -1078,7 +1116,7 @@ let QuestionGenerator = (() => {
                     updateAnalysis(params);
                 }
             } else {
-                alert("Name can't be empty!");
+                alert("Name and result can't be empty!");
             }
             //  Creating a new wizard
         }).on("click", `#${settings.newSubject.backButton.id}`, () => {
@@ -1108,8 +1146,8 @@ let QuestionGenerator = (() => {
             let id = $record.attr("data-analysis-id");
 
             DataStorage.Analysis.find(id, (analysis) => {
-                renderNewCalculationForm(analysis);
-                goTo(settings.newCalculation.panel.id);
+                renderNewAnalysisForm(analysis);
+                goTo(settings.newAnalysis.panel.id);
             });
         }).on("click", "button.subject-delete", (event) => {
             let $record = $(event.target).parents("tr");
