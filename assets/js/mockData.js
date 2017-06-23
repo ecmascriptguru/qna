@@ -694,11 +694,14 @@ let Constants = {
             name: "First analysis",
             condition: JSON.stringify({
                 subjects: [{
-                    id: 2,
-                    answer: ""
+                    id: 4,
+                    questoin: "How did you come up with the price?",
+                    answer: "Zestimate"
                 }],
                 calculations:[{
-                    id: 3
+                    id: 3,
+                    name: "V3: Total owed",
+                    factors: JSON.stringify([{"coeff":"1","id":"3"},{"coeff":"1","id":"2"}])
                 }]
             }),
             result: "Something here {{sub_0}} on {{cal_0}}"

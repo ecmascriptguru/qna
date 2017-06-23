@@ -469,11 +469,7 @@ let QuestionGenerator = (() => {
                 template = Handlebars.compile(source);
 
             $container.append(
-                $(template({
-                    id: subjects[i].id,
-                    question: "Not sure?",
-                    answer: subjects[i].answer
-                }))
+                $(template(subjects[i]))
             );
         }
 
@@ -482,16 +478,42 @@ let QuestionGenerator = (() => {
                 template = Handlebars.compile(source);
 
             $container.append(
-                $(template({
-                    id: calculations[i],
-                    name: "Not sure?"
-                }))
+                $(template(calculations[i]))
             );
         }
     }
 
+    const extractAnalysisConditionsFromConfig = () => {
+        let $subjects = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-subject`);
+        let $calculations = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-calculation`);
+        let subjects = [],
+            calculations = [];
+
+        for (let i = 0; i < $subjects.length; i ++) {
+            let tempSubject = {};
+            tempSubject.id = $subjects.eq(i).attr("data-id");
+            tempSubject.question = $subjects.eq(i).find(".question").text().trim();
+            tempSubject.answer = $subjects.eq(i).find(".answer").text().trim();
+
+            subjects.push(tempSubject);
+        }
+
+        for (let i = 0; i < $calculations.length; i ++) {
+            let tempCalculation = {};
+            tempCalculation.id = $calculations.eq(i).attr("data-id");
+            tempCalculation.name = $calculations.eq(i).find(".name").text().trim();
+            tempCalculation.factors = $calculations.eq(i).find(".factors").text().trim();
+
+            calculations.push(tempCalculation);
+        }
+
+        let condition = {subjects, calculations};
+
+        $(`#${settings.newAnalysis.hiddenConditionInput.id}`).val(JSON.stringify(condition))
+    }
+
     /**
-     * Extract values from answer types configuration. Not done yet.
+     * Extract values from answer types configuration.
      * @return {array}
      */
     const extractValuesFromAnswersConfig = () => {
@@ -806,6 +828,14 @@ let QuestionGenerator = (() => {
         })
     }
 
+    const createAnalysis = (params) => {
+        //
+    }
+
+    const updateAnalysis = (params) => {
+        //
+    }
+
     /**
      * Rerender wizards table with data pulled from data store.
      */
@@ -1033,18 +1063,19 @@ let QuestionGenerator = (() => {
             //  Creating a new wizard
         }).on("click", `#${settings.newAnalysis.createButton.id}`, (event) => {
             event.preventDefault();
-            if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "") {
+            if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "" && $(`#${settings.newAnalysis.hiddenResultInput.id}`).val() != "") {
                 let params = {
                     id: event.target.getAttribute("data-id"),
                     wizard_id: _selected_wizard,
                     name: $(`#${settings.newAnalysis.nameInput.id}`).val().trim(),
-                    operator: $(`#${settings.newAnalysis.operatorSelect.id}`).val(),
-                    factors: extractFactorsFromFactorOptionsConfig()
-                }
+                    condition: $(`#${settings.newAnalysis.hiddenConditionInput.id}`).val().trim(),
+                    result: $(`#${settings.newAnalysis.hiddenResultInput.id}`).val().trim()
+                };
+
                 if (event.target.getAttribute("data-action") == "create") {
-                    // createCalculation(params);
+                    createAnalysis(params);
                 } else if (event.target.getAttribute("data-action") == "update") {
-                    // updateCalculation(params);
+                    updateAnalysis(params);
                 }
             } else {
                 alert("Name can't be empty!");
@@ -1106,12 +1137,15 @@ let QuestionGenerator = (() => {
                 return false;
             }
 
-            objCondition.subjects.push({
-                id: subId,
-                answer
+            DataStorage.Subjects.find(subId, (subject) => {
+                objCondition.subjects.push({
+                    id: subId,
+                    answer,
+                    question: subject.question
+                });
+                $condition.val(JSON.stringify(objCondition));
+                renderAnalysisConditionFields(objCondition);
             });
-            $condition.val(JSON.stringify(objCondition));
-            renderAnalysisConditionFields(objCondition);
             //  Code to render subject/answer configuration
         }).on("click", $(`#${settings.newAnalysis.calculationAddButton.id}`), (event) => {
             let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
@@ -1129,9 +1163,11 @@ let QuestionGenerator = (() => {
                 return false;
             }
 
-            objCondition.calculations.push(calId);
-            $condition.val(JSON.stringify(objCondition));
-            renderAnalysisConditionFields(objCondition);
+            DataStorage.Calculations.find(calId, (cal) => {
+                objCondition.calculations.push(cal);
+                $condition.val(JSON.stringify(objCondition));
+                renderAnalysisConditionFields(objCondition);
+            })
         }).on("click", "button.calculation-delete", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-calculation-id");
@@ -1140,6 +1176,20 @@ let QuestionGenerator = (() => {
                 renderSubjectsPanel();
                 goTo(settings.subjects.panel.id);
             });
+        }).on('click', 'button.condition-subject-delete', (event) => {
+            let $record = $(event.target).parents('.form-group.condition');
+
+            if (confirm("Are you sure to delete this subject option?")) {
+                $record.remove();
+                extractAnalysisConditionsFromConfig()
+            }
+        }).on('click', 'button.condition-calculation-delete', (event) => {
+            let $record = $(event.target).parents('.form-group.condition');
+
+            if (confirm("Are you sure to delete this calculation option?")) {
+                $record.remove();
+                extractAnalysisConditionsFromConfig()
+            }
         }).on("click", "button.wizard-edit", (event) => {
             let $record = $(event.target).parents("tr");
             let wizardId = $record.attr("data-wizard-id");

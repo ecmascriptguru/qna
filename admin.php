@@ -231,41 +231,38 @@ require("config/env.php");
 
                             </div>
                         </div>
-
-                        <div class="form-group" id="new-analysis-data-info-container">
-                            Selected Type Info.
-                            <pre></pre>
-                        </div>
+                        
                         <div id="new-analysis-conditions-container" class="form-group">
                             
                         </div>
                         <script id="new-analysis-condition-subject-template" type="text/x-handlebars-template">
-                            <div class="row">
+                            <div class="row form-group condition condition-subject" data-id="{{id}}">
                                 <div class="col-xs-2">
-                                    {{id}}
+                                    <strong>subject_{{id}}</strong>
                                 </div>
-                                <div class="col-xs-4">
+                                <div class="col-xs-4 question">
                                     {{question}}
                                 </div>
-                                <div class="col-xs-3">
+                                <div class="col-xs-4 answer">
                                     {{answer}}
                                 </div>
-                                <div class="col-xs-3">
+                                <div class="col-xs-2">
                                     <button class="btn btn-danger form-control condition-subject-delete">Delete</button>
                                 </div>
                             </div>
                         </script>
                         <script id="new-analysis-condition-calculation-template" type="text/x-handlebars-template">
-                            <div class="row">
+                            <div class="row form-group condition condition-calculation" data-id="{{id}}">
                                 <div class="col-xs-2">
-                                    {{id}}
+                                    <strong>calculation_{{id}}</strong>
                                 </div>
-                                <div class="col-xs-4">
+                                <div class="col-xs-4 name">
                                     {{name}}
                                 </div>
-                                <div class="col-xs-3">
+                                <div class="col-xs-4 factors">
+                                    <code>{{factors}}</code>
                                 </div>
-                                <div class="col-xs-3">
+                                <div class="col-xs-2">
                                     <button class="btn btn-danger form-control condition-subject-delete">Delete</button>
                                 </div>
                             </div>
@@ -274,6 +271,7 @@ require("config/env.php");
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
+                                    <label for="new-analysis-result-value">Analysis Text</label>
                                     <input type="text" id="new-analysis-result-value" value="" class="form-control" />
                                 </div>
                             </div>
