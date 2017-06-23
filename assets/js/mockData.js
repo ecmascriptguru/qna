@@ -704,7 +704,7 @@ let Constants = {
                     factors: JSON.stringify([{"coeff":"1","id":"3"},{"coeff":"1","id":"2"}])
                 }]
             }),
-            result: "Something here {{sub_0}} on {{cal_0}}"
+            result: "Something here {{subject_4}} on {{calculation_3}}"
         }
     ]
 }
