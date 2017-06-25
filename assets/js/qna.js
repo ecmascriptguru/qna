@@ -1671,6 +1671,17 @@ let QuestionRenderer = (() => {
                     goTo();
                 }
             }
+        }).on("change", $(`#${settings.subject.panel.id} input[name='answer-option-yes-no']`), (event) => {
+            let index = parseInt(event.target.getAttribute("data-id"));
+            let answers = _selectedSubject.answers;
+
+            if (typeof answers == "string") {
+                answers = JSON.parse(answers);
+            }
+
+            if ($(event.target).prop('checked')) {
+                $("button.subject-control-button.next").attr({'data-target': answers[index].next});
+            }
         })
     }
 
