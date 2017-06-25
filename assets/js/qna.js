@@ -1414,6 +1414,11 @@ let QuestionRenderer = (() => {
                 multiChoice: "subject-multichoice-type-answer-template",
                 yesOrNo: "subject-yes-no-type-answer-template"
             }
+        },
+        analysis: {
+            panel: {
+                id: "qna-leads-analysis"
+            }
         }
     }
 
@@ -1601,6 +1606,51 @@ let QuestionRenderer = (() => {
     }
 
     /**
+     * Check whether the given analysis should be shown for the answers provided by leads.
+     * @param {array} subjects 
+     * @param {object} analysis 
+     * @return {boolean}
+     */
+    const checkCondition = (subjects, analysis) => {
+        let condition = analysis.condition;
+
+        if (typeof condition == "string") {
+            condition = JSON.parse(condition);
+        }
+
+        let subjectConditions = condition.subjects;
+
+        for (let i = 0; i < subjectConditions.length; i ++) {
+            let matches = subjects.filter(subject => (subject.id == subjectConditions[i].id) && (subject.value == subjectConditions[i].answer));
+
+            if (matches.length > 0) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Render Analayses panel based on answers given by leads.
+     * @param {array} subjects 
+     * @param {function} callback 
+     * @return {void}
+     */
+    const renderAnalysisPanel = (subjects, callback) => {
+        DataStorage.Analysis.get(_selectedSubject.id, (analyses) => {
+            for (let i = 0; i < analyses.length; i ++) {
+                //  Codo to parse an analysis.
+                if (checkCondition(subjects, analyses[i])) {
+                    //  Render the current analysis.
+                }
+            }
+        })
+    }
+
+    /**
      * Funtion to satrt showing Questions and Answers once a lead choose a wizard.
      * @param {object} wizard 
      * @return {void}
@@ -1660,6 +1710,35 @@ let QuestionRenderer = (() => {
     };
 
     /**
+     * Function to get current answers given by a lead.
+     * @return {object}
+     */
+    const getAnswers = () => {
+        return {
+            todo: _todo,
+            done: _done
+        };
+    }
+
+    /**
+     * Parse HTML to extract answer given by leads.
+     * @return {string}
+     */
+    const parseAnswer = () => {
+        let $panelBody = $(`#${settings.subject.panel.id} div.panel-body`);
+        let $inputs = $panelBody.find("input"),
+            $selects = $panelBody.find("select");
+
+        if ($selects.length > 0) {
+            return $selects.eq(0).val()
+        } else if ($inputs.length > 0) {
+            return $inputs.eq(0).val();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Function to bind all of events needed in this page.
      * @return {void}
      */
@@ -1674,6 +1753,7 @@ let QuestionRenderer = (() => {
         }).on("click", $("button.subject-control-button"), (event) => {
             let targetID = event.target.getAttribute("data-target");
 
+            _selectedSubject.value = parseAnswer();
             if (event.target.className.split(" ").indexOf("next") > -1) {
                 if (!validateForm()) {
                     alert("Please let us know your answers.");
@@ -1689,7 +1769,8 @@ let QuestionRenderer = (() => {
                         return false;
                     } else {
                         //  Code to finish and show analysis page.
-                        alert("Thanks for your answers and analysis pages are coming soon. I promise...");
+                        // alert("Thanks for your answers and analysis pages are coming soon. I promise...");
+                        goTo(settings.analysis.panel.id);
                     }
                 } else {
                     let next = _todo.filter(item => item.id == targetID);
@@ -1745,6 +1826,7 @@ let QuestionRenderer = (() => {
     }
 
     return {
-        init: init
+        init: init,
+        get: getAnswers
     };
 })();
