@@ -230,6 +230,7 @@ let QuestionGenerator = (() => {
     /**
      * Go to a given Step
      * @param {string} step
+     * @return {void}
      */
     const goTo = (step) => {
         if (!step) {
@@ -248,6 +249,7 @@ let QuestionGenerator = (() => {
      * Render new ziard form.
      * Here wizard parameter can be empty. So this can be empty when you need to create a new Wizard
      * @param {object} wizard
+     * @return {void}
      */
     const renderNewWizardForm = (wizard) => {
         let panel = $(`#${settings.newWizard.panel.id}`).eq(0);
@@ -318,6 +320,7 @@ let QuestionGenerator = (() => {
     /**
      * Render New Subject Panel. Subject parameter can be null/empty when you create a new Subject.
      * @param {object} subject
+     * @return {void}
      */
     const renderNewSubjectForm = (subject) => {
         let panel = $(`#${settings.newSubject.panel.id}`),
@@ -360,6 +363,7 @@ let QuestionGenerator = (() => {
     /**
      * Render New Calculation Panel. Calculation parameter can be null/empty when you create a new Calculation.
      * @param {object} calculation
+     * @return {void}
      */
     const renderNewCalculationForm = (calculation) => {
         let panel = $(`#${settings.newCalculation.panel.id}`),
@@ -409,6 +413,7 @@ let QuestionGenerator = (() => {
     /**
      * Render New Analysis Panel. Analysis parameter can be null/empty when you create a new Analysis.
      * @param {object} Analysis
+     * @return {void}
      */
     const renderNewAnalysisForm = (analysis) => {
         let panel = $(`#${settings.newAnalysis.panel.id}`),
@@ -464,6 +469,7 @@ let QuestionGenerator = (() => {
     /**
      * Render conditions for a specific analysis. The condition consists of subject/answers and calculations
      * @param {object} condition 
+     * @return {void}
      */
     const renderAnalysisConditionFields = (condition) => {
         let subjects = condition.subjects || [];
@@ -491,6 +497,10 @@ let QuestionGenerator = (() => {
         }
     }
 
+    /**
+     * Extract current analysis options from HTML made by admin.
+     * @return {void}
+     */
     const extractAnalysisConditionsFromConfig = () => {
         let $subjects = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-subject`);
         let $calculations = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-calculation`);
@@ -571,6 +581,7 @@ let QuestionGenerator = (() => {
      * @param {string} id
      * @param {object} container
      * @param {object} monitor
+     * @return {void}
      */
     const renderNewAnswerOptions = (id, container, monitor) => {
         DataStorage.Types.find(id, (type) => {
@@ -614,6 +625,7 @@ let QuestionGenerator = (() => {
      * @param {object} subject
      * @param {object} container
      * @param {object} monitor
+     * @return {void}
      */
     const renderExistingAnswerOptions = (subject, container, monitor) => {
         let values = null;
@@ -669,6 +681,7 @@ let QuestionGenerator = (() => {
      * @param {object} calculation
      * @param {object} container
      * @param {object} monitor
+     * @return {void}
      */
     const renderExistingFactorOptions = (calculation, container, monitor) => {
         let factors = null;
@@ -716,6 +729,7 @@ let QuestionGenerator = (() => {
      * Create a new Wizard with name property. This method will call the temp object to manage mock database.
      * @param {string} name
      * @param {number} starts_with
+     * @return {void}
      */
     const createWizard = (name, starts_with) => {
         //  Code to create wizard here. Callback function should be used here.
@@ -733,6 +747,7 @@ let QuestionGenerator = (() => {
      * @param {number} id
      * @param {string} name
      * @param {number} starts_with
+     * @return {void}
      */
     const updateWizard = (id, name, starts_with) => {
         DataStorage.Wizards.update(id, {
@@ -747,6 +762,7 @@ let QuestionGenerator = (() => {
     /**
      * Update local subject Database. can be called refreshing for subjects.
      * @param {function} callback
+     * @return {void}
      */
     const updateLocalSubjects = (callback) => {
         DataStorage.Subjects.get(_selected_wizard, (subjects) => {
@@ -761,6 +777,7 @@ let QuestionGenerator = (() => {
     /**
      * Update local subject Database. can be called refreshing for calculation.
      * @param {function} callback
+     * @return {void}
      */
     const updateLocalCalculations = (callback) => {
         DataStorage.Calculations.get(_selected_wizard, (calculations) => {
@@ -775,6 +792,7 @@ let QuestionGenerator = (() => {
     /**
      * Create a new subject with properties given by admin
      * @param {object} params
+     * @return {void}
      */
     const createSubject = (params) => {
         DataStorage.Subjects.insert(params, () => {
@@ -790,6 +808,7 @@ let QuestionGenerator = (() => {
     /**
      * Update an existing subject
      * @param {object} params
+     * @return {void}
      */
     const updateSubject = (params) => {
         DataStorage.Subjects.update(params.id, params, (response) => {
@@ -806,6 +825,7 @@ let QuestionGenerator = (() => {
     /**
      * Create a new calculation with properties given by admin
      * @param {object} params
+     * @return {void}
      */
     const createCalculation = (params) => {
         DataStorage.Calculations.insert(params, () => {
@@ -823,6 +843,7 @@ let QuestionGenerator = (() => {
     /**
      * Update an existing calculation
      * @param {object} params
+     * @return {void}
      */
     const updateCalculation = (params) => {
         DataStorage.Calculations.update(params.id, params, (response) => {
@@ -839,6 +860,7 @@ let QuestionGenerator = (() => {
     /**
      * Update local subject Database. can be called refreshing for analyses.
      * @param {function} callback
+     * @return {void}
      */
     const updateLocalAnalyses = (callback) => {
         DataStorage.Analysis.get(_selected_wizard, (analyses) => {
@@ -853,6 +875,7 @@ let QuestionGenerator = (() => {
     /**
      * Create a new analysis.
      * @param {object} params 
+     * @return {void}
      */
     const createAnalysis = (params) => {
         //
@@ -866,6 +889,7 @@ let QuestionGenerator = (() => {
     /**
      * Update an existing analysis.
      * @param {object} params 
+     * @return {void}
      */
     const updateAnalysis = (params) => {
         DataStorage.Analysis.update(params.id, params, () => {
@@ -877,6 +901,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Rerender wizards table with data pulled from data store.
+     * @return {void}
      */
     const updateWizardsTable = () => {
         DataStorage.Wizards.get((wizards) => {
@@ -893,6 +918,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Rerender Subjects table with data pulled from data store.
+     * @return {void}
      */
     const updateSubjectsTable = () => {
         DataStorage.Subjects.get(_selected_wizard, (subjects) => {
@@ -910,6 +936,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Render Calculations talbe with data pulled from data store.
+     * @return {void}
      */
     const updateCalculationTable = () => {
         DataStorage.Calculations.get(_selected_wizard, (calculations) => {
@@ -927,6 +954,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Render Analyses talbe with data pulled from data store.
+     * @return {void}
      */
     const updateAnalysesTable = () => {
         DataStorage.Analysis.get(_selected_wizard, (analyses) => {
@@ -947,6 +975,7 @@ let QuestionGenerator = (() => {
      * Get subjects select option 
      * @param {integer} id
      * @param {object} params
+     * @return {object}
      */
     const getSubjectsDropdown = (id, params) => {
         let others = null;
@@ -978,6 +1007,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Initialize Wizards panel including wizards table.
+     * @return {void}
      */
     const initWizardsTable = () => {
         //  Initializing container panel.
@@ -1010,6 +1040,7 @@ let QuestionGenerator = (() => {
 
     /**
      * Initialize Components
+     * @return {void}
      */
     const initComponents = () => {
         //  Render wizards list table
@@ -1327,6 +1358,7 @@ let QuestionGenerator = (() => {
      * Initialize this object with ID of element and API base URL
      * @param { string } containerID 
      * @param { string } baseUrl 
+     * @return {void}
      */
     const init = (containerID, baseUrl) => {
         $_container = $(`#${containerID}`);
@@ -1585,6 +1617,7 @@ let QuestionRenderer = (() => {
     /**
      * Function to render the corresponding Panel.
      * @param {string} panelID 
+     * @return {void}
      */
     const goTo = (panelID) => {
         panelID = panelID || settings.wizards.panel.id;
@@ -1628,6 +1661,7 @@ let QuestionRenderer = (() => {
 
     /**
      * Function to bind all of events needed in this page.
+     * @return {void}
      */
     const initEvents = () => {
         $(document).on("click", $(`button.${settings.wizards.selectWizardButton.class}`), (event) => {
