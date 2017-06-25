@@ -1518,6 +1518,24 @@ let QuestionRenderer = (() => {
     }
 
     /**
+     * Once a lead provides an answer to click "Next", one of input option should be focused.
+     * @return {void}
+     */
+    const focusOnSomething = () => {
+        let $inputs = $.merge(
+                $.merge(
+                    $(`#${settings.subject.panel.id} input`),
+                    $(`#${settings.subject.panel.id} select`)
+                ),
+                $(`#${settings.subject.panel.id} textarea`)
+            );
+
+        if ($inputs.length > 0) {
+            $inputs.eq(0).focus();
+        }
+    }
+
+    /**
      * Render the Subject panel with subject consiting of questions, type and answers, etc.
      * @param {object} subject 
      * @return {void}
@@ -1547,6 +1565,7 @@ let QuestionRenderer = (() => {
         renderBody[subject.type_id](subject.answers, subjectPanelBody);
 
         goTo(settings.subject.panel.id);
+        focusOnSomething();
     }
 
     /**
@@ -1681,6 +1700,12 @@ let QuestionRenderer = (() => {
 
             if ($(event.target).prop('checked')) {
                 $("button.subject-control-button.next").attr({'data-target': answers[index].next});
+            }
+        }).on("keypress", $(`#${settings.subject.panel.id} div.panel-body`), (event) => {
+            let keyCode = event.keyCode ? event.keyCode : event.which;
+
+            if (keyCode == 13 && event.target.tagName.toLowerCase() != "textarea") {
+                $(`#${settings.subject.panel.id} button.next`).click();
             }
         })
     }
