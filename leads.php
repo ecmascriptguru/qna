@@ -14,20 +14,42 @@ require("config/env.php");
 	<div class="wrapper">
         <div class="container">
             <h3>Question and Answers</h3>
-            <div id="qna-container">
-                Here we will see the questions and answer options one by one rendered by JavaScript library.
+
+            <div class="panel panel-default" id="qna-leads-wizards" style="display:none;">
+                <div class="panel-heading">
+                    <h3>Please Select a wizard.</h3>
+                </div>
+                <div class="panel-body">
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                            <button class="btn btn-default form-control">Prev</button>
+                        </div>
+                        <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+                            <button class="btn btn-default form-control">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default" id="qna-leads-subject" style="display:none;">
             </div>
         </div>
 		<footer>
             <a href="<?php echo $BASE_URL . '/admin.php'; ?>">Go to Admin Page</a>
         </footer>
     </div>
+    <?php
+    include "leads-template.html";
+    ?>
 	<script src="assets/js/jquery.js"></script>
     <script src="assets/js/bootstrap.js"></script>
     <script src="assets/js/jquery.dataTables.min.js"></script>
     <script src="assets/js/dataTables.bootstrap.min.js"></script>
     <script src="assets/js/handlebars.js"></script>
     <script src="assets/js/env.js"></script>
+    <script src="assets/js/mockData.js"></script>
     <script src="assets/js/storage.js"></script>
 	<script src="assets/js/qna.js"></script>
 	<script src="assets/js/leads.js"></script>

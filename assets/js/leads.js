@@ -1,3 +1,3 @@
 (function(window, jQuery) {
-    QuestionRenderer.init("qna-container", window.QNAConfig.baseUrl());
+    QuestionRenderer.init("qna-container", QNAConfig.baseUrl());
 })(window, $);

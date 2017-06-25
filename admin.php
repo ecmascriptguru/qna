@@ -292,7 +292,7 @@ require("config/env.php");
             </div>
         </div>
         <footer>
-            <a href="<?php echo $BASE_URL . '/leads.php'; ?>">Go to Leads Page</a>
+            <a href="<?php echo $BASE_URL . '/leads.php'; ?>" target="_blank">Go to Leads Page</a>
         </footer>
     </div>
 

@@ -1,6 +1,6 @@
 let QNAConfig = (() => {
-    let env = "dev";
-    // let env = "demo";
+    // let env = "dev";
+    let env = "demo";
     // let env = "production";
 
     const getBaseUrl = () => {
@@ -16,4 +16,3 @@ let QNAConfig = (() => {
         baseUrl: getBaseUrl
     };
 })();
-        

@@ -1347,15 +1347,89 @@ let QuestionRenderer = (() => {
         _apiBaseUrl = null,
         $_container = null;
 
-    /**
-     * TEST FUNCTION THAT CHECKS IF IT DOES WORK OR NOT.
-     */
-    const renderSomething = () => {
-        $_container.append(
-            $("<center><h2>Front end User Library does work now.</h2></center>")
-        );
-    };
+    let _selectedWizard = null;
 
+    /**
+     * Constants for configuration.
+     */
+    const settings = {
+        wizards: {
+            panel: {
+                id: "qna-leads-wizards"
+            },
+            tableTemplate: {
+                id: "wizards-list-template"
+            },
+            selectWizardButton: {
+                class: "wizard-select"
+            }
+        },
+        subject: {
+            panel: {
+                id: "qna-leads-subject"
+            },
+            template: {
+                id: "subject-template"
+            }
+        }
+    }
+
+    const renderSubjectPanel = (subject) => {
+        let subjectPanel = $(`#${settings.subject.panel.id}`),
+            subjectSource = $(`#${settings.subject.template.id}`).html(),
+            subjectTemplate = Handlebars.compile(subjectSource);
+
+        subjectPanel.html(
+            $(subjectTemplate(subject))
+        );
+
+        goTo(settings.subject.panel.id);
+    }
+
+    /**
+     * Funtion to satrt showing Questions and Answers once a lead choose a wizard.
+     * @param {object} wizard 
+     * @return {void}
+     */
+    const start = (wizard) => {
+        _selectedWizard = wizard;
+        let startPoint = wizard.starts_with;
+        DataStorage.Subjects.find(startPoint, (subject) => {
+            renderSubjectPanel(subject);
+        });
+    }
+
+    /**
+     * Function to render the corresponding Panel.
+     * @param {string} panelID 
+     */
+    const goTo = (panelID) => {
+        panelID = panelID || settings.wizards.panel.id;
+
+        $("div.panel").hide();
+        $(`#${panelID}`).show();
+    }
+
+    /**
+     * Render Wizards list panel to show leads. In this page, leads will be able to select a wizard to give answers.
+     * @return {void}
+     */
+    const renderWizardsPanel = () => {
+        DataStorage.Wizards.get((wizards) => {
+            let tableSource = $(`#${settings.wizards.tableTemplate.id}`).html(),
+                tableTemplate = Handlebars.compile(tableSource),
+                $wizardsPanelBody = $(`#${settings.wizards.panel.id} .panel-body`);
+
+            $wizardsPanelBody.children().remove();
+            $wizardsPanelBody.append(
+                $(tableTemplate({
+                    wizards: wizards
+                }))
+            );
+
+            goTo(settings.wizards.panel.id);
+        });
+    }
 
     /**
      * Initialize with Identity of HTML element and API base url
@@ -1365,8 +1439,23 @@ let QuestionRenderer = (() => {
     const init = (id, url) => {
         $_container = $(`#${id}`);
         _apiBaseUrl = url;
-        renderSomething();
+        renderWizardsPanel();
+        initEvents();
     };
+
+    /**
+     * Function to bind all of events needed in this page.
+     */
+    const initEvents = () => {
+        $(document).on("click", $(`button.${settings.wizards.selectWizardButton.class}`), (event) => {
+            let wizardID = event.target.getAttribute("data-id");
+
+            DataStorage.Wizards.find(wizardID, (wizard) => {
+                // Code to render step by step Q&A wizard.
+                start(wizard);
+            })
+        })
+    }
 
     return {
         init: init
