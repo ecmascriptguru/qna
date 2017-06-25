@@ -58,8 +58,8 @@
 <!-- Template for DropDown Field Type Answer Options -->
 <script id="subject-dropdown-type-answer-template" type="text/x-handlebars-template">
     <div class="form-group">
-        <select name="dropdown-value" id="dropdown-value">
-            {{#each}}
+        <select name="dropdown-value" id="dropdown-value" class="form-control">
+            {{#each answers}}
             <option value="{{value}}">{{caption}}</option>
             {{/each}}
         </select>
@@ -69,7 +69,7 @@
 <!-- Template for Multiple Choice Field Type Answer Options -->
 <script id="subject-multichoice-type-answer-template" type="text/x-handlebars-template">
     <div class="form-group">
-        {{#each}}
+        {{#each answers}}
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
             <label for="multi-choice-{{caption}}">{{caption}}</label>
             <input type="checkbox" id="multi-choice-{{caption}}" value="{{value}}" />
@@ -81,10 +81,14 @@
 <!-- Template for Yes Or No Field Type Answer Options -->
 <script id="subject-yes-no-type-answer-template" type="text/x-handlebars-template">
     <div class="form-group">
-        {{#each}}
+        {{#each answers}}
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
             <label for="yes-no-{{caption}}">{{caption}}</label>
-            <input type="radio" id="yes-no-{{caption}}" value="{{value}}" />
+            <input type="radio" id="yes-no-{{caption}}" 
+                {{#if @index}}
+                checked
+                {{/if}}
+                 data-id="{{@index}}" name="answer-option-yes-no" value="{{value}}" />
         </div>
         {{/each}}
     </div>

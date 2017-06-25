@@ -1348,6 +1348,10 @@ let QuestionRenderer = (() => {
         $_container = null;
 
     let _selectedWizard = null;
+    let _selectedSubject = null;
+
+    let _done = [];
+    let _todo = [];
 
     /**
      * Constants for configuration.
@@ -1382,9 +1386,42 @@ let QuestionRenderer = (() => {
     }
 
     /**
+     * Validate a Subject Form. We expect that leads will fill the forms provided.
+     * @return {boolean}
+     */
+    const validateForm = () => {
+        let $inputs = $.merge(
+                $.merge(
+                    $(`#${settings.subject.panel.id} input[type='text']`), 
+                    $(`#${settings.subject.panel.id} input[type='number']`)
+                ),
+                $(`#${settings.subject.panel.id} textarea`)),
+            $selects = $(`#${settings.subject.panel.id} select`);
+
+        for (let i =  0; i < $inputs.length; i ++) {
+            if ($inputs.eq(i).val() == "") {
+                return false;
+            } else {
+                continue;
+            }
+        }
+
+        for (let i =  0; i < $selects.length; i ++) {
+            if ($selects.eq(i).val() == "") {
+                return false;
+            } else {
+                continue;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Render Text Field Type Answer Form
      * @param {object} answers 
      * @param {object}  
+     * @return {void}
      */
     const renderTextAnswer = (answers, $container) => {
         let source = $(`#${settings.subject.answerTemplates.text}`).html(),
@@ -1404,6 +1441,7 @@ let QuestionRenderer = (() => {
      * Render Number Field Type Answer Form
      * @param {object} answers 
      * @param {object}  
+     * @return {void}
      */
     const renderNumberAnswer = (answers, $container) => {
         let source = $(`#${settings.subject.answerTemplates.number}`).html(),
@@ -1423,27 +1461,60 @@ let QuestionRenderer = (() => {
      * Render Drop Down Field Type Answer Form
      * @param {object} answers 
      * @param {object}  
+     * @return {void}
      */
     const renderDropDownAnswer = (answers, $container) => {
-        //
+        let source = $(`#${settings.subject.answerTemplates.dropDown}`).html(),
+            template = Handlebars.compile(source);
+
+        $container.children().remove();
+        $container.append(
+            $(template({
+                answers: answers
+            }))
+        );
+
+        $("button.subject-control-button.next").attr({'data-target': answers[0].next});
     }
 
     /**
      * Render Multiple Choice Type Answer Form
      * @param {object} answers 
-     * @param {object}  
+     * @param {object} 
+     * @return {void}
      */
     const renderMultipleChoiceAnswer = (answers, $container) => {
-        //
+        let source = $(`#${settings.subject.answerTemplates.multiChoice}`).html(),
+            template = Handlebars.compile(source);
+
+        $container.children().remove();
+        $container.append(
+            $(template({
+                answers: answers
+            }))
+        );
+
+        $("button.subject-control-button.next").attr({'data-target': answers[0].next});
     }
 
     /**
      * Render Yes or No Type Answer Form
      * @param {object} answers 
      * @param {object}  
+     * @return {void}
      */
     const renderYesNoAnswer = (answers, $container) => {
-        //
+        let source = $(`#${settings.subject.answerTemplates.yesOrNo}`).html(),
+            template = Handlebars.compile(source);
+
+        $container.children().remove();
+        $container.append(
+            $(template({
+                answers: answers
+            }))
+        );
+
+        $("button.subject-control-button.next").attr({'data-target': answers[1].next});
     }
 
     /**
@@ -1487,6 +1558,7 @@ let QuestionRenderer = (() => {
         _selectedWizard = wizard;
         let startPoint = wizard.starts_with;
         DataStorage.Subjects.find(startPoint, (subject) => {
+            _selectedSubject = subject;
             renderSubjectPanel(subject);
         });
     }
@@ -1546,6 +1618,59 @@ let QuestionRenderer = (() => {
                 // Code to render step by step Q&A wizard.
                 start(wizard);
             })
+        }).on("click", $("button.subject-control-button"), (event) => {
+            let targetID = event.target.getAttribute("data-target");
+
+            if (event.target.className.split(" ").indexOf("next") > -1) {
+                if (!validateForm()) {
+                    alert("Please let us know your answers.");
+                } else if (!targetID) {
+                    let answers = _selectedSubject.answers;
+                    if (typeof answers == "string") {
+                        answers = JSON.parse(answers);
+                    }
+                    answers = answers.filter(answer => answer.next != null);
+
+                    if (answers.length > 0) {
+                        alert("Please provide us your answers.");
+                        return false;
+                    } else {
+                        //  Code to finish and show analysis page.
+                        alert("Thanks for your answers and analysis pages are coming soon. I promise...");
+                    }
+                } else {
+                    let next = _todo.filter(item => item.id == targetID);
+
+                    if (next.length > 0) {
+                        _done.push(_selectedSubject);
+                        _selectedSubject = next[0];
+                        
+                        renderSubjectPanel(next[0]);
+                    } else {
+                        DataStorage.Subjects.find(targetID, (subject) => {
+                            _done.push(_selectedSubject);
+                            _selectedSubject = subject;
+                            
+                            renderSubjectPanel(subject);
+                        });
+                    }
+
+                    _todo = _todo.filter(item => item.id != targetID);
+                }
+
+            } else if (event.target.className.split(" ").indexOf("prev") > -1) {
+                if (_done.length > 0) {
+                    _todo.push(_selectedSubject);
+                    let subject = _done.pop();
+
+                    renderSubjectPanel(subject);
+                } else {
+                    _todo = [];
+                    _done = [];
+
+                    goTo();
+                }
+            }
         })
     }
 

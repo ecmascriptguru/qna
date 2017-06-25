@@ -74,16 +74,16 @@ let Constants = {
     ],
 
     wizards: [
-        {
-            id: 1,
-            name: "Demo Wizard 1",
-            starts_with: null
-        },
-        {
-            id: 2,
-            name: "Demo Wizard 2",
-            starts_with: null
-        },
+        // {
+        //     id: 1,
+        //     name: "Demo Wizard 1",
+        //     starts_with: null
+        // },
+        // {
+        //     id: 2,
+        //     name: "Demo Wizard 2",
+        //     starts_with: null
+        // },
         {
             id: 3,
             name: "Demo for Admin UI including analysis",
@@ -109,7 +109,7 @@ let Constants = {
                 caption: "",
                 value: 1,
                 weight: 100,
-                next: null
+                next: 3
             }])
         },{
             id: 3,
@@ -453,7 +453,7 @@ let Constants = {
                 caption: "",
                 value: 1,
                 weight: 100,
-                next: null
+                next: 25
             }])
         },
         {
@@ -498,7 +498,7 @@ let Constants = {
                     caption: "No",
                     value: "no",
                     weight: 0,
-                    next: null
+                    next: 28
                 }
             ])
         },
