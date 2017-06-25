@@ -1370,18 +1370,110 @@ let QuestionRenderer = (() => {
             },
             template: {
                 id: "subject-template"
+            },
+            answerTemplates: {
+                number: "subject-number-type-answer-template",
+                text: "subject-text-type-answer-template",
+                dropDown: "subject-dropdown-type-answer-template",
+                multiChoice: "subject-multichoice-type-answer-template",
+                yesOrNo: "subject-yes-no-type-answer-template"
             }
         }
     }
 
+    /**
+     * Render Text Field Type Answer Form
+     * @param {object} answers 
+     * @param {object}  
+     */
+    const renderTextAnswer = (answers, $container) => {
+        let source = $(`#${settings.subject.answerTemplates.text}`).html(),
+            template = Handlebars.compile(source);
+
+        $container.children().remove();
+        for (let i = 0; i < answers.length; i ++) {
+            $container.append(
+                $(template(answers[i]))
+            );
+        }
+
+        $("button.subject-control-button.next").attr({'data-target': answers[0].next});
+    }
+
+    /**
+     * Render Number Field Type Answer Form
+     * @param {object} answers 
+     * @param {object}  
+     */
+    const renderNumberAnswer = (answers, $container) => {
+        let source = $(`#${settings.subject.answerTemplates.number}`).html(),
+            template = Handlebars.compile(source);
+
+        $container.children().remove();
+        for (let i = 0; i < answers.length; i ++) {
+            $container.append(
+                $(template(answers[i]))
+            );
+        }
+
+        $("button.subject-control-button.next").attr({'data-target': answers[0].next});
+    }
+
+    /**
+     * Render Drop Down Field Type Answer Form
+     * @param {object} answers 
+     * @param {object}  
+     */
+    const renderDropDownAnswer = (answers, $container) => {
+        //
+    }
+
+    /**
+     * Render Multiple Choice Type Answer Form
+     * @param {object} answers 
+     * @param {object}  
+     */
+    const renderMultipleChoiceAnswer = (answers, $container) => {
+        //
+    }
+
+    /**
+     * Render Yes or No Type Answer Form
+     * @param {object} answers 
+     * @param {object}  
+     */
+    const renderYesNoAnswer = (answers, $container) => {
+        //
+    }
+
+    /**
+     * Render the Subject panel with subject consiting of questions, type and answers, etc.
+     * @param {object} subject 
+     * @return {void}
+     */
     const renderSubjectPanel = (subject) => {
         let subjectPanel = $(`#${settings.subject.panel.id}`),
             subjectSource = $(`#${settings.subject.template.id}`).html(),
             subjectTemplate = Handlebars.compile(subjectSource);
 
+        const renderBody = {
+            1: renderTextAnswer,
+            2: renderNumberAnswer,
+            3: renderDropDownAnswer,
+            4: renderMultipleChoiceAnswer,
+            5: renderYesNoAnswer
+        };
+
         subjectPanel.html(
             $(subjectTemplate(subject))
         );
+
+        let subjectPanelBody = subjectPanel.find(".panel-body");
+        if (typeof subject.answers == "string") {
+            subject.answers = JSON.parse(subject.answers);
+        }
+
+        renderBody[subject.type_id](subject.answers, subjectPanelBody);
 
         goTo(settings.subject.panel.id);
     }
