@@ -36,7 +36,7 @@ require("config/env.php");
             <div class="panel panel-default" id="qna-leads-subject" style="display:none;">
             </div>
 
-            <div class="panel panel-success" id="qna-leads-analysis" style="display:none;">
+            <div class="panel panel-default" id="qna-leads-analysis" style="display:none;">
                 <div class="panel-heading">
                     <h3>Thanks for your answers.</h3>
                 </div>

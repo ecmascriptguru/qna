@@ -1647,6 +1647,8 @@ let QuestionRenderer = (() => {
                     //  Render the current analysis.
                 }
             }
+
+            goTo(settings.analysis.panel.id);
         })
     }
 
@@ -1770,7 +1772,7 @@ let QuestionRenderer = (() => {
                     } else {
                         //  Code to finish and show analysis page.
                         // alert("Thanks for your answers and analysis pages are coming soon. I promise...");
-                        goTo(settings.analysis.panel.id);
+                        renderAnalysisPanel(_done);
                     }
                 } else {
                     let next = _todo.filter(item => item.id == targetID);
