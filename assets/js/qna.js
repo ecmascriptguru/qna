@@ -1457,10 +1457,11 @@ let QuestionRenderer = (() => {
     /**
      * Render Text Field Type Answer Form
      * @param {object} answers 
-     * @param {object}  
+     * @param {object} $container
+     * @param {object} subject
      * @return {void}
      */
-    const renderTextAnswer = (answers, $container) => {
+    const renderTextAnswer = (answers, $container, subject) => {
         let source = $(`#${settings.subject.answerTemplates.text}`).html(),
             template = Handlebars.compile(source);
 
@@ -1472,15 +1473,20 @@ let QuestionRenderer = (() => {
         }
 
         $("button.subject-control-button.next").attr({'data-target': answers[0].next});
+
+        if (subject && subject.value) {
+            $container.find("textarea").val(subject.value);
+        }
     }
 
     /**
      * Render Number Field Type Answer Form
      * @param {object} answers 
-     * @param {object}  
+     * @param {object} $container
+     * @param {object} subject
      * @return {void}
      */
-    const renderNumberAnswer = (answers, $container) => {
+    const renderNumberAnswer = (answers, $container, subject) => {
         let source = $(`#${settings.subject.answerTemplates.number}`).html(),
             template = Handlebars.compile(source);
 
@@ -1492,15 +1498,20 @@ let QuestionRenderer = (() => {
         }
 
         $("button.subject-control-button.next").attr({'data-target': answers[0].next});
+
+        if (subject && subject.value) {
+            $container.find("input").val(subject.value);
+        }
     }
 
     /**
      * Render Drop Down Field Type Answer Form
      * @param {object} answers 
-     * @param {object}  
+     * @param {object} $container
+     * @param {obejct} subject
      * @return {void}
      */
-    const renderDropDownAnswer = (answers, $container) => {
+    const renderDropDownAnswer = (answers, $container, subject) => {
         let source = $(`#${settings.subject.answerTemplates.dropDown}`).html(),
             template = Handlebars.compile(source);
 
@@ -1512,15 +1523,20 @@ let QuestionRenderer = (() => {
         );
 
         $("button.subject-control-button.next").attr({'data-target': answers[0].next});
+
+        if (subject && subject.value) {
+            $container.find("select").val(subject.value);
+        }
     }
 
     /**
      * Render Multiple Choice Type Answer Form
      * @param {object} answers 
-     * @param {object} 
+     * @param {object} $container
+     * @param {object} subject
      * @return {void}
      */
-    const renderMultipleChoiceAnswer = (answers, $container) => {
+    const renderMultipleChoiceAnswer = (answers, $container, subject) => {
         let source = $(`#${settings.subject.answerTemplates.multiChoice}`).html(),
             template = Handlebars.compile(source);
 
@@ -1537,10 +1553,11 @@ let QuestionRenderer = (() => {
     /**
      * Render Yes or No Type Answer Form
      * @param {object} answers 
-     * @param {object}  
+     * @param {object} $container
+     * @param {object} subject
      * @return {void}
      */
-    const renderYesNoAnswer = (answers, $container) => {
+    const renderYesNoAnswer = (answers, $container, subject) => {
         let source = $(`#${settings.subject.answerTemplates.yesOrNo}`).html(),
             template = Handlebars.compile(source);
 
@@ -1552,6 +1569,10 @@ let QuestionRenderer = (() => {
         );
 
         $("button.subject-control-button.next").attr({'data-target': answers[1].next});
+
+        if (subject && subject.value) {
+            $container.find("input").val(subject.value);
+        }
     }
 
     /**
@@ -1599,7 +1620,7 @@ let QuestionRenderer = (() => {
             subject.answers = JSON.parse(subject.answers);
         }
 
-        renderBody[subject.type_id](subject.answers, subjectPanelBody);
+        renderBody[subject.type_id](subject.answers, subjectPanelBody, subject);
 
         goTo(settings.subject.panel.id);
         focusOnSomething();
@@ -1729,12 +1750,15 @@ let QuestionRenderer = (() => {
     const parseAnswer = () => {
         let $panelBody = $(`#${settings.subject.panel.id} div.panel-body`);
         let $inputs = $panelBody.find("input"),
+            $textareas = $panelBody.find("textarea"),
             $selects = $panelBody.find("select");
 
         if ($selects.length > 0) {
             return $selects.eq(0).val()
         } else if ($inputs.length > 0) {
             return $inputs.eq(0).val();
+        } else if ($textareas.length > 0) {
+            return $textareas.eq(0).val();
         } else {
             return null;
         }
@@ -1778,16 +1802,18 @@ let QuestionRenderer = (() => {
                     let next = _todo.filter(item => item.id == targetID);
 
                     if (next.length > 0) {
-                        _done.push(_selectedSubject);
+                        let buffer = _selectedSubject;
+                        _done.push(buffer);
                         _selectedSubject = next[0];
                         
-                        renderSubjectPanel(next[0]);
+                        renderSubjectPanel(_selectedSubject);
                     } else {
                         DataStorage.Subjects.find(targetID, (subject) => {
-                            _done.push(_selectedSubject);
+                            let buffer = _selectedSubject;
+                            _done.push(buffer);
                             _selectedSubject = subject;
                             
-                            renderSubjectPanel(subject);
+                            renderSubjectPanel(_selectedSubject);
                         });
                     }
 
@@ -1795,16 +1821,19 @@ let QuestionRenderer = (() => {
                 }
 
             } else if (event.target.className.split(" ").indexOf("prev") > -1) {
+                let buffer = _selectedSubject;
+                _todo.push(buffer);
                 if (_done.length > 0) {
-                    _todo.push(_selectedSubject);
                     let subject = _done.pop();
-
-                    renderSubjectPanel(subject);
+                    _selectedSubject = subject;
+                    renderSubjectPanel(_selectedSubject);
                 } else {
-                    _todo = [];
-                    _done = [];
+                    if (confirm("You will lost all of answers. Are you sure to go back to list?")) {
+                        _todo = [];
+                        _done = [];
 
-                    goTo();
+                        goTo();
+                    }
                 }
             }
         }).on("change", $(`#${settings.subject.panel.id} input[name='answer-option-yes-no']`), (event) => {
