@@ -1571,7 +1571,7 @@ let QuestionRenderer = (() => {
         $("button.subject-control-button.next").attr({'data-target': answers[1].next});
 
         if (subject && subject.value) {
-            $container.find("input").val(subject.value);
+            $container.find(`input[value='${subject.value}']`).prop("checked", true);
         }
     }
 
