@@ -1397,7 +1397,7 @@ let QuestionRenderer = (() => {
                 id: "wizards-list-template"
             },
             selectWizardButton: {
-                class: "wizard-select"
+                class: "select-wizard"
             }
         },
         subject: {
@@ -1770,78 +1770,81 @@ let QuestionRenderer = (() => {
      */
     const initEvents = () => {
         $(document).on("click", $(`button.${settings.wizards.selectWizardButton.class}`), (event) => {
-            let wizardID = event.target.getAttribute("data-id");
 
-            DataStorage.Wizards.find(wizardID, (wizard) => {
-                // Code to render step by step Q&A wizard.
-                start(wizard);
-            });
-        }).on("click", $(`#${settings.subject.panel.id} div.panel-footer button.subject-control-button`), (event) => {
-            event.preventDefault();
+            if (event.target.className.split(" ").indexOf(settings.wizards.selectWizardButton.class) > 0) {
+                let wizardID = event.target.getAttribute("data-id");
+
+                DataStorage.Wizards.find(wizardID, (wizard) => {
+                    // Code to render step by step Q&A wizard.
+                    start(wizard);
+                });
+            }
+        })
+        .on("click", $(`#${settings.subject.panel.id} div.panel-footer button.subject-control-button`), (event) => {
+            // event.preventDefault();
             let targetID = event.target.getAttribute("data-target");
 
-            if (event.target.className.split(" ").indexOf("subject-control-button") < 0) {
-                return false;
-            }
+            if (event.target.className.split(" ").indexOf("subject-control-button") > 0) {
+                _selectedSubject.value = parseAnswer();
+                if (event.target.className.split(" ").indexOf("next") > -1) {
+                    if (!validateForm()) {
+                        alert("Please let us know your answers.");
+                    } else if (!targetID) {
+                        let answers = _selectedSubject.answers;
+                        if (typeof answers == "string") {
+                            answers = JSON.parse(answers);
+                        }
+                        answers = answers.filter(answer => answer.next != null);
 
-            _selectedSubject.value = parseAnswer();
-            if (event.target.className.split(" ").indexOf("next") > -1) {
-                if (!validateForm()) {
-                    alert("Please let us know your answers.");
-                } else if (!targetID) {
-                    let answers = _selectedSubject.answers;
-                    if (typeof answers == "string") {
-                        answers = JSON.parse(answers);
-                    }
-                    answers = answers.filter(answer => answer.next != null);
-
-                    if (answers.length > 0) {
-                        alert("Please provide us your answers.");
-                        return false;
+                        if (answers.length > 0) {
+                            alert("Please provide us your answers.");
+                            return false;
+                        } else {
+                            //  Code to finish and show analysis page.
+                            // alert("Thanks for your answers and analysis pages are coming soon. I promise...");
+                            renderAnalysisPanel(_done);
+                        }
                     } else {
-                        //  Code to finish and show analysis page.
-                        // alert("Thanks for your answers and analysis pages are coming soon. I promise...");
-                        renderAnalysisPanel(_done);
-                    }
-                } else {
-                    let next = _todo.filter(item => item.id == targetID);
+                        let next = _todo.filter(item => item.id == targetID);
 
-                    if (next.length > 0) {
-                        let buffer = _selectedSubject;
-                        _done.push(buffer);
-                        _selectedSubject = next[0];
-                        
-                        renderSubjectPanel(_selectedSubject);
-                    } else {
-                        DataStorage.Subjects.find(targetID, (subject) => {
+                        if (next.length > 0) {
                             let buffer = _selectedSubject;
                             _done.push(buffer);
-                            _selectedSubject = subject;
+                            _selectedSubject = next[0];
                             
                             renderSubjectPanel(_selectedSubject);
-                        });
+                        } else {
+                            DataStorage.Subjects.find(targetID, (subject) => {
+                                let buffer = _selectedSubject;
+                                _done.push(buffer);
+                                _selectedSubject = subject;
+                                
+                                renderSubjectPanel(_selectedSubject);
+                            });
+                        }
+
+                        _todo = _todo.filter(item => item.id != targetID);
                     }
 
-                    _todo = _todo.filter(item => item.id != targetID);
-                }
+                } else if (event.target.className.split(" ").indexOf("prev") > -1) {
+                    let buffer = _selectedSubject;
+                    _todo.push(buffer);
+                    if (_done.length > 0) {
+                        let subject = _done.pop();
+                        _selectedSubject = subject;
+                        renderSubjectPanel(_selectedSubject);
+                    } else {
+                        if (confirm("You will lost all of answers. Are you sure to go back to list?")) {
+                            _todo = [];
+                            _done = [];
 
-            } else if (event.target.className.split(" ").indexOf("prev") > -1) {
-                let buffer = _selectedSubject;
-                _todo.push(buffer);
-                if (_done.length > 0) {
-                    let subject = _done.pop();
-                    _selectedSubject = subject;
-                    renderSubjectPanel(_selectedSubject);
-                } else {
-                    if (confirm("You will lost all of answers. Are you sure to go back to list?")) {
-                        _todo = [];
-                        _done = [];
-
-                        goTo();
+                            goTo();
+                        }
                     }
                 }
             }
-        }).on("change", $(`#${settings.subject.panel.id} input[name='answer-option-yes-no']`), (event) => {
+        })
+        .on("change", $(`#${settings.subject.panel.id} input[name='answer-option-yes-no']`), (event) => {
             let index = parseInt(event.target.getAttribute("data-id"));
             let answers = _selectedSubject.answers;
 
@@ -1852,7 +1855,8 @@ let QuestionRenderer = (() => {
             if ($(event.target).prop('checked')) {
                 $("button.subject-control-button.next").attr({'data-target': answers[index].next});
             }
-        }).on("keypress", $(`#${settings.subject.panel.id} div.panel-body`), (event) => {
+        })
+        .on("keypress", $(`#${settings.subject.panel.id} div.panel-body`), (event) => {
             let keyCode = event.keyCode ? event.keyCode : event.which;
 
             if (keyCode == 13 && event.target.tagName.toLowerCase() != "textarea") {
