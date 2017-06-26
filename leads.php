@@ -45,7 +45,7 @@ require("config/env.php");
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
-                            <button class="btn btn-default form-control">Back to Answers</button>
+                            <button class="btn btn-default form-control" id="back-to-answers-button">Back to Answers</button>
                         </div>
                         <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
                             <button class="btn btn-primary form-control">Submit Answers</button>

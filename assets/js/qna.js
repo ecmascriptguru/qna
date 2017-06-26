@@ -1418,6 +1418,9 @@ let QuestionRenderer = (() => {
         analysis: {
             panel: {
                 id: "qna-leads-analysis"
+            },
+            backToAnswersButton: {
+                id: "back-to-answers-button"
             }
         }
     }
@@ -1820,7 +1823,6 @@ let QuestionRenderer = (() => {
                             return false;
                         } else {
                             //  Code to finish and show analysis page.
-                            // alert("Thanks for your answers and analysis pages are coming soon. I promise...");
                             renderAnalysisPanel(_done);
                         }
                     } else {
@@ -1880,6 +1882,10 @@ let QuestionRenderer = (() => {
 
             if (keyCode == 13 && event.target.tagName.toLowerCase() != "textarea") {
                 $(`#${settings.subject.panel.id} button.next`).click();
+            }
+        }).on("click", $(`#${settings.analysis.backToAnswersButton.id}`), (event) => {
+            if (event.target.getAttribute("id") == settings.analysis.backToAnswersButton.id) {
+                goTo(settings.subject.panel.id);
             }
         })
     }
