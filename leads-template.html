@@ -71,8 +71,8 @@
     <div class="form-group">
         {{#each answers}}
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <label for="multi-choice-{{caption}}">{{caption}}</label>
             <input type="checkbox" id="multi-choice-{{caption}}" data-id="{{@index}}" name="answer-option-multiple-choice" value="{{value}}" />
+            <label for="multi-choice-{{caption}}">{{caption}}</label>
         </div>
         {{/each}}
     </div>

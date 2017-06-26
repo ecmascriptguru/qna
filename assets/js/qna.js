@@ -1775,9 +1775,14 @@ let QuestionRenderer = (() => {
             DataStorage.Wizards.find(wizardID, (wizard) => {
                 // Code to render step by step Q&A wizard.
                 start(wizard);
-            })
-        }).on("click", $("button.subject-control-button"), (event) => {
+            });
+        }).on("click", $(`#${settings.subject.panel.id} div.panel-footer button.subject-control-button`), (event) => {
+            event.preventDefault();
             let targetID = event.target.getAttribute("data-target");
+
+            if (event.target.className.split(" ").indexOf("subject-control-button") < 0) {
+                return false;
+            }
 
             _selectedSubject.value = parseAnswer();
             if (event.target.className.split(" ").indexOf("next") > -1) {

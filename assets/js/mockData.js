@@ -122,8 +122,8 @@ let Constants = {
             id: 4,
             wizard_id: "3",
             question: "How did you come up with the price?",
-            type_id: 3,
-            type_name: "Drop Down",
+            type_id: 4,
+            type_name: "Multiple Choice",
             answers: JSON.stringify([
                 {
                     caption: "Comparable Sales",
