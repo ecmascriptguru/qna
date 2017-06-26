@@ -1548,6 +1548,13 @@ let QuestionRenderer = (() => {
         );
 
         $("button.subject-control-button.next").attr({'data-target': answers[0].next});
+
+        if (subject && subject.value) {
+            let values = subject.value.split("&");
+            for (let i = 0; i < values.length; i ++) {
+                $container.find(`input[value='${values[i]}']`).prop("checked", true);
+            }
+        }
     }
 
     /**
@@ -1756,7 +1763,19 @@ let QuestionRenderer = (() => {
         if ($selects.length > 0) {
             return $selects.eq(0).val()
         } else if ($inputs.length > 0) {
-            return $inputs.eq(0).val();
+            if ($inputs.eq(0).attr("type") == "checkbox") {
+                let values = [];
+
+                for (let i = 0; i < $inputs.length; i ++) {
+                    if ($inputs.eq(i).prop("checked")) {
+                        values.push($inputs.eq(i).val());
+                    }
+                }
+
+                return values.join("&&");
+            } else {
+                return $inputs.eq(0).val();
+            }
         } else if ($textareas.length > 0) {
             return $textareas.eq(0).val();
         } else {
