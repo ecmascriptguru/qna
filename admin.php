@@ -185,51 +185,81 @@ require("config/env.php");
                         </div>
                         <div class="form-group">
                             <div class="row">
-                                <div class="col-xs-6">
-                                    <label for="new-analysis-calculation-select">Select a Calculation</label>
-                                    <select id="new-analysis-calculation-select" class="form-control">
-                                        
-                                    </select>
-                                    <script id="new-anlysis-calculation-select-template" type="text/x-handlebars-template">
-                                        {{#each calculations}}
-                                        <option value="{{id}}">{{name}}</option>
-                                        {{/each}}
-                                    </script>
-                                    <button class="btn btn-default pull-right" id="new-analysis-calculation-add-button">Add this calculation</button>
-                                </div>
-                                <div class="col-xs-6">
+                                <div class="col-lg-6 col-md-12 col-sm-12">
+                                    <h4>Calculations Configuration</h4>
                                     <div class="row">
-                                        <div class="col-xs-6">
-                                            <label for="new-analysis-subject-select">Select a subject</label>
+                                        <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
+                                            <select id="new-analysis-calculation-select" class="form-control">
+                                                
+                                            </select>
+                                            <script id="new-anlysis-calculation-select-template" type="text/x-handlebars-template">
+                                                <option value="">Select a calculation</option>
+                                                {{#each calculations}}
+                                                <option value="{{id}}">{{name}}</option>
+                                                {{/each}}
+                                            </script>
+                                        </div>
+                                        <div class="col-lg-4 col-md-5 col-sm-6 col-xs-12">
+                                            <button class="btn btn-default form-control" id="new-analysis-calculation-add-button">Add calculation</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12">
+                                    <h4>Subjects Configuration</h4>
+                                    <div class="row">
+                                        <div class="col-lg-5 col-md-6 col-sm-6 col-xs-12">
                                             <select id="new-analysis-subject-select" class="form-control">
                                                 
                                             </select>
                                             <script id="new-analysis-subject-select-template" type="text/x-handlebars-template">
-                                                <option value="">Select one</option>
+                                                <option value="">Select a Subject</option>
                                                 {{#each subjects}}
                                                 <option value="{{id}}">{{question}}</option>
                                                 {{/each}}
                                             </script>
                                         </div>
-                                        <div class="col-xs-6">
-                                            <label for="new-analysis-answers-select">Answers</label>
+                                        <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
                                             <select id="new-analysis-answers-select" class="form-control">
-                                                
+                                                <option value="">Select an answer</option>
                                             </select>
                                             <script id="new-analysis-answers-select-template" type="text/x-handlebars-template">
+                                                <option value="">Select an answer</option>
                                                 {{#each values}}
-                                                <option value="{{value}}">{{caption}}=>{{value}}</option>
+                                                <option value="{{value}}">{{value}}</option>
                                                 {{/each}}
                                             </script>
                                         </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <button id="new-analysis-subject-add-button" class="btn btn-default form-control">Add Subject</button>
+                                        </div>
                                     </div>
-                                    <button id="new-analysis-subject-add-button" class="btn btn-default pull-right">Add this Subject option</button>
                                 </div>
-                                <input type="hidden" id="new-analysis-condition-value" value='{"subjects":[],"calculations":[]}' />
+                                <input type="hidden" id="new-analysis-condition-value" value='{"subjects":[],"calculations":[],"comparisons":[]}' />
                             </div>
 
-                            <div class="row" id="">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h4>Comparisons Configuration</h4>
+                                </div>
+                                <div class="col-sm-6 col-xs-12">
+                                    <select id="new-analysis-calculation-select-for-comparison" class="form-control">
+                                        
+                                    </select>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <select id="new-analysis-comparisons-select" class="form-control">
 
+                                    </select>
+                                    <script id="new-analysis-comparisions-template" type="text/x-handlebars-template">
+                                        <option value="">Select an operator</option>
+                                        {{#each operators}}
+                                        <option value="{{value}}">{{caption}}</option>
+                                        {{/each}}
+                                    </script>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <button id="new-analysis-comparison-add-button" class="btn btn-default form-control">Add Comparison</button>
+                                </div>
                             </div>
                         </div>
                         

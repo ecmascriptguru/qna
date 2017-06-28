@@ -211,6 +211,27 @@ let QuestionGenerator = (() => {
                 id: "new-analysis-calculation-add-button",
                 class: "btn btn-default"
             },
+            calculationSelectForComparison: {
+                id: "new-analysis-calculation-select-for-comparison"
+            },
+            comparisonOperatorSelect: {
+                id: "new-analysis-comparisons-select",
+                options: [
+                    {
+                        caption: "=",
+                        value:  "=="
+                    }, {
+                        caption:">",
+                        value: ">"
+                    }, {
+                        caption: "<",
+                        value: "<"
+                    }
+                ]
+            },
+            comparisonAddButton: {
+                id: "new-analysis-comparison-add-button"
+            },
             dataInfoContainer: {
                 id: "new-analysis-data-info-container"
             },
@@ -420,6 +441,8 @@ let QuestionGenerator = (() => {
             createAnalaysisButton = $(`#${settings.newAnalysis.createButton.id}`),
             nameInput = $(`#${settings.newAnalysis.nameInput.id}`),
             subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
+            calculationSelectForComparison = $(`#${settings.newAnalysis.calculationSelectForComparison.id}`),
+            comparisonOperatorSelect = $(`#${settings.newAnalysis.comparisonOperatorSelect.id}`),
             answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`),
             calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`),
             hiddenConditionInput = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
@@ -432,7 +455,9 @@ let QuestionGenerator = (() => {
                 subjectSelectSource = $("#new-analysis-subject-select-template").html(),
                 subjectSelectTemplate = Handlebars.compile(subjectSelectSource),
                 answersSelectSource = $("#new-analysis-answers-select-template").html(),
-                answersSelectTemplate = Handlebars.compile(answersSelectSource);
+                answersSelectTemplate = Handlebars.compile(answersSelectSource),
+                comparisonOperatorSelectSource = $("#new-analysis-comparisions-template").html(),
+                comparisonOperatorSelectTemplate = Handlebars.compile(comparisonOperatorSelectSource);
 
             subjectSelect.html(subjectSelectTemplate({
                 subjects: options.subjects
@@ -440,6 +465,12 @@ let QuestionGenerator = (() => {
 
             calculationSelect.html(calculationSelectTemplate({
                 calculations: options.calculations
+            }));
+            calculationSelectForComparison.html(calculationSelectTemplate({
+                calculations: options.calculations
+            }));
+            comparisonOperatorSelect.html(comparisonOperatorSelectTemplate({
+                operators: settings.newAnalysis.comparisonOperatorSelect.options
             }));
 
             if (analysis) {

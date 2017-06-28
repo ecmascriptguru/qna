@@ -698,6 +698,11 @@ let Constants = {
                     questoin: "How did you come up with the price?",
                     answer: "Zestimate"
                 }],
+                comparisons:[{
+                    id: 3,
+                    operator: ">",
+                    value: JSON.stringify(200)
+                }],
                 calculations:[{
                     id: 3,
                     name: "V3: Total owed",
