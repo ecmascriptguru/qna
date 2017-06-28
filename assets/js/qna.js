@@ -192,30 +192,14 @@ let QuestionGenerator = (() => {
                 title: "Enter analysis name."
             },
             subjectSelect: {
-                id: "new-analysis-subject-select",
-                class: "form-control"
-            },
-            subjectAddButton: {
-                id: "new-analysis-subject-add-button",
-                class: "btn btn-default"
-            },
-            answersSelect: {
-                id: "new-analysis-answers-select",
+                id: "new-analysis-subject-select-for-comparison",
                 class: "form-control"
             },
             calculationSelect: {
-                id: "new-analysis-calculation-select",
-                class: "form-control"
-            },
-            calculationAddButton: {
-                id: "new-analysis-calculation-add-button",
-                class: "btn btn-default"
-            },
-            calculationSelectForComparison: {
                 id: "new-analysis-calculation-select-for-comparison"
             },
-            comparisonOperatorSelect: {
-                id: "new-analysis-comparisons-select",
+            operatorSelectForCalculation: {
+                id: "new-analysis-operator-select-for-calculations",
                 options: [
                     {
                         caption: "=",
@@ -229,11 +213,21 @@ let QuestionGenerator = (() => {
                     }
                 ]
             },
-            comparisonValueInput: {
-                id: "new-analysis-comparison-value"
+            operatorSelectForSubject: {
+                id: "new-analysis-operator-select-for-subjects"
             },
-            comparisonAddButton: {
-                id: "new-analysis-comparison-add-button"
+            calculationComparisonValueInput: {
+                id: "new-analysis-calculation-comparison-value"
+            },
+            subjectComparisonValueInput: {
+                id: "new-analysis-subject-comparison-value"
+            },
+            calculationComparisonAddButton: {
+                id: "new-analysis-calculation-comparison-add-button"
+            },
+            subjectComparisonAddButton: {
+                id: "new-analysis-subject-comparison-add-button",
+                class: "btn btn-default"
             },
             dataInfoContainer: {
                 id: "new-analysis-data-info-container"
@@ -444,36 +438,35 @@ let QuestionGenerator = (() => {
             createAnalaysisButton = $(`#${settings.newAnalysis.createButton.id}`),
             nameInput = $(`#${settings.newAnalysis.nameInput.id}`),
             subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
-            calculationSelectForComparison = $(`#${settings.newAnalysis.calculationSelectForComparison.id}`),
-            comparisonOperatorSelect = $(`#${settings.newAnalysis.comparisonOperatorSelect.id}`),
-            answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`),
             calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`),
+            operatorSelectForCalculation = $(`#${settings.newAnalysis.operatorSelectForCalculation.id}`),
+            operatorSelectForSubject = $(`#${settings.newAnalysis.operatorSelectForSubject.id}`),
             hiddenConditionInput = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
             resultInput = $(`#${settings.newAnalysis.resultInput.id}`),
             dataInfoContainer = $(`#new-analysis-data-info-container`);
 
-        DataStorage.Analysis.options(_selected_wizard, (options) => {
+        DataStorage.Analysis.options(_selected_wizard, (option) => {
             let calculationSelectSource = $("#new-anlysis-calculation-select-template").html(),
                 calculationSelectTemplate = Handlebars.compile(calculationSelectSource),
                 subjectSelectSource = $("#new-analysis-subject-select-template").html(),
                 subjectSelectTemplate = Handlebars.compile(subjectSelectSource),
-                answersSelectSource = $("#new-analysis-answers-select-template").html(),
-                answersSelectTemplate = Handlebars.compile(answersSelectSource),
-                comparisonOperatorSelectSource = $("#new-analysis-comparisions-template").html(),
-                comparisonOperatorSelectTemplate = Handlebars.compile(comparisonOperatorSelectSource);
+                operatorSelectForCalculationSource = $("#new-analysis-operator-select-template").html(),
+                operatorSelectForCalculationTemplate = Handlebars.compile(operatorSelectForCalculationSource);
 
             subjectSelect.html(subjectSelectTemplate({
-                subjects: options.subjects
+                subjects: option.subjects
             }));
 
             calculationSelect.html(calculationSelectTemplate({
-                calculations: options.calculations
+                calculations: option.calculations
             }));
-            calculationSelectForComparison.html(calculationSelectTemplate({
-                calculations: options.calculations
+            
+            operatorSelectForCalculation.html(operatorSelectForCalculationTemplate({
+                operators: settings.newAnalysis.operatorSelectForCalculation.options
             }));
-            comparisonOperatorSelect.html(comparisonOperatorSelectTemplate({
-                operators: settings.newAnalysis.comparisonOperatorSelect.options
+
+            operatorSelectForSubject.html(operatorSelectForCalculationTemplate({
+                operators: settings.newAnalysis.operatorSelectForCalculation.options
             }));
 
             if (analysis) {
@@ -483,7 +476,7 @@ let QuestionGenerator = (() => {
                 });
                 nameInput.val(analysis.name);
                 resultInput.val(analysis.result);
-                hiddenConditionInput.val(analysis.condition || JSON.stringify({subjects:[], calculations:[], comparisons:[]}));
+                hiddenConditionInput.val(analysis.condition || JSON.stringify({subjects:[], calculations:[]}));
                 renderAnalysisConditionFields(JSON.parse(analysis.condition));
             } else {
                 createAnalaysisButton.attr({
@@ -492,8 +485,8 @@ let QuestionGenerator = (() => {
                 });
                 nameInput.val("");
                 resultInput.val("");
-                hiddenConditionInput.val(JSON.stringify({subjects:[], calculations:[], comparisons:[]}));
-                renderAnalysisConditionFields(JSON.stringify({subjects:[], calculations:[], comparisons: []}));
+                hiddenConditionInput.val(JSON.stringify({subjects:[], calculations:[]}));
+                renderAnalysisConditionFields(JSON.stringify({subjects:[], calculations:[]}));
             }
         });
 
@@ -522,15 +515,6 @@ let QuestionGenerator = (() => {
             );
         }
 
-        for (let i = 0; i < comparisons.length; i ++) {
-            let source = $("#new-analysis-condition-comparison-template").html(),
-                template = Handlebars.compile(source);
-
-            $container.append(
-                $(template(comparisons[i]))
-            );
-        }
-
         for (let i = 0; i < calculations.length; i ++) {
             let source = $("#new-analysis-condition-calculation-template").html(),
                 template = Handlebars.compile(source);
@@ -547,10 +531,8 @@ let QuestionGenerator = (() => {
      */
     const extractAnalysisConditionsFromConfig = () => {
         let $subjects = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-subject`);
-        let $comparisons = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-comparison`);
         let $calculations = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-calculation`);
         let subjects = [],
-            comparisons = [],
             calculations = [];
 
         for (let i = 0; i < $subjects.length; i ++) {
@@ -562,15 +544,6 @@ let QuestionGenerator = (() => {
             subjects.push(tempSubject);
         }
 
-        for (let i = 0; i < $comparisons.length; i ++) {
-            let tempSubject = {};
-            tempSubject.id = $comparisons.eq(i).attr("data-id");
-            tempSubject.operator = $comparisons.eq(i).find(".operator").text().trim();
-            tempSubject.value = $comparisons.eq(i).find(".value").text().trim();
-
-            comparisons.push(tempSubject);
-        }
-
         for (let i = 0; i < $calculations.length; i ++) {
             let tempCalculation = {};
             tempCalculation.id = $calculations.eq(i).attr("data-id");
@@ -580,7 +553,7 @@ let QuestionGenerator = (() => {
             calculations.push(tempCalculation);
         }
 
-        let condition = {subjects, comparisons, calculations};
+        let condition = {subjects, calculations};
 
         $(`#${settings.newAnalysis.hiddenConditionInput.id}`).val(JSON.stringify(condition))
     }
@@ -1245,92 +1218,72 @@ let QuestionGenerator = (() => {
                 goTo(settings.subjects.panel.id);
             });
         })
-        .on("click", $(`button#${settings.newAnalysis.subjectAddButton.id}`), () => {
+        .on("click", $(`button#${settings.newAnalysis.subjectComparisonAddButton.id}`), () => {
             let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
                 $subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
-                $answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
+                $operatorSelect = $(`#${settings.newAnalysis.operatorSelectForSubject.id}`),
+                $value = $(`#${settings.newAnalysis.subjectComparisonValueInput.id}`);
 
             let objCondition = JSON.parse($condition.val()),
-                subId = parseInt($subjectSelect.val()),
-                answer = $answersSelect.val();
+                id = parseInt($subjectSelect.val()),
+                operator = $operatorSelect.val(),
+                value = $value.val();
 
-            if (event.target.id != settings.newAnalysis.subjectAddButton.id) {
+            if (event.target.id != settings.newAnalysis.subjectComparisonAddButton.id) {
                 return false;
             }
 
-            if (!answer) {
-                alert("Answer option should not be empty.");
-                return false;
-            }
-
-            DataStorage.Subjects.find(subId, (subject) => {
+            if (id == "" || operator == "" || value == "") {
+                alert("Plese fill in the form.");
+            } else {
                 objCondition.subjects.push({
-                    id: subId,
-                    answer,
-                    question: subject.question
+                    id, 
+                    operator,
+                    value
                 });
                 $condition.val(JSON.stringify(objCondition));
                 renderAnalysisConditionFields(objCondition);
-            });
-            //  Code to render subject/answer configuration
+
+                $subjectSelect.val("");
+                $operatorSelect.val("");
+                $value.val("");
+            }
         })
-        .on("click", $(`#${settings.newAnalysis.comparisonAddButton.id}`), (event) => {
-            if (event.target.getAttribute("id") != settings.newAnalysis.comparisonAddButton.id) {
+        .on("click", $(`#${settings.newAnalysis.calculationComparisonAddButton.id}`), (event) => {
+            if (event.target.getAttribute("id") != settings.newAnalysis.calculationComparisonAddButton.id) {
                 return false;
             }
 
             let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
-                $calculationSelect = $(`#${settings.newAnalysis.calculationSelectForComparison.id}`),
-                $comparisonOperator = $(`#${settings.newAnalysis.comparisonOperatorSelect.id}`),
-                $comparisonValue = $(`#${settings.newAnalysis.comparisonValueInput.id}`);
+                $calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`),
+                $operatorSelect = $(`#${settings.newAnalysis.operatorSelectForCalculation.id}`),
+                $comparisonValue = $(`#${settings.newAnalysis.calculationComparisonValueInput.id}`);
 
             let objCondition = JSON.parse($condition.val()),
                 calId = parseInt($calculationSelect.val()),
-                operator = $comparisonOperator.val(),
+                operator = $operatorSelect.val(),
                 value = $comparisonValue.val();
 
             if (calId == "" || operator == "") {
-                alert("Please select a calculation and an operator.");
+                alert("Please fill in the form.");
                 return false;
-            }
+            } else {
+                if (!objCondition.calculations) {
+                    objCondition.calculations = [];
+                }
 
-            if (!objCondition.comparisons) {
-                objCondition.comparisons = [];
-            }
-
-            objCondition.comparisons.push({
-                id: calId,
-                operator: operator,
-                value: value
-            });
-            $condition.val(JSON.stringify(objCondition));
-            renderAnalysisConditionFields(objCondition);
-        })
-        .on("click", $(`#${settings.newAnalysis.calculationAddButton.id}`), (event) => {
-            let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
-                $calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`);
-
-            let objCondition = JSON.parse($condition.val()),
-                calId = parseInt($calculationSelect.val());
-
-            if (event.target.id != settings.newAnalysis.calculationAddButton.id) {
-                return false;
-            }
-
-            if (!calId || objCondition.calculations.indexOf(calId) > -1) {
-                alert("Wrong parameter.");
-                return false;
-            }
-
-            DataStorage.Calculations.find(calId, (cal) => {
                 objCondition.calculations.push({
-                    id: cal.id,
-                    name: cal.name,
-                    operator: cal.operator
+                    id: calId,
+                    operator: operator,
+                    value: value
                 });
                 $condition.val(JSON.stringify(objCondition));
                 renderAnalysisConditionFields(objCondition);
-            })
+
+                $calculationSelect.val("");
+                $operatorSelect.val("");
+                $comparisonValue.val("");
+            }
         })
         .on("click", "button.calculation-delete", (event) => {
             let $record = $(event.target).parents("tr");
@@ -1425,27 +1378,27 @@ let QuestionGenerator = (() => {
                 })
             }
         }).on("change", $(`#${settings.newAnalysis.subjectSelect.id}`), (event) => {
-            event.preventDefault();
-            if (event.target.getAttribute("id") != settings.newAnalysis.subjectSelect.id) {
-                return false;
-            }
-            let curSelectedSubjectId = event.target.value;
+            // event.preventDefault();
+            // if (event.target.getAttribute("id") != settings.newAnalysis.subjectSelect.id) {
+            //     return false;
+            // }
+            // let curSelectedSubjectId = event.target.value;
 
-            if (curSelectedSubjectId == "") {
-                return false;
-            }
-            DataStorage.Subjects.find(curSelectedSubjectId, (subject) => {
-                let source = $("#new-analysis-answers-select-template").html(),
-                    template = Handlebars.compile(source),
-                    answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
+            // if (curSelectedSubjectId == "") {
+            //     return false;
+            // }
+            // DataStorage.Subjects.find(curSelectedSubjectId, (subject) => {
+            //     let source = $("#new-analysis-answers-select-template").html(),
+            //         template = Handlebars.compile(source),
+            //         answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
 
-                let values = (typeof subject.answers == "object") ? subject.answers : JSON.parse(subject.answers);
-                answersSelect.html(
-                    $(template({
-                        values: values
-                    }))
-                );
-            });
+            //     let values = (typeof subject.answers == "object") ? subject.answers : JSON.parse(subject.answers);
+            //     answersSelect.html(
+            //         $(template({
+            //             values: values
+            //         }))
+            //     );
+            // });
         });
 
         $(".nav-tabs li a").click((event) => {

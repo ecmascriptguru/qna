@@ -696,17 +696,13 @@ let Constants = {
                 subjects: [{
                     id: 4,
                     questoin: "How did you come up with the price?",
-                    answer: "Zestimate"
-                }],
-                comparisons:[{
-                    id: 3,
-                    operator: ">",
-                    value: JSON.stringify(200)
+                    operator: "==",
+                    value: "Zestimate"
                 }],
                 calculations:[{
                     id: 3,
-                    name: "V3: Total owed",
-                    factors: JSON.stringify([{"coeff":"1","id":"3"},{"coeff":"1","id":"2"}])
+                    operator: ">",
+                    value: JSON.stringify(200)
                 }]
             }),
             result: "Something here {{subject_4}} on {{calculation_3}}"

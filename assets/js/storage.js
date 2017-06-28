@@ -775,8 +775,7 @@ let DataStorage = (() => {
                 } else {
                     return {
                         subjects,
-                        calculations,
-                        comparisons:[]
+                        calculations
                     };
                 }
             } else {
