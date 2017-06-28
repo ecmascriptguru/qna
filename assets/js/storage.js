@@ -755,7 +755,7 @@ let DataStorage = (() => {
      */
     let Analyses = (() => {
         let _analyses = Constants.analyses;
-        let _offset = 1;
+        let _offset = 2;
 
         /**
          * Get subjects and calculations belong to a wizard. This will be used to create analyses.
@@ -775,7 +775,8 @@ let DataStorage = (() => {
                 } else {
                     return {
                         subjects,
-                        calculations
+                        calculations,
+                        comparisons:[]
                     };
                 }
             } else {
@@ -791,7 +792,8 @@ let DataStorage = (() => {
                     } else {
                         success({
                             subjects: [],
-                            calculations: []
+                            calculations: [],
+                            comparisons:[]
                         });
                     }
                 }, failure);

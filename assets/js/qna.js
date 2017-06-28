@@ -229,6 +229,9 @@ let QuestionGenerator = (() => {
                     }
                 ]
             },
+            comparisonValueInput: {
+                id: "new-analysis-comparison-value"
+            },
             comparisonAddButton: {
                 id: "new-analysis-comparison-add-button"
             },
@@ -480,7 +483,7 @@ let QuestionGenerator = (() => {
                 });
                 nameInput.val(analysis.name);
                 resultInput.val(analysis.result);
-                hiddenConditionInput.val(analysis.condition || JSON.stringify({subjects:[], calculations:[]}));
+                hiddenConditionInput.val(analysis.condition || JSON.stringify({subjects:[], calculations:[], comparisons:[]}));
                 renderAnalysisConditionFields(JSON.parse(analysis.condition));
             } else {
                 createAnalaysisButton.attr({
@@ -489,8 +492,8 @@ let QuestionGenerator = (() => {
                 });
                 nameInput.val("");
                 resultInput.val("");
-                hiddenConditionInput.val(JSON.stringify({subjects:[], calculations:[]}));
-                renderAnalysisConditionFields(JSON.stringify({subjects:[], calculations:[]}));
+                hiddenConditionInput.val(JSON.stringify({subjects:[], calculations:[], comparisons:[]}));
+                renderAnalysisConditionFields(JSON.stringify({subjects:[], calculations:[], comparisons: []}));
             }
         });
 
@@ -505,6 +508,7 @@ let QuestionGenerator = (() => {
     const renderAnalysisConditionFields = (condition) => {
         let subjects = condition.subjects || [];
         let calculations = condition.calculations || [];
+        let comparisons = condition.comparisons || [];
         let $container = $(`#${settings.newAnalysis.conditionsContainer.id}`);
 
         $container.children().remove();
@@ -515,6 +519,15 @@ let QuestionGenerator = (() => {
 
             $container.append(
                 $(template(subjects[i]))
+            );
+        }
+
+        for (let i = 0; i < comparisons.length; i ++) {
+            let source = $("#new-analysis-condition-comparison-template").html(),
+                template = Handlebars.compile(source);
+
+            $container.append(
+                $(template(comparisons[i]))
             );
         }
 
@@ -534,8 +547,10 @@ let QuestionGenerator = (() => {
      */
     const extractAnalysisConditionsFromConfig = () => {
         let $subjects = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-subject`);
+        let $comparisons = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-comparison`);
         let $calculations = $(`#${settings.newAnalysis.conditionsContainer.id} div.condition.condition-calculation`);
         let subjects = [],
+            comparisons = [],
             calculations = [];
 
         for (let i = 0; i < $subjects.length; i ++) {
@@ -547,6 +562,15 @@ let QuestionGenerator = (() => {
             subjects.push(tempSubject);
         }
 
+        for (let i = 0; i < $comparisons.length; i ++) {
+            let tempSubject = {};
+            tempSubject.id = $comparisons.eq(i).attr("data-id");
+            tempSubject.operator = $comparisons.eq(i).find(".operator").text().trim();
+            tempSubject.value = $comparisons.eq(i).find(".value").text().trim();
+
+            comparisons.push(tempSubject);
+        }
+
         for (let i = 0; i < $calculations.length; i ++) {
             let tempCalculation = {};
             tempCalculation.id = $calculations.eq(i).attr("data-id");
@@ -556,7 +580,7 @@ let QuestionGenerator = (() => {
             calculations.push(tempCalculation);
         }
 
-        let condition = {subjects, calculations};
+        let condition = {subjects, comparisons, calculations};
 
         $(`#${settings.newAnalysis.hiddenConditionInput.id}`).val(JSON.stringify(condition))
     }
@@ -1220,7 +1244,8 @@ let QuestionGenerator = (() => {
                 renderSubjectsPanel();
                 goTo(settings.subjects.panel.id);
             });
-        }).on("click", $(`button#${settings.newAnalysis.subjectAddButton.id}`), () => {
+        })
+        .on("click", $(`button#${settings.newAnalysis.subjectAddButton.id}`), () => {
             let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
                 $subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
                 $answersSelect = $(`#${settings.newAnalysis.answersSelect.id}`);
@@ -1248,7 +1273,40 @@ let QuestionGenerator = (() => {
                 renderAnalysisConditionFields(objCondition);
             });
             //  Code to render subject/answer configuration
-        }).on("click", $(`#${settings.newAnalysis.calculationAddButton.id}`), (event) => {
+        })
+        .on("click", $(`#${settings.newAnalysis.comparisonAddButton.id}`), (event) => {
+            if (event.target.getAttribute("id") != settings.newAnalysis.comparisonAddButton.id) {
+                return false;
+            }
+
+            let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
+                $calculationSelect = $(`#${settings.newAnalysis.calculationSelectForComparison.id}`),
+                $comparisonOperator = $(`#${settings.newAnalysis.comparisonOperatorSelect.id}`),
+                $comparisonValue = $(`#${settings.newAnalysis.comparisonValueInput.id}`);
+
+            let objCondition = JSON.parse($condition.val()),
+                calId = parseInt($calculationSelect.val()),
+                operator = $comparisonOperator.val(),
+                value = $comparisonValue.val();
+
+            if (calId == "" || operator == "") {
+                alert("Please select a calculation and an operator.");
+                return false;
+            }
+
+            if (!objCondition.comparisons) {
+                objCondition.comparisons = [];
+            }
+
+            objCondition.comparisons.push({
+                id: calId,
+                operator: operator,
+                value: value
+            });
+            $condition.val(JSON.stringify(objCondition));
+            renderAnalysisConditionFields(objCondition);
+        })
+        .on("click", $(`#${settings.newAnalysis.calculationAddButton.id}`), (event) => {
             let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
                 $calculationSelect = $(`#${settings.newAnalysis.calculationSelect.id}`);
 
@@ -1273,7 +1331,8 @@ let QuestionGenerator = (() => {
                 $condition.val(JSON.stringify(objCondition));
                 renderAnalysisConditionFields(objCondition);
             })
-        }).on("click", "button.calculation-delete", (event) => {
+        })
+        .on("click", "button.calculation-delete", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-calculation-id");
 
@@ -1281,14 +1340,24 @@ let QuestionGenerator = (() => {
                 renderSubjectsPanel();
                 goTo(settings.subjects.panel.id);
             });
-        }).on('click', 'button.condition-subject-delete', (event) => {
+        })
+        .on('click', 'button.condition-subject-delete', (event) => {
             let $record = $(event.target).parents('.form-group.condition');
 
             if (confirm("Are you sure to delete this subject option?")) {
                 $record.remove();
                 extractAnalysisConditionsFromConfig()
             }
-        }).on('click', 'button.condition-calculation-delete', (event) => {
+        })
+        .on("click", "button.condition-comparison-delete", (event) => {
+            let $record = $(event.target).parents('.form-group.condition');
+
+            if (confirm("Are you sure to delete this Comparison option?")) {
+                $record.remove();
+                extractAnalysisConditionsFromConfig()
+            }
+        })
+        .on('click', 'button.condition-calculation-delete', (event) => {
             let $record = $(event.target).parents('.form-group.condition');
 
             if (confirm("Are you sure to delete this calculation option?")) {

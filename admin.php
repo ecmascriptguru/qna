@@ -241,12 +241,12 @@ require("config/env.php");
                                 <div class="col-xs-12">
                                     <h4>Comparisons Configuration</h4>
                                 </div>
-                                <div class="col-sm-6 col-xs-12">
+                                <div class="col-sm-5 col-xs-12">
                                     <select id="new-analysis-calculation-select-for-comparison" class="form-control">
                                         
                                     </select>
                                 </div>
-                                <div class="col-sm-3 col-xs-12">
+                                <div class="col-sm-2 col-xs-12">
                                     <select id="new-analysis-comparisons-select" class="form-control">
 
                                     </select>
@@ -256,6 +256,9 @@ require("config/env.php");
                                         <option value="{{value}}">{{caption}}</option>
                                         {{/each}}
                                     </script>
+                                </div>
+                                <div class="col-sm-2 col-xs-12">
+                                    <input id="new-analysis-comparison-value" class="form-control" placeholder="Type Something" />
                                 </div>
                                 <div class="col-sm-3 col-xs-12">
                                     <button id="new-analysis-comparison-add-button" class="btn btn-default form-control">Add Comparison</button>
@@ -279,6 +282,22 @@ require("config/env.php");
                                 </div>
                                 <div class="col-xs-2">
                                     <button class="btn btn-danger form-control condition-subject-delete">Delete</button>
+                                </div>
+                            </div>
+                        </script>
+                        <script id="new-analysis-condition-comparison-template" type="text/x-handlebars-template">
+                            <div class="row form-group condition condition-comparison" data-id="{{id}}">
+                                <div class="col-xs-2">
+                                    <strong>calculation_{{id}}</strong>
+                                </div>
+                                <div class="col-xs-4 operator">
+                                    {{operator}}
+                                </div>
+                                <div class="col-xs-4 value">
+                                    {{value}}
+                                </div>
+                                <div class="col-xs-2">
+                                    <button class="btn btn-danger form-control condition-comparison-delete">Delete</button>
                                 </div>
                             </div>
                         </script>
