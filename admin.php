@@ -192,13 +192,6 @@ require("config/env.php");
                                     <select id="new-analysis-subject-select-for-comparison" class="form-control">
                                         
                                     </select>
-
-                                    <script id="new-analysis-subject-select-template" type="text/x-handlebars-template">
-                                        <option value="">Select a Subject</option>
-                                        {{#each subjects}}
-                                        <option value="{{id}}">{{question}}</option>
-                                        {{/each}}
-                                    </script>
                                 </div>
                                 <div class="col-sm-2 col-xs-12">
                                     <select id="new-analysis-operator-select-for-subjects" class="form-control">
@@ -221,23 +214,11 @@ require("config/env.php");
                                     <select id="new-analysis-calculation-select-for-comparison" class="form-control">
                                         
                                     </select>
-                                    <script id="new-anlysis-calculation-select-template" type="text/x-handlebars-template">
-                                        <option value="">Select a calculation</option>
-                                        {{#each calculations}}
-                                        <option value="{{id}}">{{name}}</option>
-                                        {{/each}}
-                                    </script>
                                 </div>
                                 <div class="col-sm-2 col-xs-12">
                                     <select id="new-analysis-operator-select-for-calculations" class="form-control">
 
                                     </select>
-                                    <script id="new-analysis-operator-select-template" type="text/x-handlebars-template">
-                                        <option value="">Select an operator</option>
-                                        {{#each operators}}
-                                        <option value="{{value}}">{{caption}}</option>
-                                        {{/each}}
-                                    </script>
                                 </div>
                                 <div class="col-sm-2 col-xs-12">
                                     <input id="new-analysis-calculation-comparison-value" class="form-control" placeholder="Type Something" />
@@ -253,38 +234,6 @@ require("config/env.php");
                         <div id="new-analysis-conditions-container" class="form-group">
                             
                         </div>
-                        <script id="new-analysis-condition-subject-template" type="text/x-handlebars-template">
-                            <div class="row form-group condition condition-subject" data-id="{{id}}">
-                                <div class="col-xs-2">
-                                    <strong>subject_{{id}}</strong>
-                                </div>
-                                <div class="col-xs-4 question">
-                                    {{operator}}
-                                </div>
-                                <div class="col-xs-4 answer">
-                                    {{value}}
-                                </div>
-                                <div class="col-xs-2">
-                                    <button class="btn btn-danger form-control condition-subject-delete">Delete</button>
-                                </div>
-                            </div>
-                        </script>
-                        <script id="new-analysis-condition-calculation-template" type="text/x-handlebars-template">
-                            <div class="row form-group condition condition-calculation" data-id="{{id}}">
-                                <div class="col-xs-2">
-                                    <strong>calculation_{{id}}</strong>
-                                </div>
-                                <div class="col-xs-4 factors">
-                                    {{operator}}
-                                </div>
-                                <div class="col-xs-4 value">
-                                    {{value}}
-                                </div>
-                                <div class="col-xs-2">
-                                    <button class="btn btn-danger form-control condition-subject-delete">Delete</button>
-                                </div>
-                            </div>
-                        </script>
 
                         <div class="form-group">
                             <div class="row">
@@ -312,273 +261,9 @@ require("config/env.php");
             <a href="<?php echo $BASE_URL . '/leads.php'; ?>" target="_blank">Go to Leads Page</a>
         </footer>
     </div>
-
-    <script id="wizard-starting-question-template" type="text/x-handlebars-template">
-        <!--<div class="form-group">-->
-            <label for="wizard-starting-subject">Starts with:</label>
-            <select id="wizard-starting-subject" class="form-control">
-                {{#each subjects}}
-                <option value="{{id}}" 
-                {{#if selected }}
-                    selected
-                {{/if}}>{{question}}</option>
-                {{/each}}
-            </select>
-        <!--</div>-->
-    </script>
-
-    <script id="wizards-list-template" type="text/x-handlebars-template">
-        <!--<div class="panel panel-default">-->
-            <div class="panel-heading">
-                <h3>{{title}}</h3>
-                <button class="btn btn-default pull-right new-wizard" id="new-wizard-button">New Wizard</button>
-            </div>
-            <div class="panel-body">
-                {{> wizardsTable }}
-            </div>
-            <div class="panel-footer">
-                <div class="row">
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
-                        <button class="btn btn-default form-control">Prev</button>
-                    </div>
-                    <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
-                        <button class="btn btn-primary form-control">Next</button>
-                    </div>
-                </div>
-            </div>
-        <!--</div>-->
-    </script>
-
-    <script id="add-new-answer-option-button" type="text/x-handlebars-template">
-        <div class="form-group">
-            <button class="btn btn-default pull-right" id="btn-add-answer-option">Add new Answer Option</button>
-        </div>
-    </script>
-
-    <script id="add-new-factor-option-button" type="text/x-handlebars-template">
-        <div class="form-group">
-            <button class="btn btn-default pull-right" id="btn-add-factor-option">Add new factor(operand)</button>
-        </div>
-    </script>
-
-    <script id="new-subject-type-template" type="text/x-handlebars-template">
-        <!--<select class="form-control" id="new-subject-type-select">-->
-            {{#each types}}
-            <option value="{{id}}">{{type_name}}</option>
-            {{/each}}
-        <!--</select>-->
-    </script>
-
-    <script id="wizards-table-template" type="text/x-handlebars-template">
-        <table class="{{class}}" id="{{id}}">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th class="actions-header">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each wizards}}
-                <tr data-wizard-id='{{id}}'>
-                    <td>{{@index}}</td>
-                    <td>{{name}}</td>
-                    <td>
-                        <div class="col-xs-6">
-                            <button class="btn btn-info form-control wizard-edit">Edit</button>
-                        </div>
-                        <div class="col-xs-6">
-                            <button class="btn btn-danger form-control wizard-delete">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    </script>
-
-    <script id="wizard-form-template" type="text/x-handlebars-template">
-
-    </script>
-
-    <script id="new-answer-option-template" type="text/x-handlebars-template">
-        <div class="form-group row answer-option">
-            <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-2">
-                <input data-id="caption" placeholder="Caption" value="{{caption}}" class="form-control">
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-2">
-                <input data-id="value" placeholder="Value" class="form-control" value="{{value}}">
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-2">
-                <input type="number" placeholder="Weight" data-id="weight" class="form-control" value="{{weight}}">
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-sm-3 col-xs-4">
-                <select class="form-control" data-id="next">
-                    <option value="">Select a next subject</option>
-                    {{#each subjects}}
-                    <option value="{{id}}" 
-                        {{#if selected}} 
-                            selected 
-                        {{/if}}
-                    >{{question}}</option>
-                    {{/each}}
-                    <!--<option value="create_new_and_link">Create to Link</option>-->
-                </select>
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-sm-2 col-xs-2">
-                <button class="btn btn-danger form-control answer-option-delete">Remove</button>
-            </div>
-        </div>
-    </script>
-
-    <script id="subjects-list-template" type="text/x-handlebars-template">
-        <ul class="nav nav-tabs">
-            <li role="presentation" class="active"><a href="#tab-content-subjects">Subjects</a></li>
-            <li role="presentation"><a href="#tab-content-calculation">Calculations</a></li>
-        </ul>
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="tab-content-subjects">
-                <div class="panel-heading">
-                    <h3>{{title}}</h3>
-                    <button class="btn btn-default pull-right new-subject" id="new-subject-button">New Subject</button>
-                </div>
-                <div class="panel-body">
-                    {{> subjectsTable }}
-                </div>
-                <div class="panel-footer">
-                    <div class="row">
-                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
-                            <button class="btn btn-default form-control">Back to Wizards</button>
-                        </div>
-                        <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
-                            <button class="btn btn-primary form-control">Next</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div role="tabpanel" class="tab-pane active" id="tab-content-calculation">
-            </div>
-        </div>
-    </script>
-
-    <script id="subjects-table-template" type="text/x-handlebars-template">
-        <table class="{{class}}" id="{{id}}">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Question</th>
-                    <th>Answer Type</th>
-                    <th class="actions-header">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each subjects}}
-                <tr data-subject-id='{{id}}'>
-                    <td>{{@index}}</td>
-                    <td>{{question}}</td>
-                    <td>{{type_name}}</td>
-                    <td>
-                        <div class="col-xs-6">
-                            <button class="btn btn-info form-control subject-edit">Edit</button>
-                        </div>
-                        <div class="col-xs-6">
-                            <button class="btn btn-danger form-control subject-delete">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    </script>
-
-    <script id="calculation-table-template" type="text/x-handlebars-template">
-        <table class="{{class}}" id="{{id}}">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>operator</th>
-                    <th>Factors</th>
-                    <th class="actions-header">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each calculations}}
-                <tr data-calculation-id='{{id}}'>
-                    <td>{{@index}}</td>
-                    <td>{{name}}</td>
-                    <td>{{operator}}</td>
-                    <td><code>{{factors}}</code></td>
-                    <td>
-                        <div class="col-xs-6">
-                            <button class="btn btn-info form-control calculation-edit">Edit</button>
-                        </div>
-                        <div class="col-xs-6">
-                            <button class="btn btn-danger form-control calculation-delete">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    </script>
-
-    <script id="analyses-table-template" type="text/x-handlebars-template">
-        <table class="{{class}}" id="{{id}}">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Condition</th>
-                    <th>Result</th>
-                    <th class="actions-header">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each analyses}}
-                <tr data-analysis-id='{{id}}'>
-                    <td>{{@index}}</td>
-                    <td>{{name}}</td>
-                    <td><code>{{condition}}</code></td>
-                    <td><code>{{result}}</code></td>
-                    <td>
-                        <div class="col-xs-6">
-                            <button class="btn btn-info form-control analysis-edit">Edit</button>
-                        </div>
-                        <div class="col-xs-6">
-                            <button class="btn btn-danger form-control analysis-delete">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    </script>
-
-    <script id="new-calculation-factor-option-template" type="text/x-handlebars-template">
-        <!--<div id="new-calculation-factors-container">-->
-            <div class="form-group row factor-option">
-                <div class="col-lg-2 col-md-3 col-sm-sm-3 col-xs-3">
-                    <input data-id="coeff" type="number" placeholder="Coefficient" value="{{coeff}}" class="form-control">
-                </div>
-                <div class="col-lg-8 col-md-6 col-sm-sm-6 col-xs-6">
-                    <select class="form-control" data-id="subject-id">
-                        {{#each subjects}}
-                        <option value="{{id}}" 
-                            {{#if selected}}
-                            selected
-                            {{/if}}
-                            >{{question}}
-                        </option>
-                        {{/each}}
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-3 col-sm-sm-3 col-xs-3">
-                    <button class="btn btn-danger form-control factor-option-delete">Remove</button>
-                </div>
-            </div>
-        <!--</div>-->
-    </script>
+    <?php
+    include "admin-templates.html";
+    ?>
     
     <script src="assets/js/jquery.js"></script>
     <script src="assets/js/bootstrap.js"></script>

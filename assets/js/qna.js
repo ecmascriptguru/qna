@@ -1726,7 +1726,10 @@ let QuestionRenderer = (() => {
      * @return {void}
      */
     const renderAnalysisPanel = (subjects, callback) => {
-        DataStorage.Analysis.get(_selectedSubject.id, (analyses) => {
+        let $panelBody = $(`#${settings.analysis.panel.id} div.panel-body`);
+        $panelBody.children().remove();
+        
+        DataStorage.Analysis.get(_selectedWizard.id, (analyses) => {
             for (let i = 0; i < analyses.length; i ++) {
                 //  Codo to parse an analysis.
                 if (checkCondition(subjects, analyses[i])) {
@@ -1943,7 +1946,8 @@ let QuestionRenderer = (() => {
             if (keyCode == 13 && event.target.tagName.toLowerCase() != "textarea") {
                 $(`#${settings.subject.panel.id} button.next`).click();
             }
-        }).on("click", $(`#${settings.analysis.backToAnswersButton.id}`), (event) => {
+        })
+        .on("click", $(`#${settings.analysis.backToAnswersButton.id}`), (event) => {
             if (event.target.getAttribute("id") == settings.analysis.backToAnswersButton.id) {
                 let buffer = _done.pop();
                 _selectedSubject = buffer;

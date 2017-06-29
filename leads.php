@@ -59,7 +59,7 @@ require("config/env.php");
         </footer>
     </div>
     <?php
-    include "leads-template.html";
+    include "leads-templates.html";
     ?>
 	<script src="assets/js/jquery.js"></script>
     <script src="assets/js/bootstrap.js"></script>
