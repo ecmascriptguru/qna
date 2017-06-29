@@ -243,14 +243,14 @@ require("config/env.php");
                                         <option value="calculation">Calculation Comparison</option>
                                     </select>
                                 </div>
-                                <div class="col-lg-5 col-md-3 col-sm-3 col-xs-12">
-                                    <select id="new-analysis-comparison-value-select" class="form-control">
-                                    </select>
-                                </div>
                                 <div class="col-lg-2 col-md-3 col-sm-2 col-xs-6">
                                     <select id="new-analysis-comparison-visible-type-select" class="form-control">
                                         <option value="question">Question</option>
                                         <option value="answer">Answer</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-5 col-md-3 col-sm-3 col-xs-12">
+                                    <select id="new-analysis-comparison-value-select" class="form-control">
                                     </select>
                                 </div>
                                 <div class="col-lg-2 col-md-3 col-sm-3 col-xs-6">
