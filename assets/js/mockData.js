@@ -115,7 +115,7 @@ let Constants = {
             id: 3,
             wizard_id: "3",
             question: "Why?",
-            type_id: 2,
+            type_id: 1,
             type_name: "Text Field",
             answers: "[{\"caption\":\"\",\"value\":\"\",\"weight\":\"0\",\"next\":\"4\"}]"
         },{
@@ -702,10 +702,10 @@ let Constants = {
                 calculations:[{
                     id: 3,
                     operator: ">",
-                    value: JSON.stringify(200)
+                    value: "200"
                 }]
             }),
-            result: "Something here {{subject_4}} on {{calculation_3}}"
+            result: "Something here {{Q5}} and {{A7}} on {{Calc3}} and {{Val9}}"
         }
     ]
 }

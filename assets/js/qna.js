@@ -1540,6 +1540,12 @@ let QuestionRenderer = (() => {
     let _selectedWizard = null;
     let _selectedSubject = null;
 
+    /**
+     * Temp Variables
+     */
+    let _subjects = [];
+    let _calculations = [];
+
     let _done = [];
     let _todo = [];
 
@@ -1825,6 +1831,168 @@ let QuestionRenderer = (() => {
     }
 
     /**
+     * Check if a given object is true for the condition.
+     * @param {object} cond 
+     * @param {object} obj 
+     * @return {boolean}
+     */
+    const checkMatch = (cond, obj) => {
+        const opFunctions = {
+            "==": (a, b) => { return a == b; },
+            ">": (a, b) => { return a > b; },
+            "<": (a, b) => { return a < b; },
+        };
+
+        return opFunctions[cond.operator](obj.value, cond.value);
+    }
+
+    /**
+     * Parse result text and replace tags with corresponding content
+     * @param {string} result 
+     * @param {array} subjects 
+     * @param {array} calculations 
+     * @return {string}
+     */
+    const processAnalysisResult = (result, subjects, calculations) => {
+        const getValue = {
+            "Q": (id) => {
+                let objs = subjects.filter(subject => subject.id == id);
+                return (objs.length > 0) ? objs[0].question : "Not found.";
+            },
+            "A": (id) => {
+                let objs = subjects.filter(subject => subject.id == id);
+                return (objs.length > 0) ? objs[0].value : "Not found.";
+            },
+            "Calc": (id) => {
+                let objs = calculations.filter(calculation => calculation.id == id);
+                return (objs.length > 0) ? objs[0].name : "Not found.";
+            },
+            "Val": (id) => {
+                let objs = calculations.filter(calculation => calculation.id == id);
+                return (objs.length > 0) ? objs[0].value : "Not found.";
+            },
+        }
+
+        let matches = result.match(/\{\{(Q|A|Calc|Val)\d+\}\}/g);
+        for (let i = 0; matches && i < matches.length; i ++) {
+            let tag = matches[i].replace(/\{|\}/g, "");
+            let option = tag.match(/(Q|A|Calc|Val)/g)[0];
+            let ID = tag.match(/\d+/g)[0];
+
+            let content = getValue[option](ID);
+            let pattern = new RegExp(matches[i], "g");
+            result = result.replace(pattern, content);
+        }
+
+        return result;
+    }
+
+    /**
+     * Replace all of tags within analyses' result text with real content.
+     * Originally the result text has tags like {{Q3}}, {{A5}} for subjects and {{Calc2}}, {{Val6}}.
+     * Those tags should be replaced with corresponding values.
+     * @param {array} subjects 
+     * @param {array} calculations 
+     * @param {array} analyses 
+     * @param {function} callback 
+     * @return {void}
+     */
+    const replaceTagsWithRealValues = (subjects, calculations, analyses, callback) => {
+        for (let i = 0; i < analyses.length; i ++) {
+            analyses[i].result = processAnalysisResult(analyses[i].result, subjects, calculations);
+        }
+
+        if (typeof callback === "function") {
+            callback(analyses);
+        }
+    }
+
+    /**
+     * Get all analysis corresponding to answers given by a lead.
+     * @param {array} subjects 
+     * @param {array} calculations 
+     * @param {function} callback 
+     * @return {void}
+     */
+    const getMatchedAnalyses = (subjects, calculations, callback) => {
+        DataStorage.Analysis.get(_selectedWizard.id, (analyses) => {
+            let result = [];
+            for (let i = 0; i < analyses.length; i ++) {
+                let condition = analyses[i].condition;
+                let matchFlag = true;
+
+                if (typeof condition === "string") {
+                    condition = JSON.parse(condition);
+                }
+
+                let condSubjects = condition.subjects;
+                let condCalculations = condition.calculations;
+
+                for (let j = 0; j < condSubjects.length; j ++) {
+                    let matches = subjects.filter(subject => subject.id == condSubjects[j].id);
+
+                    if (matches.length == 0 || !checkMatch(condSubjects[j], matches[0])) {
+                        matchFlag = false;
+                        break;
+                    }
+                }
+
+                for (let j = 0; j < condCalculations.length && matchFlag; j ++) {
+                    let matches = calculations.filter(calculation => calculation.id == condCalculations[j].id);
+
+                    if (matches.length == 0 || !checkMatch(condCalculations[j], matches[0])) {
+                        matchFlag = false;
+                        break;
+                    }
+                }
+
+                if (matchFlag) {
+                    result.push(analyses[i]);
+                }
+            }
+
+            replaceTagsWithRealValues(subjects, calculations, result, callback);
+        })
+    }
+
+    /**
+     * Compute all calculations for a given answers.
+     * And call function to get analyses matched with answers given by user.
+     * @param {array} subjects 
+     * @param {function} callback 
+     * @return {void}
+     */
+    const computeCalculations = (subjects, callback) => {
+        DataStorage.Calculations.get(_selectedWizard.id, (calculations) => {
+            for (let i = 0; i < calculations.length; i ++) {
+                let cal = calculations[i];
+                let factors = cal.factors;
+                let op = cal.operator;
+                let value = 0;
+                let calc = {
+                    "+": (src, coeff, operand) => { return src + coeff * operand; },
+                    "-": (src, coeff, operand) => { return src - coeff * operand; },
+                    "*": (src, coeff, operand) => { return src * coeff * operand; },
+                    "/": (src, coeff, operand) => { return src / coeff * operand; }
+                };
+
+                if (typeof factors === "string") {
+                    factors = JSON.parse(factors);
+                }
+
+                for (let j = 0; j < factors.length; j ++) {
+                    let matches = subjects.filter(subject => subject.id == factors[j].id);
+                    value = calc[op](value, factors[j].coeff, matches[0].value);
+                }
+
+                calculations[i].value = value;
+            }
+
+            getMatchedAnalyses(subjects, calculations, callback);
+        })
+    }
+
+    /**
      * Render Analayses panel based on answers given by leads.
      * @param {array} subjects 
      * @param {function} callback 
@@ -1834,16 +2002,16 @@ let QuestionRenderer = (() => {
         let $panelBody = $(`#${settings.analysis.panel.id} div.panel-body`);
         $panelBody.children().remove();
 
-        DataStorage.Analysis.get(_selectedWizard.id, (analyses) => {
-            for (let i = 0; i < analyses.length; i ++) {
-                //  Codo to parse an analysis.
-                if (checkCondition(subjects, analyses[i])) {
-                    //  Render the current analysis.
-                }
-            }
+        let analysisTextSource = $("#analysis-text-template").html(),
+            analysisTextTemplate = Handlebars.compile(analysisTextSource);
+
+        computeCalculations(subjects, (analyses) => {
+            $panelBody.append(
+                $(analysisTextTemplate({analyses}))
+            )
 
             goTo(settings.analysis.panel.id);
-        })
+        });
     }
 
     /**
@@ -1858,6 +2026,12 @@ let QuestionRenderer = (() => {
             _selectedSubject = subject;
             renderSubjectPanel(subject);
         });
+
+        /**
+         * Temp function calls for dev
+         */
+        DataStorage.Subjects.get(_selectedWizard.id, (subjects) => { _subjects = subjects; });
+        DataStorage.Calculations.get(_selectedWizard.id, (calculations) => { _calculations = calculations; });
     }
 
     /**

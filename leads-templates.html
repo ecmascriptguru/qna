@@ -93,3 +93,13 @@
         {{/each}}
     </div>
 </script>
+
+<!-- Template for analysis result text in results page -->
+<script id="analysis-text-template" type="text/x-handlebars-template">
+    {{#each analyses}}
+    <div class="form-group">
+        <h4>{{name}}</h4>
+        <p class="analysis-text">{{result}}</p>
+    </div>
+    {{/each}}
+</script>
