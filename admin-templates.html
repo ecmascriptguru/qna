@@ -302,3 +302,42 @@
         </tbody>
     </table>
 </script>
+
+
+<!-- Template of Comparison visible type dropdown list in analysis create/update form. -->
+<script id="new-analysis-comparison-visible-type-select-template" type="text/x-handlebars-template">
+    {{#if is_subject}}
+    <option value="question">Question</option>
+    <option value="answer" selected>Answer</option>
+    {{else}}
+    <option value="name">Name</option>
+    <option value="value" selected>Value</option>
+    {{/if}}
+</script>
+
+<!-- Template of comparison value dropdown list in analysis create/update form. -->
+<script id="new-analysis-comparison-value-select-template" type="text/x-handlebars-template">
+    {{#if is_subject}}
+        <option value="">Select a Subject</option>
+        {{#if is_answer}}
+            {{#each subjects}}
+            <option value="A{{id}}">{{question}}</option>
+            {{/each}}
+        {{else}}
+            {{#each subjects}}
+            <option value="Q{{id}}">{{question}}</option>
+            {{/each}}
+        {{/if}}
+    {{else}}
+        <option value="">Select a Calculation</option>
+        {{#if is_value}}
+            {{#each calculations}}
+            <option value="Val{{id}}">{{name}}</option>
+            {{/each}}
+        {{else}}
+            {{#each calculations}}
+            <option value="Calc{{id}}">{{name}}</option>
+            {{/each}}
+        {{/if}}
+    {{/if}}
+</script>

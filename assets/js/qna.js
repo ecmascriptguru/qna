@@ -241,6 +241,24 @@ let QuestionGenerator = (() => {
             },
             resultInput: {
                 id: "new-analysis-result-value"
+            },
+            comparisonTypeSelect: {
+                id: "new-analysis-comparison-type-select"
+            },
+            comparisonValueSelect: {
+                id: "new-analysis-comparison-value-select",
+                template: {
+                    id: "new-analysis-comparison-value-select-template"
+                }
+            },
+            comparisonVisibleTypeSelect: {
+                id: "new-analysis-comparison-visible-type-select",
+                template: {
+                    id: "new-analysis-comparison-visible-type-select-template"
+                }
+            },
+            analysisTagAddButton: {
+                id: "new-analysis-analysis-tag-add-button"
             }
         }
     }
@@ -468,6 +486,8 @@ let QuestionGenerator = (() => {
             operatorSelectForSubject.html(operatorSelectForCalculationTemplate({
                 operators: settings.newAnalysis.operatorSelectForCalculation.options
             }));
+
+            $(`#${settings.newAnalysis.comparisonTypeSelect.id}`).val("subject").change();
 
             if (analysis) {
                 createAnalaysisButton.attr({
@@ -1399,6 +1419,91 @@ let QuestionGenerator = (() => {
             //         }))
             //     );
             // });
+        })
+        .on("change", $(`#${settings.newAnalysis.comparisonTypeSelect.id}`), (event) => {
+            if (event.target.getAttribute("id") == settings.newAnalysis.comparisonTypeSelect.id) {
+                let value = event.target.value;
+
+                let $comparisonVisibleTypeSelect = $(`#${settings.newAnalysis.comparisonVisibleTypeSelect.id}`),
+                    source = $(`#${settings.newAnalysis.comparisonVisibleTypeSelect.template.id}`).html(),
+                    template = Handlebars.compile(source);
+
+                $comparisonVisibleTypeSelect.children().remove();
+                if (value == "subject") {
+                    $comparisonVisibleTypeSelect.append(
+                        $(template({
+                            is_subject: true
+                        }))
+                    );
+
+                    $comparisonVisibleTypeSelect.val("answer").change();
+                } else {
+                    $comparisonVisibleTypeSelect.append(
+                        $(template({
+                            is_subject: false
+                        }))
+                    );
+
+                    $comparisonVisibleTypeSelect.val("value").change();
+                }
+            }
+        })
+        .on("change", `#${settings.newAnalysis.comparisonVisibleTypeSelect.id}`, (event) => {
+            if (event.target.getAttribute("id") == settings.newAnalysis.comparisonVisibleTypeSelect.id) {
+                let comparisonType = $(`#${settings.newAnalysis.comparisonTypeSelect.id}`).val();
+                let visibleType = event.target.value;
+
+                let $comparisonValueSelect = $(`#${settings.newAnalysis.comparisonValueSelect.id}`),
+                    source = $(`#${settings.newAnalysis.comparisonValueSelect.template.id}`).html(),
+                    template = Handlebars.compile(source);
+
+                $comparisonValueSelect.children().remove();
+                if (comparisonType == "subject") {
+                    let is_answer = (visibleType == "answer");
+                    $comparisonValueSelect.append(
+                        $(template({
+                            is_subject: true,
+                            is_answer,
+                            subjects: _subjects
+                        }))
+                    );
+                } else {
+                    let is_value = (visibleType == "value");
+                    $comparisonValueSelect.append(
+                        $(template({
+                            is_subject: false,
+                            is_value,
+                            calculations: _calculations
+                        }))
+                    );
+                }
+            }
+        })
+        .on("click", `button#${settings.newAnalysis.analysisTagAddButton.id}`, (event) => {
+            let $comparisonValueSelect = $(`#${settings.newAnalysis.comparisonValueSelect.id}`);
+            let tag = $comparisonValueSelect.val();
+
+            if (tag == "") {
+                alert("Please select a subject or a calculation.");
+            } else {
+                let $body = $("body");
+                let $tmp = $("<input/>");
+                tag = "{{" + tag + "}}";
+                $body.append($tmp);
+                $tmp.val(tag).select();
+                document.execCommand("copy");
+                $tmp.remove();
+
+                event.target.textContent = "Copied to Clipboard.";
+                event.target.className = "btn btn-success form-control";
+
+                let tempTimer = window.setTimeout(() => {
+                    event.target.textContent = "Copy to Clipboard";
+                    event.target.className = "btn btn-default form-control";
+
+                    clearTimeout(tempTimer);
+                }, 5000);
+            }
         });
 
         $(".nav-tabs li a").click((event) => {
@@ -1728,7 +1833,7 @@ let QuestionRenderer = (() => {
     const renderAnalysisPanel = (subjects, callback) => {
         let $panelBody = $(`#${settings.analysis.panel.id} div.panel-body`);
         $panelBody.children().remove();
-        
+
         DataStorage.Analysis.get(_selectedWizard.id, (analyses) => {
             for (let i = 0; i < analyses.length; i ++) {
                 //  Codo to parse an analysis.
