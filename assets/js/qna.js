@@ -1526,6 +1526,7 @@ let QuestionRenderer = (() => {
             $container.append(
                 $(template(answers[i]))
             );
+            break;
         }
 
         $("button.subject-control-button.next").attr({'data-target': answers[0].next});
@@ -1551,6 +1552,7 @@ let QuestionRenderer = (() => {
             $container.append(
                 $(template(answers[i]))
             );
+            break;
         }
 
         $("button.subject-control-button.next").attr({'data-target': answers[0].next});
@@ -1876,6 +1878,8 @@ let QuestionRenderer = (() => {
                             return false;
                         } else {
                             //  Code to finish and show analysis page.
+                            let buffer = _selectedSubject;
+                            _done.push(buffer);
                             renderAnalysisPanel(_done);
                         }
                     } else {
@@ -1901,11 +1905,12 @@ let QuestionRenderer = (() => {
                     }
 
                 } else if (event.target.className.split(" ").indexOf("prev") > -1) {
-                    let buffer = _selectedSubject;
-                    _todo.push(buffer);
                     if (_done.length > 0) {
-                        let subject = _done.pop();
-                        _selectedSubject = subject;
+                        let buffer = _selectedSubject;
+                        _todo.push(buffer);
+                        _selectedSubject = _done.pop();
+                        // let subject = _done.pop();
+                        // _selectedSubject = subject;
                         renderSubjectPanel(_selectedSubject);
                     } else {
                         if (confirm("You will lost all of answers. Are you sure to go back to list?")) {
@@ -1913,6 +1918,8 @@ let QuestionRenderer = (() => {
                             _done = [];
 
                             goTo();
+                        } else {
+                            _selectedSubject
                         }
                     }
                 }
@@ -1938,6 +1945,8 @@ let QuestionRenderer = (() => {
             }
         }).on("click", $(`#${settings.analysis.backToAnswersButton.id}`), (event) => {
             if (event.target.getAttribute("id") == settings.analysis.backToAnswersButton.id) {
+                let buffer = _done.pop();
+                _selectedSubject = buffer;
                 goTo(settings.subject.panel.id);
             }
         })
