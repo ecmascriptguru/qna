@@ -1545,6 +1545,7 @@ let QuestionRenderer = (() => {
      */
     let _subjects = [];
     let _calculations = [];
+    let _userId = null;
 
     let _done = [];
     let _todo = [];
@@ -1569,7 +1570,13 @@ let QuestionRenderer = (() => {
         },
         subject: {
             panel: {
-                id: "qna-leads-subject"
+                id: "qna-leads-subject",
+                backButton: {
+                    id: "subject-prev-button"
+                },
+                nextButton: {
+                    id: "subject-next-button"
+                }
             },
             template: {
                 id: "subject-template"
@@ -1805,6 +1812,13 @@ let QuestionRenderer = (() => {
         renderBody[subject.type_id](subject.answers, subjectPanelBody, subject);
 
         goTo(settings.subject.panel.id);
+        if (_done.length == 0) {
+            $(`#${settings.subject.panel.backButton.id}`).text("Back To Wizards");
+        }
+
+        if (_todo.length == 0 && subject.answers.filter(answer => (answer.next)).length == 0) {
+            $(`#${settings.subject.panel.nextButton.id}`).text("View Result");
+        }
         focusOnSomething();
     }
 
@@ -1872,7 +1886,7 @@ let QuestionRenderer = (() => {
                 let objs = (subjects.length > 0 && subjects[0].subject_id)
                             ? subjects.filter(subject => subject.subject_id == id)
                             : subjects.filter(subject => subject.id == id);
-                            
+
                 return (objs.length > 0) ? objs[0].value : "Not found.";
             },
             "Calc": (id) => {
@@ -2056,6 +2070,7 @@ let QuestionRenderer = (() => {
         DataStorage.Subjects.find(startPoint, (subject) => {
             _selectedSubject = subject;
             renderSubjectPanel(subject);
+            $(`#${settings.subject.panel.backButton.id}`).text("Back To Wizards");
         });
 
         /**
@@ -2083,7 +2098,7 @@ let QuestionRenderer = (() => {
      */
     const renderWizardsPanel = () => {
         DataStorage.Wizards.get((wizards) => {
-            DataStorage.Results.get(1, (results) => {
+            DataStorage.Results.get(_userId, (results) => {
                 let tableSource = $(`#${settings.wizards.tableTemplate.id}`).html(),
                     tableTemplate = Handlebars.compile(tableSource),
                     $wizardsPanelBody = $(`#${settings.wizards.panel.id} .panel-body`);
@@ -2114,11 +2129,13 @@ let QuestionRenderer = (() => {
     /**
      * Initialize with Identity of HTML element and API base url
      * @param {string} id 
-     * @param {string} url 
+     * @param {string} url ,
+     * @param {number} userId
      */
-    const init = (id, url) => {
+    const init = (id, url, userId) => {
         $_container = $(`#${id}`);
         _apiBaseUrl = url;
+        _userId = userId;
         renderWizardsPanel();
         initEvents();
     };
@@ -2296,7 +2313,7 @@ let QuestionRenderer = (() => {
         })
         .on("click", $(`#${settings.analysis.submitButton.id}`), (event) => {
             if (event.target.getAttribute("id") == settings.analysis.submitButton.id && confirm("Are you sure to submit your answers?")) {
-                DataStorage.Results.insert(_selectedWizard.id, _done, (response) => {
+                DataStorage.Results.insert(_userId ,_selectedWizard.id, _done, (response) => {
                     alert("Thanks for your answers.");
                 }, (response) => {
                     //  To do in failure.
