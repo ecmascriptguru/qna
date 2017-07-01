@@ -1562,6 +1562,9 @@ let QuestionRenderer = (() => {
             },
             selectWizardButton: {
                 class: "select-wizard"
+            },
+            selectResultButton: {
+                class: "select-result"
             }
         },
         subject: {
@@ -1859,11 +1862,17 @@ let QuestionRenderer = (() => {
     const processAnalysisResult = (result, subjects, calculations) => {
         const getValue = {
             "Q": (id) => {
-                let objs = subjects.filter(subject => subject.id == id);
+                let objs = (subjects.length > 0 && subjects[0].subject_id)
+                            ? subjects.filter(subject => subject.subject_id == id)
+                            : subjects.filter(subject => subject.id == id);
+
                 return (objs.length > 0) ? objs[0].question : "Not found.";
             },
             "A": (id) => {
-                let objs = subjects.filter(subject => subject.id == id);
+                let objs = (subjects.length > 0 && subjects[0].subject_id)
+                            ? subjects.filter(subject => subject.subject_id == id)
+                            : subjects.filter(subject => subject.id == id);
+                            
                 return (objs.length > 0) ? objs[0].value : "Not found.";
             },
             "Calc": (id) => {
@@ -1932,7 +1941,13 @@ let QuestionRenderer = (() => {
                 let condCalculations = condition.calculations;
 
                 for (let j = 0; j < condSubjects.length; j ++) {
-                    let matches = subjects.filter(subject => subject.id == condSubjects[j].id);
+                    let matches = [];
+                    
+                    if (subjects[0].subject_id) {
+                        matches = subjects.filter(subject => subject.subject_id == condSubjects[j].id);
+                    } else {
+                        matches = subjects.filter(subject => subject.id == condSubjects[j].id);
+                    }
 
                     if (matches.length == 0 || !checkMatch(condSubjects[j], matches[0])) {
                         matchFlag = false;
@@ -1984,7 +1999,14 @@ let QuestionRenderer = (() => {
                 }
 
                 for (let j = 0; j < factors.length; j ++) {
-                    let matches = subjects.filter(subject => subject.id == factors[j].id);
+                    let matches = [];
+                    
+                    if (subjects[i].subject_id) {
+                        matches = subjects.filter(subject => subject.subject_id == factors[j].id);
+                    } else {
+                        matches = subjects.filter(subject => subject.id == factors[j].id);
+                    }
+                    
                     value = calc[op](value, factors[j].coeff, matches[0].value);
                 }
 
@@ -2001,7 +2023,7 @@ let QuestionRenderer = (() => {
      * @param {function} callback 
      * @return {void}
      */
-    const renderAnalysisPanel = (subjects, callback) => {
+    const renderAnalysisPanel = (subjects, isEditable, callback) => {
         let $panelBody = $(`#${settings.analysis.panel.id} div.panel-body`);
         $panelBody.children().remove();
 
@@ -2011,8 +2033,14 @@ let QuestionRenderer = (() => {
         computeCalculations(subjects, (analyses) => {
             $panelBody.append(
                 $(analysisTextTemplate({analyses}))
-            )
+            );
 
+            if (isEditable) {
+                $(`#${settings.analysis.submitButton.id}`).show();
+            } else {
+                $(`#${settings.analysis.submitButton.id}`).hide();
+            }
+            
             goTo(settings.analysis.panel.id);
         });
     }
@@ -2055,18 +2083,31 @@ let QuestionRenderer = (() => {
      */
     const renderWizardsPanel = () => {
         DataStorage.Wizards.get((wizards) => {
-            let tableSource = $(`#${settings.wizards.tableTemplate.id}`).html(),
-                tableTemplate = Handlebars.compile(tableSource),
-                $wizardsPanelBody = $(`#${settings.wizards.panel.id} .panel-body`);
+            DataStorage.Results.get(1, (results) => {
+                let tableSource = $(`#${settings.wizards.tableTemplate.id}`).html(),
+                    tableTemplate = Handlebars.compile(tableSource),
+                    $wizardsPanelBody = $(`#${settings.wizards.panel.id} .panel-body`);
 
-            $wizardsPanelBody.children().remove();
-            $wizardsPanelBody.append(
-                $(tableTemplate({
-                    wizards: wizards
-                }))
-            );
+                $wizardsPanelBody.children().remove();
 
-            goTo(settings.wizards.panel.id);
+                for (let i = 0; i < wizards.length; i ++) {
+                    let matchedReuslts = results.filter(result => result.wizard_id == wizards[i].id);
+
+                    if (matchedReuslts.length > 0) {
+                        wizards[i].isAnswered = true;
+                        wizards[i].result_id = matchedReuslts[0].id;
+                    } else {
+                        wizards[i].isAnswered = false;
+                    }
+                }
+                $wizardsPanelBody.append(
+                    $(tableTemplate({
+                        wizards: wizards
+                    }))
+                );
+
+                goTo(settings.wizards.panel.id);
+            });
         });
     }
 
@@ -2142,6 +2183,22 @@ let QuestionRenderer = (() => {
                 });
             }
         })
+        .on("click", `button.${settings.wizards.selectResultButton.class}`, (event) => {
+            if (event.target.className.split(" ").indexOf(settings.wizards.selectResultButton.class) > 0) {
+                let resultId = event.target.getAttribute("data-id");
+
+                DataStorage.Results.find(resultId, (response) => {
+                    let result = response.result;
+                    let answers = response.answers;
+
+                    DataStorage.Wizards.find(result.wizard_id, (wizard) => {
+                        // Code to render step by step Q&A wizard.
+                        _selectedWizard = wizard;
+                        renderAnalysisPanel(answers, false);
+                    });
+                })
+            }
+        })
         .on("click", $(`#${settings.subject.panel.id} div.panel-footer button.subject-control-button`), (event) => {
             // event.preventDefault();
             let targetID = event.target.getAttribute("data-target");
@@ -2165,7 +2222,7 @@ let QuestionRenderer = (() => {
                             //  Code to finish and show analysis page.
                             let buffer = _selectedSubject;
                             _done.push(buffer);
-                            renderAnalysisPanel(_done);
+                            renderAnalysisPanel(_done, true);
                         }
                     } else {
                         let next = _todo.filter(item => item.id == targetID);
@@ -2233,7 +2290,8 @@ let QuestionRenderer = (() => {
             if (event.target.getAttribute("id") == settings.analysis.backToAnswersButton.id) {
                 let buffer = _done.pop();
                 _selectedSubject = buffer;
-                goTo(settings.subject.panel.id);
+                //  To do
+                goTo(settings.wizards.panel.id);
             }
         })
         .on("click", $(`#${settings.analysis.submitButton.id}`), (event) => {

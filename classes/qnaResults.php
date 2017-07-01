@@ -22,25 +22,21 @@ function get_all_results($conn, $params) {
  *  Creating a new fresh subject
  */
 function create_result($conn, $params) {
-    $user_id = $params->user_id;
-    if (!isset($user_id) || empty($user_id)) {
+    $paramResult = $params->result;
+    $paramAnswers = $params->answers;
+    $user_id = $paramResult->user_id;
+    if (!isset($paramResult->user_id) || empty($paramResult->user_id)) {
         $user_id = 1;   // Initialized with default value.
     }
 
-    $wizard_id = $params->wizard_id;
-    if (!isset($wizard_id) || empty($wizard_id)) {
-        $wizard_id = 1; // Initialized with default value.
-    }
-
     $query = "INSERT INTO `qna_results` (user_id, wizard_id, analysis)
-                VALUES ('{$user_id}', {$wizard_id}, {$params->analysis})";
+                VALUES ('{$user_id}', {$paramResult->wizard_id}, 0)";
     
     if ($conn->query($query) === TRUE) {
         $result_id = $conn->insert_id;
-        $answers = $params->answers;
-        foreach($answers as $answer) {
+        foreach($paramAnswers as $answer) {
             $query = "INSERT INTO `qna_answers` (result_id, subject_id, value, estimation)
-                        VALUES ({$result_id}, {$answer->subject_id}, '{$answer->value}', {$answer->est})";
+                        VALUES ({$result_id}, {$answer->id}, '{$answer->value}', 0)";
             
             if (!$conn->query($query)) {
                 die("Something went wrong in SQL");
