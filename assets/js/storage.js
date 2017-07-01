@@ -1018,7 +1018,8 @@ let DataStorage = (() => {
      */
     let Results = (() => {
         let _results = Constants.results;
-        let _subjectOffset = 2;
+        let _answers = Constants.answers;
+        let _resultOffset = 2;
         let _answerOffset = 30;
 
         /**
@@ -1063,10 +1064,32 @@ let DataStorage = (() => {
             if (env === "demo") {
                 let results = _results.filter(result => result.id == id);
 
-                if (typeof success === "function") {
-                    success(results[0])
+                if (results.length > 0) {
+                    let result = results[0];
+                    let answers = _answers.filter(answer => answer.result_id == results[0].id);
+                    if (typeof success === "function") {
+                        success({
+                            result,
+                            answers
+                        });
+                    } else {
+                        return {
+                            result,
+                            answers
+                        };
+                    }
                 } else {
-                    return results[0];
+                    if (typeof success === "function") {
+                        success({
+                            result: null,
+                            answers: []
+                        });
+                    } else {
+                        return {
+                            result: null,
+                            answers: []
+                        };
+                    }
                 }
             } else {
                 sendRequest(QNAConfig.baseUrl(), {
@@ -1091,17 +1114,77 @@ let DataStorage = (() => {
             }
         };
 
-        const createResult = (result, answers, success, failure) => {
-            //
+        /**
+         * Create a new result with answers given by leads
+         * @param {number} wizard_id 
+         * @param {array} answers 
+         * @param {function} success 
+         * @param {function} failure 
+         * @return {array} in case of that there are no callback function in parameter.
+         */
+        const createResult = (wizard_id, answers, success, failure) => {
+            let result = {
+                id: _resultOffset,
+                user_id: 1,
+                wizard_id,
+                analysis: null
+            };
+
+            if (env === "demo") {
+                _results.push(result);
+
+                for (let i = 0; answers && i < answers.length; i ++) {
+                    answers[i].id = _answerOffset;
+                    answers[i].result_id = _resultOffset;
+                    _answerOffset++;
+                }
+                _answers = _answers.concat(answers);
+
+                if (typeof success === "function") {
+                    success({
+                        id: _resultOffset
+                    });
+                } else {
+                    return {
+                        id: _resultOffset
+                    };
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "results",
+                    action: "create",
+                    params: JSON.stringify({
+                        result: result,
+                        answers: answers
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success({
+                            id: response.id
+                        });
+                    } else {
+                        return ({
+                            id: null
+                        })
+                    }
+                }, failure);
+            }
         }
-    })
+
+        return {
+            get: getResults,
+            find: findResult,
+            insert: createResult
+        };
+    })();
 
     return {
         Types: AnswerTypes,
         Wizards: Wizards,
         Subjects: Subjects,
         Calculations: Calculations,
-        Analysis: Analyses
+        Analysis: Analyses,
+        Results: Results
     }
     
 })();

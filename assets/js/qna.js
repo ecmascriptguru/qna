@@ -2237,7 +2237,13 @@ let QuestionRenderer = (() => {
             }
         })
         .on("click", $(`#${settings.analysis.submitButton.id}`), (event) => {
-            //  Code to submit answers.
+            if (event.target.getAttribute("id") == settings.analysis.submitButton.id && confirm("Are you sure to submit your answers?")) {
+                DataStorage.Results.insert(_selectedWizard.id, _done, (response) => {
+                    alert("Thanks for your answers.");
+                }, (response) => {
+                    //  To do in failure.
+                })
+            }
         })
     }
 
