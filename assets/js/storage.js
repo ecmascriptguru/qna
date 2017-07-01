@@ -1012,6 +1012,90 @@ let DataStorage = (() => {
         }
     })();
 
+
+    /**
+     * Questions and Answers result given by leads.
+     */
+    let Results = (() => {
+        let _results = Constants.results;
+        let _subjectOffset = 2;
+        let _answerOffset = 30;
+
+        /**
+         * 
+         * @param {number} userID 
+         * @param {function} success 
+         * @param {function} failure 
+         * @return {void}
+         */
+        const getResults = (userID, success, failure) => {
+            if (env === "demo") {
+                if (typeof success === "function") {
+                    success(_results);
+                } else {
+                    return _results;
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "results",
+                    action: "get_all",
+                    params: JSON.stringify({
+                        user_id: userID
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.results);
+                    } else {
+                        success(response.results || []);
+                    }
+                }, failure);
+            }
+        };
+
+        /**
+         * Retrieve a result with result Identity.
+         * @param {number} id 
+         * @param {function} success 
+         * @param {function} failure 
+         * @return {void}
+         */
+        const findResult = (id, success, failure) => {
+            if (env === "demo") {
+                let results = _results.filter(result => result.id == id);
+
+                if (typeof success === "function") {
+                    success(results[0])
+                } else {
+                    return results[0];
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "results",
+                    action: "get",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success({
+                            result: response.result,
+                            answers: response.answers
+                        });
+                    } else {
+                        return ({
+                            result: null,
+                            answers: []
+                        })
+                    }
+                }, failure);
+            }
+        };
+
+        const createResult = (result, answers, success, failure) => {
+            //
+        }
+    })
+
     return {
         Types: AnswerTypes,
         Wizards: Wizards,

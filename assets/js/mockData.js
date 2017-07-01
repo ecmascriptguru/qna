@@ -707,5 +707,189 @@ let Constants = {
             }),
             result: "Something here {{Q5}} and {{A7}} on {{Calc3}} and {{Val9}}"
         }
-    ]
+    ],
+
+    results: [
+        {
+            id: 1,
+            user_id: 1,
+            wizard_id: 3,
+            analysis: null
+        }
+    ],
+
+    answers: [
+        {
+            id: 1,
+            result_id: 1,
+            subject_id: 1,
+            value: "356"
+        },{
+            id: 2,
+            result_id: 1,
+            subject_id: 2,
+            value: "665"
+        },{
+            id: 3,
+            result_id: 1,
+            subject_id: 3,
+            value: "lorem string blah blah"
+        },{
+            id: 4,
+            result_id: 1,
+            subject_id: 4,
+            value: "Zestimate"
+        },
+        {
+            id: 5,
+            result_id: 1,
+            subject_id: 5,
+            value: "5578"
+        },
+        {
+            id: 6,
+            result_id: 1,
+            subject_id: 6,
+            value: "Yes"
+        },
+        {
+            id: 7,
+            result_id: 1,
+            subject_id: 7,
+            value: "Yes"
+        },
+        {
+            id: 8,
+            result_id: 1,
+            subject_id: 8,
+            value: "554"
+        },
+        {
+            id: 9,
+            result_id: 1,
+            subject_id: 9,
+            value: "6"
+        },
+        {
+            id: 10,
+            result_id: 1,
+            subject_id: 10,
+            value: "546"
+        },
+        {
+            id: 11,
+            result_id: 1,
+            subject_id: 11,
+            value: "45"
+        },
+        
+        {
+            id: 12,
+            result_id: 1,
+            subject_id: 12,
+            value: "24"
+        },
+        {
+            id: 13,
+            result_id: 1,
+            subject_id: 13,
+            value: "Adjustable"
+        },
+        {
+            id: 14,
+            result_id: 1,
+            subject_id: 14,
+            value: "245"
+        },
+        {
+            id: 15,
+            result_id: 1,
+            subject_id: 15,
+            value: "351"
+        },
+        {
+            id: 16,
+            result_id: 1,
+            subject_id: 16,
+            value: "478"
+        },
+        {
+            id: 17,
+            result_id: 1,
+            subject_id: 17,
+            value: "752"
+        },
+        {
+            id: 18,
+            result_id: 1,
+            subject_id: 18,
+            value: "Fixed"
+        },
+        {
+            id: 19,
+            result_id: 1,
+            subject_id: 19,
+            value: "421"
+        },
+        {
+            id: 20,
+            result_id: 1,
+            subject_id: 20,
+            value: "125"
+        },
+        {
+            id: 21,
+            result_id: 1,
+            subject_id: 21,
+            value: "yes"
+        },
+        {
+            id: 22,
+            result_id: 1,
+            subject_id: 22,
+            value: "22"
+        },
+        {
+            id: 23,
+            result_id: 1,
+            subject_id: 23,
+            value: "no"
+        },
+        {
+            id: 24,
+            result_id: 1,
+            subject_id: 24,
+            value: "757"
+        },
+        {
+            id: 25,
+            result_id: 1,
+            subject_id: 25,
+            value: "Balh blah, it's sucks"
+        },
+        {
+            id: 26,
+            result_id: 1,
+            subject_id: 26,
+            value: "Wow, additional text again! You are killing me."
+        },
+        {
+            id: 27,
+            result_id: 1,
+            subject_id: 27,
+            value: "yes"
+        },
+        {
+            id: 28,
+            result_id: 1,
+            subject_id: 28,
+            value: "Don't ask me, ever"
+        },
+        {
+            id: 29,
+            result_id: 1,
+            subject_id: 29,
+            value: "10"
+        },
+    ],
 }

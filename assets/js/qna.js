@@ -1585,6 +1585,9 @@ let QuestionRenderer = (() => {
             },
             backToAnswersButton: {
                 id: "back-to-answers-button"
+            },
+            submitButton: {
+                id: "qna-analysis-submit-answers-button"
             }
         }
     }
@@ -2232,6 +2235,9 @@ let QuestionRenderer = (() => {
                 _selectedSubject = buffer;
                 goTo(settings.subject.panel.id);
             }
+        })
+        .on("click", $(`#${settings.analysis.submitButton.id}`), (event) => {
+            //  Code to submit answers.
         })
     }
 

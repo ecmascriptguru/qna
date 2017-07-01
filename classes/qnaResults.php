@@ -4,7 +4,8 @@ require_once("qnaTypes.php");
  *  Getting all results for a subject
  */
 function get_all_results($conn, $params) {
-    $query = "SELECT * FROM `qna_results`;";
+    $user_id = $params->user_id;
+    $query = "SELECT * FROM `qna_results` WHERE `user_id`={$user_id};";
     $result = $conn->query($query);
     $results = array();
 
