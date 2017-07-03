@@ -374,6 +374,12 @@ let QuestionGenerator = (() => {
             typeSelect.html(template({
                 types: types
             }));
+
+            if (subject) {
+                typeSelect.val(subject.type_id);
+            } else {
+                typeSelect.val(1).change();
+            }
         });
 
         if (subject) {
@@ -382,7 +388,7 @@ let QuestionGenerator = (() => {
                 "data-action": "update"
             });
             questionInput.val(subject.question);
-            typeSelect.val(subject.type_id);
+            
             renderExistingAnswerOptions(subject, answersContainer, dataInfoContainer);
         } else {
             createSubjectButton.attr({
@@ -390,7 +396,6 @@ let QuestionGenerator = (() => {
                 "data-action": "create"
             });
             questionInput.val("");
-            typeSelect.val(1).change();
         }
 
         goTo(settings.newSubject.panel.id);
