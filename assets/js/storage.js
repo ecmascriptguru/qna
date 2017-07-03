@@ -187,7 +187,9 @@ let DataStorage = (() => {
                     })
                 }, (response) => {
                     if (response.status) {
-                        success(response.wizard_id);
+                        success({
+                            id: response.wizard_id
+                        });
                     } else {
                         success([]);
                     }

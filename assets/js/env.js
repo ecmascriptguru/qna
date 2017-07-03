@@ -1,7 +1,7 @@
 let QNAConfig = (() => {
-    // let env = "dev";
+    let env = "dev";
     // let env = "demo";
-    let env = "production";
+    // let env = "production";
 
     const getBaseUrl = () => {
         if (env === "dev" || env === "demo") {
