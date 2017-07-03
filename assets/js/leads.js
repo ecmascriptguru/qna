@@ -4,7 +4,7 @@
     const hashChangeHandler = (curHash) => {
         let pattern = /\d+/g;
         let matches = (curHash || "").match(pattern);
-        let userId = 2;
+        let userId = 1;
         if (matches && matches.length > 0) {
             userId = parseInt(matches[0]);
         }
