@@ -2320,7 +2320,8 @@ let QuestionRenderer = (() => {
             if (event.target.getAttribute("id") == settings.analysis.submitButton.id && confirm("Are you sure to submit your answers?")) {
                 DataStorage.Results.insert(_userId ,_selectedWizard.id, _done, (response) => {
                     alert("Thanks for your answers.");
-                    renderWizardsPanel();
+                    // renderWizardsPanel();
+                    renderAnalysisPanel(_done, false);
                 }, (response) => {
                     //  To do in failure.
                 })
