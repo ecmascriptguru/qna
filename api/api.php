@@ -162,6 +162,13 @@ switch($end_point) {
                 'status' => true,
                 'results' => $results
             ]);
+        } else if ($action == "get_by_wizard") {
+            $results = get_results_by_wizard($conn, $params);
+
+            echo json_encode([
+                'status' => true,
+                'results' => $results
+            ]);
         } else if ($action == "create") {
             $return = create_result($conn, $params);
 

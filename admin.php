@@ -52,8 +52,9 @@ require("config/env.php");
                     <div class="panel-body">
                         <ul class="nav nav-tabs">
                             <li role="presentation" class="active"><a href="#tab-content-subjects">Subjects</a></li>
-                            <li role="presentation"><a href="#tab-content-calculation">Calculations</a></li>
-                            <li role="presentation"><a href="#tab-content-analysis">Analysis</a></li>
+                            <li role="presentation"><a href="#tab-content-calculations">Calculations</a></li>
+                            <li role="presentation"><a href="#tab-content-analyses">Analysis</a></li>
+                            <li role="presentation"><a href="#tab-content-results">Results</a></li>
                         </ul>
                         <div class="tab-content">
                             <div role="tabpanel" id="tab-content-subjects" class="tab-pane active">
@@ -61,14 +62,18 @@ require("config/env.php");
                                 <table class="table table-striped table-bordered" id="subjects-table">
                                 </table>
                             </div>
-                            <div role="tabpanel" id="tab-content-calculation" class="tab-pane">
+                            <div role="tabpanel" id="tab-content-calculations" class="tab-pane">
                                 <button class="btn btn-default pull-right new-calculation" id="new-calculation-button">New Calculation</button>
                                 <table class="table table-striped table-bordered" id="calculation-table">
                                 </table>
                             </div>
-                            <div role="tabpanel" id="tab-content-analysis" class="tab-pane">
+                            <div role="tabpanel" id="tab-content-analyses" class="tab-pane">
                                 <button class="btn btn-default pull-right new-analysis" id="new-analysis-button">New Analysis</button>
                                 <table class="table table-striped table-bordered" id="analyses-table">
+                                </table>
+                            </div>
+                            <div role="tabpanel" id="tab-content-results" class="tab-pane">
+                                <table class="table table-striped table-bordered" id="results-table">
                                 </table>
                             </div>
                         </div>

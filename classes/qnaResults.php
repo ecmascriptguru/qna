@@ -18,6 +18,22 @@ function get_all_results($conn, $params) {
     return $results;
 }
 
+function get_results_by_wizard($conn, $params) {
+    $wizardId = $params->wizard_id;
+
+    $query = "SELECT * FROM `qna_results` WHERE `wizard_id`={$wizardId};";
+    $result = $conn->query($query);
+    $results = array();
+
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            array_push($results, $row);
+        }
+    }
+
+    return $results;
+}
+
 /**
  *  Creating a new fresh subject
  */

@@ -1117,6 +1117,39 @@ let DataStorage = (() => {
         };
 
         /**
+         * Get all results given to a specific wizard.
+         * @param {number} wizardId 
+         * @param {function} success 
+         * @param {function} failure 
+         * @return {array}
+         */
+        const findResultsByWizard = (wizardId, success, failure) => {
+            if (env === "demo") {
+                let results = _results.filter(result => result.wizard_id == wizardId);
+
+                if (typeof success === "function") {
+                    success(results);
+                } else {
+                    return results;
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "results",
+                    action: "get_by_wizard",
+                    params: JSON.stringify({
+                        wizard_id: wizardId
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response.results);
+                    } else {
+                        return ([])
+                    }
+                }, failure);
+            }
+        }
+
+        /**
          * Create a new result with answers given by leads
          * @param {number} user_id
          * @param {number} wizard_id 
@@ -1177,6 +1210,7 @@ let DataStorage = (() => {
         return {
             get: getResults,
             find: findResult,
+            fromWizard: findResultsByWizard,
             insert: createResult
         };
     })();

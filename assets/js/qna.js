@@ -26,7 +26,10 @@ let QuestionGenerator = (() => {
                 class: "panel panel-default",
                 title: "Wizards List",
                 newButtonID: "new-wizard-button",
-                newButtonText: "New Wizard"
+                newButtonText: "New Wizard",
+                viewReusltsButton: {
+                    id: "wizards-view-results-button"
+                }
             },
             "table": {
                 id: "wizards-table",
@@ -93,6 +96,13 @@ let QuestionGenerator = (() => {
             "analysesTable": {
                 id: "analyses-table",
                 class: "table table-striped table-bordered"
+            },
+            "resultsTable": {
+                id: "results-table",
+                class: "table table-striped table-bordered",
+                template: {
+                    id: "results-table-template"
+                }
             }
         },
         newSubject: {
@@ -350,6 +360,7 @@ let QuestionGenerator = (() => {
         updateSubjectsTable();
         updateCalculationTable();
         updateAnalysesTable();
+        updateResultsTable();
         goTo(settings.subjects.panel.id);
     }
 
@@ -1019,6 +1030,24 @@ let QuestionGenerator = (() => {
                 analyses: _analyses,
                 class: settings.subjects.analysesTable.class,
                 id: settings.subjects.analysesTable.id
+            }));
+        })
+    }
+
+    /**
+     * Render Results table with data pulled from data store. With this panel, admins will be able to touch reuslts given by leads.
+     * @return {void}
+     */
+    const updateResultsTable = () => {
+        DataStorage.Results.fromWizard(_selected_wizard, (results) => {
+            _results = results;
+            let table = $(`#${settings.subjects.resultsTable.id}`);
+            let source = $(`#${settings.subjects.resultsTable.template.id}`).html();
+            let template = Handlebars.compile(source);
+            table.html(template({
+                results: _results,
+                class: settings.subjects.resultsTable.class,
+                id: settings.subjects.resultsTable.id
             }));
         })
     }

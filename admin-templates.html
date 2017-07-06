@@ -89,7 +89,7 @@
                     <button class="btn btn-default form-control">Prev</button>
                 </div>
                 <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
-                    <button class="btn btn-primary form-control">Next</button>
+                    <button class="btn btn-primary form-control" id="wizards-view-results-button">View Results</button>
                 </div>
             </div>
         </div>
@@ -295,6 +295,35 @@
                     </div>
                     <div class="col-xs-6">
                         <button class="btn btn-danger form-control analysis-delete">Delete</button>
+                    </div>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
+
+<!-- Template of results table in wizard management page that appears once a wizard selected.-->
+<script id="results-table-template" type="text/x-handlebars-template">
+    <table class="{{class}}" id="{{id}}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>User</th>
+                <th class="actions-header">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each results}}
+            <tr data-result-id='{{id}}'>
+                <td>{{@index}}</td>
+                <td>{{user_id}}</td>
+                <td>
+                    <div class="col-xs-6">
+                        <button class="btn btn-info form-control result-view">View</button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button class="btn btn-danger form-control result-delete">Delete</button>
                     </div>
                 </td>
             </tr>
