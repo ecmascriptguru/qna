@@ -11,6 +11,15 @@ require("config/env.php");
     <link href="assets/images/favicon.png" rel="shortcut icon" type="image/x-icon" />
 </head>
 <body>
+    <?php
+        $uID = 1;
+        if (isset($_GET['uID'])) {
+            $uID = $_GET['uID'];
+        }
+    ?>
+    <script type="text/javascript">
+        window.uId = <?php echo $uID; ?>;
+    </script>
 	<div class="wrapper">
         <div class="container">
             <h3>Question and Answers</h3>
