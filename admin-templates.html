@@ -315,17 +315,61 @@
         </thead>
         <tbody>
             {{#each results}}
-            <tr data-result-id='{{id}}'>
+            <tr>
                 <td>{{@index}}</td>
                 <td>{{user_id}}</td>
                 <td>
                     <div class="col-xs-6">
-                        <button class="btn btn-info form-control result-view">View</button>
+                        <button class="btn btn-info form-control result-view" data-result-id='{{id}}'>View</button>
                     </div>
                     <div class="col-xs-6">
-                        <button class="btn btn-danger form-control result-delete">Delete</button>
+                        <button class="btn btn-danger form-control result-delete" data-result-id='{{id}}'>Delete</button>
                     </div>
                 </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
+
+<!-- Template of answers table.-->
+<script id="result-answers-table-template" type="text/x-handlebars-template">
+    <table class="{{class}}" id="{{id}}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Question</th>
+                <th>Answer</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each answers}}
+            <tr>
+                <td>{{@index}}</td>
+                <td>{{question}}</td>
+                <td>{{value}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
+
+<!-- Template of analyses table.-->
+<script id="result-analyses-table-template" type="text/x-handlebars-template">
+    <table class="{{class}}" id="{{id}}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Analysis Name</th>
+                <th>Analysis Text</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each analyses}}
+            <tr>
+                <td>{{@index}}</td>
+                <td>{{name}}</td>
+                <td>{{result}}</td>
             </tr>
             {{/each}}
         </tbody>

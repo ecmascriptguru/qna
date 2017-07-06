@@ -17,6 +17,35 @@ function get_all_wizards($conn) {
     return $results;
 }
 
+function get_wizard_options($conn, $params) {
+    $wizardId = $params->id;
+    $calculationsQuery = "SELECT * FROM `qna_calculations` WHERE `wizard_id`={$wizardId}";
+    $analysesQuery = "SELECT * FROM `qna_analyses` WHERE `wizard_id`={$wizardId}";
+    $cals = array();
+    $analyses = array();
+    $flag = true;
+
+    $calculationsResult = $conn->query($calculationsQuery);
+    if ($calculationsResult->num_rows > 0) {
+        while($row = $calculationsResult->fetch_assoc()) {
+            array_push($cals, $row);
+        }
+    }
+
+    $analysesResult = $conn->query($analysesQuery);
+    if ($analysesResult->num_rows > 0) {
+        while($row = $analysesResult->fetch_assoc()) {
+            array_push($analyses, $row);
+        }
+    }
+
+    return [
+        'status' => $flag,
+        'calculations' => $cals,
+        'analyses' => $analyses
+    ];
+}
+
 /**
  *  Creating a new fresh wizard
  */

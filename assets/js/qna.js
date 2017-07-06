@@ -270,6 +270,28 @@ let QuestionGenerator = (() => {
             analysisTagAddButton: {
                 id: "new-analysis-analysis-tag-add-button"
             }
+        },
+        result: {
+            panel: {
+                id: "result-panel"
+            },
+            answersTable: {
+                id: "result-answers-table",
+                class: "table table-striped table-bordered",
+                template: {
+                    id: "result-answers-table-template"
+                }
+            },
+            analysesTable: {
+                id: "result-analysis-table",
+                class: "table table-striped table-bordered",
+                template: {
+                    id: "result-analyses-table-template"
+                }
+            },
+            backButton: {
+                id: "result-back-button"
+            }
         }
     }
 
@@ -362,6 +384,232 @@ let QuestionGenerator = (() => {
         updateAnalysesTable();
         updateResultsTable();
         goTo(settings.subjects.panel.id);
+    }
+
+    /**
+     * Render answers table of result panel. This can be found in tab of result panel view.
+     * @param {array} answers 
+     */
+    const updateAnswersTable = (answers) => {
+        let container = $(`#${settings.result.answersTable.id}`);
+        let source = $(`#${settings.result.answersTable.template.id}`).html();
+        let template = Handlebars.compile(source);
+
+        container.html(
+            $(template({
+                answers: answers,
+                id: settings.result.answersTable.id,
+                class: settings.result.answersTable.class
+            }))
+        );
+    }
+
+    /**
+     * Check if a given object is true for the condition.
+     * @param {object} cond 
+     * @param {object} obj 
+     * @return {boolean}
+     */
+    const checkMatch = (cond, obj) => {
+        const opFunctions = {
+            "==": (a, b) => { return a == b; },
+            ">": (a, b) => { return a > b; },
+            "<": (a, b) => { return a < b; },
+        };
+
+        return opFunctions[cond.operator](obj.value, cond.value);
+    }
+
+    /**
+     * Parse result text and replace tags with corresponding content
+     * @param {string} result 
+     * @param {array} subjects 
+     * @param {array} calculations 
+     * @return {string}
+     */
+    const processAnalysisResult = (result, subjects, calculations) => {
+        const getValue = {
+            "Q": (id) => {
+                let objs = (subjects.length > 0 && subjects[0].subject_id)
+                            ? subjects.filter(subject => subject.subject_id == id)
+                            : subjects.filter(subject => subject.id == id);
+
+                return (objs.length > 0) ? objs[0].question : "Not found.";
+            },
+            "A": (id) => {
+                let objs = (subjects.length > 0 && subjects[0].subject_id)
+                            ? subjects.filter(subject => subject.subject_id == id)
+                            : subjects.filter(subject => subject.id == id);
+
+                return (objs.length > 0) ? objs[0].value : "Not found.";
+            },
+            "Calc": (id) => {
+                let objs = calculations.filter(calculation => calculation.id == id);
+                return (objs.length > 0) ? objs[0].name : "Not found.";
+            },
+            "Val": (id) => {
+                let objs = calculations.filter(calculation => calculation.id == id);
+                return (objs.length > 0) ? objs[0].value : "Not found.";
+            },
+        }
+
+        let matches = result.match(/\{\{(Q|A|Calc|Val)\d+\}\}/g);
+        for (let i = 0; matches && i < matches.length; i ++) {
+            let tag = matches[i].replace(/\{|\}/g, "");
+            let option = tag.match(/(Q|A|Calc|Val)/g)[0];
+            let ID = tag.match(/\d+/g)[0];
+
+            let content = getValue[option](ID);
+            let pattern = new RegExp(matches[i], "g");
+            result = result.replace(pattern, content);
+        }
+
+        return result;
+    }
+
+    /**
+     * Replace all of tags within analyses' result text with real content.
+     * Originally the result text has tags like {{Q3}}, {{A5}} for subjects and {{Calc2}}, {{Val6}}.
+     * Those tags should be replaced with corresponding values.
+     * @param {array} subjects 
+     * @param {array} calculations 
+     * @param {array} analyses 
+     * @param {function} callback 
+     * @return {void}
+     */
+    const replaceTagsWithRealValues = (subjects, calculations, analyses, callback) => {
+        for (let i = 0; i < analyses.length; i ++) {
+            analyses[i].result = processAnalysisResult(analyses[i].result, subjects, calculations);
+        }
+
+        if (typeof callback === "function") {
+            callback(analyses);
+        }
+    }
+
+    /**
+     * Get all analysis corresponding to answers given by a lead.
+     * @param {array} subjects 
+     * @param {array} calculations 
+     * @param {array} analyses
+     * @param {function} callback 
+     * @return {void}
+     */
+    const getMatchedAnalyses = (subjects, calculations, analyses, callback) => {
+        let result = [];
+        for (let i = 0; i < analyses.length; i ++) {
+            let condition = analyses[i].condition;
+            let matchFlag = true;
+
+            if (typeof condition === "string") {
+                condition = JSON.parse(condition);
+            }
+
+            let condSubjects = condition.subjects;
+            let condCalculations = condition.calculations;
+
+            for (let j = 0; j < condSubjects.length; j ++) {
+                let matches = [];
+                
+                if (subjects[0].subject_id) {
+                    matches = subjects.filter(subject => subject.subject_id == condSubjects[j].id);
+                } else {
+                    matches = subjects.filter(subject => subject.id == condSubjects[j].id);
+                }
+
+                if (matches.length == 0 || !checkMatch(condSubjects[j], matches[0])) {
+                    matchFlag = false;
+                    break;
+                }
+            }
+
+            for (let j = 0; j < condCalculations.length && matchFlag; j ++) {
+                let matches = calculations.filter(calculation => calculation.id == condCalculations[j].id);
+
+                if (matches.length == 0 || !checkMatch(condCalculations[j], matches[0])) {
+                    matchFlag = false;
+                    break;
+                }
+            }
+
+            if (matchFlag) {
+                result.push(analyses[i]);
+            }
+        }
+
+        replaceTagsWithRealValues(subjects, calculations, result, callback);
+    }
+
+    /**
+     * Compute all calculations for a given answers.
+     * And call function to get analyses matched with answers given by user.
+     * @param {array} subjects 
+     * @param {function} callback 
+     * @return {void}
+     */
+    const computeCalculations = (subjects, calculations, analyses, callback) => {
+        for (let i = 0; i < calculations.length; i ++) {
+            let cal = calculations[i];
+            let factors = cal.factors;
+            let op = cal.operator;
+            let value = 0;
+            let calc = {
+                "+": (src, coeff, operand) => { return src + coeff * operand; },
+                "-": (src, coeff, operand) => { return src - coeff * operand; },
+                "*": (src, coeff, operand) => { return src * coeff * operand; },
+                "/": (src, coeff, operand) => { return src / coeff * operand; }
+            };
+
+            if (typeof factors === "string") {
+                factors = JSON.parse(factors);
+            }
+
+            for (let j = 0; j < factors.length; j ++) {
+                let matches = [];
+                
+                if (subjects[i].subject_id) {
+                    matches = subjects.filter(subject => subject.subject_id == factors[j].id);
+                } else {
+                    matches = subjects.filter(subject => subject.id == factors[j].id);
+                }
+                
+                value = calc[op](value, factors[j].coeff, matches[0].value);
+            }
+
+            calculations[i].value = value;
+        }
+
+        getMatchedAnalyses(subjects, calculations, analyses, callback);
+    }
+
+    const updateAnalysisTable = (answers, calculations, analyses) => {
+        computeCalculations(answers, calculations, analyses, (analyses) => {
+            let container = $(`#${settings.result.analysesTable.id}`);
+            let source = $(`#${settings.result.analysesTable.template.id}`).html();
+            let template = Handlebars.compile(source);
+
+            container.html($(template({
+                id: settings.result.analysesTable.id,
+                class: settings.result.analysesTable.class,
+                analyses: analyses
+            })));
+        })
+    }
+
+    /**
+     * Render result panel. This panel will show answers and analysis
+     * @param {array} answers 
+     * @param {function} callback 
+     * @return {void}
+     */
+    const renderResultPanel = (answers, callback) => {
+        DataStorage.Wizards.settings(_selected_wizard, (response) => {
+            let calculations = response.calculations;
+            let analyses = response.analyses;
+            updateAnswersTable(answers);
+            updateAnalysisTable(answers, calculations, analyses);
+        })
+        goTo(settings.result.panel.id);
     }
 
     /**
@@ -1139,7 +1387,8 @@ let QuestionGenerator = (() => {
             } else if (confirm("Are you sure to delete this option?")) {
                 $optionContainer.remove();
             }
-        }).on("click", "button.factor-option-delete", (event) => {
+        })
+        .on("click", "button.factor-option-delete", (event) => {
             event.preventDefault();
             let $optionContainer = $(event.target).parents("div.row.factor-option");
             let optionsCount = $optionContainer.parent().children("div.row.factor-option").length;
@@ -1149,7 +1398,8 @@ let QuestionGenerator = (() => {
             } else if (confirm("Are you sure to delete this option?")) {
                 $optionContainer.remove();
             }
-        }).on("click", "button#btn-add-answer-option", (event) => {
+        })
+        .on("click", "button#btn-add-answer-option", (event) => {
             event.preventDefault();
             let $panelBody = $(event.target).parents(".panel-body");
             let source = $("#new-answer-option-template").html();
@@ -1163,7 +1413,8 @@ let QuestionGenerator = (() => {
                     subjects: _subjects
                 }))
             )
-        }).on("click", "button#btn-add-factor-option", (event) => {
+        })
+        .on("click", "button#btn-add-factor-option", (event) => {
             event.preventDefault();
             let $container = $(event.target).parents(`#${settings.newCalculation.factorsContainer.id}`);
             let source = $("#new-calculation-factor-option-template").html();
@@ -1175,7 +1426,8 @@ let QuestionGenerator = (() => {
                     subjects: _subjects
                 }))
             )
-        }).on("click", `#${settings.newSubject.createButton.id}`, (event) => {
+        })
+        .on("click", `#${settings.newSubject.createButton.id}`, (event) => {
             event.preventDefault();
             if ($(`#${settings.newSubject.questionInput.id}`).val() !== "") {
                 let params = {
@@ -1194,7 +1446,8 @@ let QuestionGenerator = (() => {
                 alert("Question can't be empty!");
             }
             //  Creating a new wizard
-        }).on("click", `#${settings.newCalculation.createButton.id}`, (event) => {
+        })
+        .on("click", `#${settings.newCalculation.createButton.id}`, (event) => {
             event.preventDefault();
             if ($(`#${settings.newCalculation.nameInput.id}`).val() !== "") {
                 let params = {
@@ -1213,7 +1466,11 @@ let QuestionGenerator = (() => {
                 alert("Name can't be empty!");
             }
             //  Creating a new wizard
-        }).on("click", `#${settings.newAnalysis.createButton.id}`, (event) => {
+        })
+        .on("click", `#${settings.result.backButton.id}`, (event) => {
+            goTo(settings.subjects.panel.id);
+        })
+        .on("click", `#${settings.newAnalysis.createButton.id}`, (event) => {
             event.preventDefault();
             if ($(`#${settings.newAnalysis.nameInput.id}`).val() !== "" && $(`#${settings.newAnalysis.resultInput.id}`).val() != "") {
                 let params = {
@@ -1233,13 +1490,17 @@ let QuestionGenerator = (() => {
                 alert("Name and result can't be empty!");
             }
             //  Creating a new wizard
-        }).on("click", `#${settings.newSubject.backButton.id}`, () => {
+        })
+        .on("click", `#${settings.newSubject.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
-        }).on("click", `#${settings.newCalculation.backButton.id}`, () => {
+        })
+        .on("click", `#${settings.newCalculation.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
-        }).on("click", `#${settings.newAnalysis.backButton.id}`, () => {
+        })
+        .on("click", `#${settings.newAnalysis.backButton.id}`, () => {
             goTo(settings.subjects.panel.id);
-        }).on("click", "button.subject-edit", (event) => {
+        })
+        .on("click", "button.subject-edit", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-subject-id");
 
@@ -1247,7 +1508,8 @@ let QuestionGenerator = (() => {
                 renderNewSubjectForm(subject);
                 goTo(settings.newSubject.panel.id);
             });
-        }).on("click", "button.calculation-edit", (event) => {
+        })
+        .on("click", "button.calculation-edit", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-calculation-id");
 
@@ -1255,7 +1517,8 @@ let QuestionGenerator = (() => {
                 renderNewCalculationForm(calculation);
                 goTo(settings.newCalculation.panel.id);
             });
-        }).on("click", "button.analysis-edit", (event) => {
+        })
+        .on("click", "button.analysis-edit", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-analysis-id");
 
@@ -1263,7 +1526,20 @@ let QuestionGenerator = (() => {
                 renderNewAnalysisForm(analysis);
                 goTo(settings.newAnalysis.panel.id);
             });
-        }).on("click", "button.subject-delete", (event) => {
+        })
+        .on("click", "button.result-view", (event) => {
+            let resultId = event.target.getAttribute("data-result-id");
+
+            if (event.target.className.split(" ").indexOf("result-view") > -1 && resultId) {
+                DataStorage.Results.find(resultId, (response) => {
+                    let result = response.result,
+                        answers = response.answers;
+
+                    renderResultPanel(answers);
+                })
+            }
+        })
+        .on("click", "button.subject-delete", (event) => {
             let $record = $(event.target).parents("tr");
             let id = $record.attr("data-subject-id");
 

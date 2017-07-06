@@ -82,7 +82,7 @@ function get_result($conn, $params) {
     if ($result->num_rows > 0) {
         $resultRow = $result->fetch_assoc();
 
-        $query = "SELECT * FROM `qna_answers` WHERE `result_id`={$resultRow['id']}";
+        $query = "SELECT answers.*, subjects.question as question FROM `qna_answers` as answers, `qna_subjects` as subjects WHERE `answers`.`result_id`={$resultRow['id']} and `subjects`.id=`answers`.`subject_id`";
         $answers = array();
         $answerResult = $conn->query($query);
         if ($answerResult->num_rows > 0) {

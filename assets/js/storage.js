@@ -124,6 +124,8 @@ let DataStorage = (() => {
 
     let Wizards = (() => {
         let _wizards = Constants.wizards;
+        let _calculations = Constants.calculations;
+        let _analyses = Constants.analyses;
 
         let _offset = 3;
 
@@ -274,6 +276,47 @@ let DataStorage = (() => {
         }
 
         /**
+         * Getting settings like calculations, analyses for a given wizard. This will be used to render result panel.
+         * @param {number} wizardId 
+         * @param {function} success 
+         * @param {function} failure 
+         */
+        const getSettings = (wizardId, success, failure) => {
+            if (env === "demo") {
+                let calculations = _calculations.filter(cal => cal.wizard_id == wizardId);
+                let analyses = _analyses.filter(cal => cal.wizard_id == wizardId);
+                if (typeof success === "function") {
+                    success({
+                        calculations,
+                        analyses
+                    });
+                } else {
+                    return {
+                        calculations,
+                        analyses
+                    };
+                }
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "settings",
+                    params: JSON.stringify({
+                        id: wizardId
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success(response);
+                    } else {
+                        success({
+                            calculations: [],
+                            analyses: []
+                        });
+                    }
+                }, failure);
+            }
+        }
+
+        /**
          * 
          * @param {number} id 
          * @param {function} success 
@@ -307,7 +350,8 @@ let DataStorage = (() => {
             insert: addWizard,
             remove: deleteWizard,
             update: updateWizard,
-            find: findWizard
+            find: findWizard,
+            settings: getSettings
         }
     })();
 

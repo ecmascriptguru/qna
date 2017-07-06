@@ -63,6 +63,10 @@ switch($end_point) {
             $return = delete_wizard($conn, $params);
 
             echo json_encode($return);
+        } else if ($action == "settings") {
+            $result = get_wizard_options($conn, $params);
+
+            echo json_encode($result);
         }
         break;
 

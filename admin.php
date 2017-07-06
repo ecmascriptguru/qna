@@ -47,7 +47,7 @@ require("config/env.php");
 
                 <div id="subjects-panel" class="panel panel-default">
                     <div class="panel-heading">
-                        <h3>Manage Subjects and Calculations</h3>
+                        <h3>Wizard Management</h3>
                     </div>
                     <div class="panel-body">
                         <ul class="nav nav-tabs">
@@ -277,6 +277,35 @@ require("config/env.php");
                             </div>
                             <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
                                 <button class="btn btn-primary form-control" id="new-analysis-create-button" data-action="create">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default" id="result-panel">
+                    <div class="panel-heading">
+                        <h3>Result View</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="nav nav-tabs">
+                            <li role="presentation" class="active"><a href="#tab-content-result-analysis">Analysis</a></li>
+                            <li role="presentation"><a href="#tab-content-result-answers">Answers</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" id="tab-content-result-analysis" class="tab-pane active">
+                                <table class="table table-striped table-bordered" id="result-analysis-table">
+                                </table>
+                            </div>
+                            <div role="tabpanel" id="tab-content-result-answers" class="tab-pane">
+                                <table class="table table-striped table-bordered" id="result-answers-table">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                                <button class="btn btn-default form-control" id="result-back-button">Back to List</button>
                             </div>
                         </div>
                     </div>
