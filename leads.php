@@ -42,6 +42,41 @@ require("config/env.php");
                 </div>
             </div>
 
+            <div class="panel panel-default" id="qna-leads-wizard-form" style="display:none;">
+                <div class="panel-heading">
+                    <h3>Give us some information of your property.</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-6 col-xs-12 form-group">
+                            <input class="form-control" placeholder="Property Address" id="qna-leads-wizard-property-address" />
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-xs-12 form-group">
+                            <input class="form-control" placeholder="Property City" id="qna-leads-wizard-property-city" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-6 col-xs-12 form-group">
+                            <input class="form-control" placeholder="Property State" id="qna-leads-wizard-property-state" />
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-xs-12 form-group">
+                            <input class="form-control" placeholder="Zip Code" id="qna-leads-wizard-property-zip-code" />
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                            <button class="btn btn-default form-control" id="qna-leads-back-to-wizards">Back to Wizards</button>
+                        </div>
+                        <div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+                            <button class="btn btn-default form-control" data-id="" id="qna-leads-wizard-continue">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="panel panel-default" id="qna-leads-subject" style="display:none;">
             </div>
 

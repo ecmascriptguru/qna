@@ -14,11 +14,7 @@
                 <td>{{ @index }}</td>
                 <td>{{ name }}</td>
                 <td>
-                    {{#if isAnswered}}
-                    <button class="btn btn-success form-control select-result" data-id="{{result_id}}">Check Answers</button>
-                    {{else}}
                     <button class="btn btn-primary form-control select-wizard" data-id="{{id}}">Select</button>
-                    {{/if}}
                 </td>
             </tr>
             {{/each}}

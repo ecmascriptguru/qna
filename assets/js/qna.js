@@ -1900,6 +1900,8 @@ let QuestionRenderer = (() => {
     let _done = [];
     let _todo = [];
 
+    let _result = {};
+
     /**
      * Constants for configuration.
      */
@@ -1916,6 +1918,31 @@ let QuestionRenderer = (() => {
             },
             selectResultButton: {
                 class: "select-result"
+            }
+        },
+        wizard: {
+            panel: {
+                id: "qna-leads-wizard-form",
+                address: {
+                    id: "qna-leads-wizard-property-address"
+                },
+                city: {
+                    id: "qna-leads-wizard-property-city"
+                },
+                state: {
+                    id: "qna-leads-wizard-property-state"
+                },
+                zipCode: {
+                    id: "qna-leads-wizard-property-zip-code"
+                }
+            },
+            backToWizardsButton: {
+                id: "qna-leads-back-to-wizards",
+                class: "btn btn-default form-control"
+            },
+            continueButton: {
+                id: "qna-leads-wizard-continue",
+                class: "btn btn-default form-control"
             }
         },
         subject: {
@@ -2448,31 +2475,18 @@ let QuestionRenderer = (() => {
      */
     const renderWizardsPanel = () => {
         DataStorage.Wizards.get((wizards) => {
-            DataStorage.Results.get(_userId, (results) => {
-                let tableSource = $(`#${settings.wizards.tableTemplate.id}`).html(),
-                    tableTemplate = Handlebars.compile(tableSource),
-                    $wizardsPanelBody = $(`#${settings.wizards.panel.id} .panel-body`);
+            let tableSource = $(`#${settings.wizards.tableTemplate.id}`).html(),
+                tableTemplate = Handlebars.compile(tableSource),
+                $wizardsPanelBody = $(`#${settings.wizards.panel.id} .panel-body`);
 
-                $wizardsPanelBody.children().remove();
+            $wizardsPanelBody.children().remove();
+            $wizardsPanelBody.append(
+                $(tableTemplate({
+                    wizards: wizards
+                }))
+            );
 
-                for (let i = 0; i < wizards.length; i ++) {
-                    let matchedReuslts = results.filter(result => result.wizard_id == wizards[i].id);
-
-                    if (matchedReuslts.length > 0) {
-                        wizards[i].isAnswered = true;
-                        wizards[i].result_id = matchedReuslts[0].id;
-                    } else {
-                        wizards[i].isAnswered = false;
-                    }
-                }
-                $wizardsPanelBody.append(
-                    $(tableTemplate({
-                        wizards: wizards
-                    }))
-                );
-
-                goTo(settings.wizards.panel.id);
-            });
+            goTo(settings.wizards.panel.id);
         });
     }
 
@@ -2539,16 +2553,50 @@ let QuestionRenderer = (() => {
      * @return {void}
      */
     const initEvents = () => {
-        $(document).on("click", $(`button.${settings.wizards.selectWizardButton.class}`), (event) => {
-
+        $(document)
+        .on("click", `button.${settings.wizards.selectWizardButton.class}`, (event) => {
             if (event.target.className.split(" ").indexOf(settings.wizards.selectWizardButton.class) > 0) {
                 let wizardID = event.target.getAttribute("data-id");
+                let address = $(`#${settings.wizard.panel.address.id}`);
+                let city = $(`#${settings.wizard.panel.city.id}`);
+                let state = $(`#${settings.wizard.panel.state.id}`);
+                let zip_code = $(`#${settings.wizard.panel.zipCode.id}`);
 
-                DataStorage.Wizards.find(wizardID, (wizard) => {
-                    // Code to render step by step Q&A wizard.
-                    start(wizard);
+                address.val("");
+                city.val("");
+                state.val("");
+                zip_code.val("");
+
+                $(`button#${settings.wizard.continueButton.id}`).attr({
+                    "data-id": wizardID
                 });
+
+                goTo(settings.wizard.panel.id);
             }
+        })
+        .on("click", `#${settings.wizard.backToWizardsButton.id}`, (event) => {
+            goTo(settings.wizards.panel.id);
+        })
+        .on("click", `#${settings.wizard.continueButton.id}`, (event) => {
+            let wizardID = event.target.getAttribute("data-id");
+
+            DataStorage.Wizards.find(wizardID, (wizard) => {
+                // Code to render step by step Q&A wizard.
+                let address = $(`#${settings.wizard.panel.address.id}`).val().trim();
+                let city = $(`#${settings.wizard.panel.city.id}`).val().trim();
+                let state = $(`#${settings.wizard.panel.state.id}`).val().trim();
+                let zip_code = $(`#${settings.wizard.panel.zipCode.id}`).val().trim();
+
+                if (address == "" ||
+                    city == "" ||
+                    state == "" ||
+                    zip_code == "") {
+                        alert("Please give us information necessary.");
+                        return false;
+                    } else {
+                        start(wizard);
+                    }
+            });
         })
         .on("click", `button.${settings.wizards.selectResultButton.class}`, (event) => {
             if (event.target.className.split(" ").indexOf(settings.wizards.selectResultButton.class) > 0) {
@@ -2626,7 +2674,7 @@ let QuestionRenderer = (() => {
                             _todo = [];
                             _done = [];
 
-                            goTo();
+                            goTo(settings.wizard.panel.id);
                         } else {
                             _selectedSubject
                         }
@@ -2634,7 +2682,7 @@ let QuestionRenderer = (() => {
                 }
             }
         })
-        .on("change", $(`#${settings.subject.panel.id} input[name='answer-option-yes-no']`), (event) => {
+        .on("change", `#${settings.subject.panel.id} input[name='answer-option-yes-no']`, (event) => {
             let index = parseInt(event.target.getAttribute("data-id"));
             let answers = _selectedSubject.answers;
 

@@ -705,7 +705,7 @@ let Constants = {
                     value: "200"
                 }]
             }),
-            result: "Something here {{Q5}} and {{A7}} on {{Calc3}} and {{Val9}}"
+            result: "Something here {{Q5}} and {{A7}} on {{Cal3}} and {{Val9}}"
         }
     ],
 
@@ -713,6 +713,10 @@ let Constants = {
         {
             id: 1,
             user_id: 1,
+            address: "Address here",
+            city: "city",
+            state: "state here",
+            zip_code: "zipcode",
             wizard_id: 3,
             analysis: null
         }
