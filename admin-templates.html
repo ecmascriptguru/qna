@@ -25,13 +25,14 @@
 <!-- Template to display subject comparison in analysis create/update form. -->
 <script id="new-analysis-condition-subject-template" type="text/x-handlebars-template">
     <div class="row form-group condition condition-subject" data-id="{{id}}">
-        <div class="col-xs-2">
-            <strong>subject_{{id}}</strong>
+        <div class="col-xs-7">
+            <strong>{{ question }}</strong>
+            <!-- <strong>subject_{{id}}</strong> -->
         </div>
-        <div class="col-xs-4 question">
+        <div class="col-xs-1 question">
             {{operator}}
         </div>
-        <div class="col-xs-4 answer">
+        <div class="col-xs-2 answer">
             {{value}}
         </div>
         <div class="col-xs-2">
@@ -43,13 +44,14 @@
 <!-- Template to display calculation comparison in analysis create/update form. -->
 <script id="new-analysis-condition-calculation-template" type="text/x-handlebars-template">
     <div class="row form-group condition condition-calculation" data-id="{{id}}">
-        <div class="col-xs-2">
-            <strong>calculation_{{id}}</strong>
+        <div class="col-xs-7">
+            <strong>{{ name }}</strong>
+            <!-- <strong>calculation_{{id}}</strong> -->
         </div>
-        <div class="col-xs-4 factors">
+        <div class="col-xs-1 factors">
             {{operator}}
         </div>
-        <div class="col-xs-4 value">
+        <div class="col-xs-2 value">
             {{value}}
         </div>
         <div class="col-xs-2">

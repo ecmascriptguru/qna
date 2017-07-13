@@ -794,18 +794,26 @@ let QuestionGenerator = (() => {
             let source = $("#new-analysis-condition-subject-template").html(),
                 template = Handlebars.compile(source);
 
-            $container.append(
-                $(template(subjects[i]))
-            );
+            DataStorage.Subjects.find(subjects[i].id, (subject) => {
+                subjects[i].question = subject.question;
+                
+                $container.append(
+                    $(template(subjects[i]))
+                );
+            })
         }
 
         for (let i = 0; i < calculations.length; i ++) {
             let source = $("#new-analysis-condition-calculation-template").html(),
                 template = Handlebars.compile(source);
 
-            $container.append(
-                $(template(calculations[i]))
-            );
+            DataStorage.Calculations.find(calculations[i].id, (calculation) => {
+                calculations[i].name = calculation.name;
+
+                $container.append(
+                    $(template(calculations[i]))
+                );
+            });
         }
     }
 
