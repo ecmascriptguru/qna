@@ -209,45 +209,120 @@ let DataStorage = (() => {
          */
         const cloneWizard = (id, success, failure) => {
             if (env == "demo") {
-                // findWizard(id, (sourceWizard) => {
-                //     let desWizard = {
-                //         name: `Copy of ${sourceWizard.name}`
-                //     };
+                findWizard(id, (sourceWizard) => {
+                    let desWizard = {
+                        name: `Copy of ${sourceWizard.name}`
+                    };
 
-                //     let wizardId = addWizard(desWizard);
-                //     let {calculations, subjects} = Analyses.options(id);// getOptions(id);
-                //     let analyses = Analyses.get(id);
-                //     let subjectsMap = {},
-                //         calculationsMap = {},
-                //         analysesMap = {};
+                    let wizardId = addWizard(desWizard);
+                    let {calculations, subjects} = Analyses.options(id);// getOptions(id);
+                    let analyses = Analyses.get(id);
+                    let subjectsMap = {},
+                        calculationsMap = {},
+                        analysesMap = {};
 
-                //     //  Management of subjects
-                //     for (let i = 0; i < subjects.length; i ++) {
-                //         let curSubject = subjects[i];
-                //         curSubject.wizard_id = wizardId;
-                //         subjectsMap[subjects[i].id] = Subjects.insert(curSubject);
-                //     }
+                    //  Management of subjects
+                    for (let i = 0; i < subjects.length; i ++) {
+                        let subject = {
+                            wizard_id: wizardId,
+                            question: subjects[i].question,
+                            type_id: subjects[i].type_id,
+                            type_name: subjects[i].type_name,
+                            answers: subjects[i].answers,
+                        }
+                        subjectsMap[subjects[i].id] = Subjects.insert(subject);
+                    }
 
-                //     subjects = Subjects.get(wizardId);
-                //     for (let i = 0; i < subjects.length; i ++) {
-                //         let answers = subjects[i].answers;
-                //         if (typeof answers == "string") {
-                //             answers = JSON.parse(answers);
-                //         }
+                    subjects = Subjects.get(wizardId);
+                    for (let i = 0; i < subjects.length; i ++) {
+                        let answers = subjects[i].answers;
+                        if (typeof answers == "string") {
+                            answers = JSON.parse(answers);
+                        }
 
-                //         for (let j = 0; j < answers.length; j ++) {
-                //             if (answers[j].next) {
-                //                 answers[j].next = subjectsMap[answers[j].next];
-                //             }
-                //         }
-                //         subjects[i].answers = JSON.stringify(answers);
-                //         if (Subjects.update(subjects[i].id, subjects[i]) == false) {
-                //             alert("Failure to update subject");
-                //         }
-                //     }
+                        for (let j = 0; j < answers.length; j ++) {
+                            if (answers[j].next) {
+                                answers[j].next = subjectsMap[answers[j].next];
+                            }
+                        }
+                        subjects[i].answers = JSON.stringify(answers);
+                        if (Subjects.update(subjects[i].id, subjects[i]) == false) {
+                            alert("Failure to update subject");
+                        }
+                    }
 
-                //     console.log("Hello");
-                // })
+                    for (let i = 0; i < calculations.length; i ++) {
+                        let factors = calculations[i].factors;
+                        if (typeof factors == "string") {
+                            factors = JSON.parse(factors)
+                        }
+
+                        for (let j = 0; j < factors.length; j ++) {
+                            factors[j].id = subjectsMap[factors[j].id];
+                        }
+                        let cal = {
+                            wizard_id: wizardId,
+                            name: calculations[i].name,
+                            operator: calculations[i].operator,
+                            factors: JSON.stringify(factors)
+                        }
+                        calculationsMap[calculations[i].id] = Calculations.insert(cal);
+                    }
+
+                    for (let i = 0; i < analyses.length; i ++) {
+                        let condition = analyses[i].condition;
+                        if (typeof condition == "string") {
+                            condition = JSON.parse(condition);
+                        }
+
+                        let condSubjects = condition.subjects;
+                        let condCalculatins = condition.calculations;
+
+                        for (let j = 0; j < condSubjects.length; j ++) {
+                            condSubjects[j].id = subjectsMap[condSubjects[j].id];
+                        }
+
+                        for (let j = 0; j < condCalculatins.length; j ++) {
+                            condCalculatins[j].id = calculationsMap[condCalculatins[j].id];
+                        }
+                        condition = {
+                            subjects: condSubjects,
+                            calculations: condCalculatins
+                        };
+
+                        let result = analyses[i].result;
+                        let pattern = /\{\{(A|Q|Cal|Val)(\d+)\}\}/g;
+                        let matches = result.match(pattern);
+                        for (let j = 0; j < matches.length; j ++) {
+                            let match = matches[j];
+                            let tag = match.match(/[a-z|A-Z]+/g)[0];
+                            let tagId = match.match(/\d+/g)[0];
+                            let newId = null;
+                            switch(tag) {
+                                case "A":
+                                case "Q":
+                                    newId = subjectsMap[tagId];
+                                    result = result.replace(new RegExp(match, "g"), `{{${tag}${newId}}}`);
+
+                                case "Cal":
+                                case "Val":
+                                    newId = calculationsMap[tagId];
+                                    result = result.replace(new RegExp(match, "g"), `{{${tag}${newId}}}`);
+                            }
+                        }
+                        let analysis = {
+                            wizard_id: wizardId,
+                            name: analyses[i].name,
+                            condition: JSON.stringify(condition),
+                            result: result
+                        }
+                        Analyses.insert(analysis);
+                    }
+
+                    if (typeof success == "function") {
+                        success();
+                    }
+                })
             } else {
                 sendRequest(QNAConfig.baseUrl(), {
                     end_point: "wizards",
@@ -481,7 +556,11 @@ let DataStorage = (() => {
                     question: params.question || "No title",
                     type_id: params.type_id || 1,
                     wizard_id: params.wizard_id,
-                    answers: JSON.stringify(params.answers || [{ caption: "", value: "", weight: 100, next: null }])
+                    answers: (!params.answers) 
+                        ? [{ caption: "", value: "", weight: 100, next: null }]
+                        : (typeof params.answers == "string") 
+                            ? params.answers
+                            : JSON.stringify(params.answers)
                 };
                 _subjects.push(tempSubject);
                 _offset++;
@@ -713,7 +792,7 @@ let DataStorage = (() => {
                 if (typeof success === "function") {
                     success(tempCalculation);
                 } else {
-                    return offset -1;
+                    return _offset -1;
                 }
             } else {
                 sendRequest(QNAConfig.baseUrl(), {
@@ -974,7 +1053,7 @@ let DataStorage = (() => {
                 if (typeof success === "function") {
                     success(tempAnalysis);
                 } else {
-                    return offset -1;
+                    return _offset -1;
                 }
             } else {
                 sendRequest(QNAConfig.baseUrl(), {
