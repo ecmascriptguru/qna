@@ -3,3 +3,7 @@ alter table `qna`.`qna_results`
    add column `city` varchar(50) NOT NULL after `address`, 
    add column `state` varchar(50) NOT NULL after `city`, 
    add column `zip_code` varchar(10) NOT NULL after `state`
+
+
+alter table `qna`.`qna_analyses` 
+   change `result` `result` text(255) NULL 
