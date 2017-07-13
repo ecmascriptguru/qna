@@ -60,6 +60,54 @@
     </div>
 </script>
 
+<!-- Template for subject tags table of new analysis panel's dictionary  -->
+<script id="new-analysis-dictionary-subjects-table-template" type="text/x-handlebars-template">
+    <table class="{{class}}" id="{{id}}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Question Tag</th>
+                <th>Answers Tag</th>
+                <th>Question</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each subjects}}
+            <tr>
+                <td>{{@index}}</td>
+                <td>Q{{id}}</td>
+                <td>A{{id}}</td>
+                <td>{{question}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
+
+<!-- Template for calculation tags table of new analysis panel's dictionary  -->
+<script id="new-analysis-dictionary-calculations-table-template" type="text/x-handlebars-template">
+    <table class="{{class}}" id="{{id}}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name Tag</th>
+                <th>Value Tag</th>
+                <th>Calculation Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each calculations}}
+            <tr>
+                <td>{{@index}}</td>
+                <td>Cal{{id}}</td>
+                <td>Val{{id}}</td>
+                <td>{{name}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>
+
 <!-- Template of subject select to be used as a staring point in a wizard -->
 <script id="wizard-starting-question-template" type="text/x-handlebars-template">
     <!--<div class="form-group">-->

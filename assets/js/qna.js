@@ -223,6 +223,20 @@ let QuestionGenerator = (() => {
                     }
                 ]
             },
+            subjectTagsTable: {
+                id: "new-analysis-dictionary-subjects-table",
+                class: "table table-striped table-bordered",
+                template: {
+                    id: "new-analysis-dictionary-subjects-table-template"
+                }
+            },
+            calculationTagsTable: {
+                id: "new-analysis-dictionary-calculations-table",
+                class: "table table-striped table-bordered",
+                template: {
+                    id: "new-analysis-dictionary-calculations-table-template"
+                }
+            },
             operatorSelectForSubject: {
                 id: "new-analysis-operator-select-for-subjects"
             },
@@ -733,13 +747,31 @@ let QuestionGenerator = (() => {
                 subjectSelectSource = $("#new-analysis-subject-select-template").html(),
                 subjectSelectTemplate = Handlebars.compile(subjectSelectSource),
                 operatorSelectForCalculationSource = $("#new-analysis-operator-select-template").html(),
-                operatorSelectForCalculationTemplate = Handlebars.compile(operatorSelectForCalculationSource);
+                operatorSelectForCalculationTemplate = Handlebars.compile(operatorSelectForCalculationSource),
+                subjectTagsTable = $(`#${settings.newAnalysis.subjectTagsTable.id}`),
+                subjectTagsTableSource = $(`#${settings.newAnalysis.subjectTagsTable.template.id}`).html(),
+                subjectTagsTableTemplate = Handlebars.compile(subjectTagsTableSource),
+                calculationTagsTable = $(`#${settings.newAnalysis.calculationTagsTable.id}`),
+                calculationTagsTableSource = $(`#${settings.newAnalysis.calculationTagsTable.template.id}`).html(),
+                calculationTagsTableTemplate = Handlebars.compile(calculationTagsTableSource);
 
             subjectSelect.html(subjectSelectTemplate({
                 subjects: option.subjects
             }));
 
+            subjectTagsTable.html(subjectTagsTableTemplate({
+                id: settings.newAnalysis.subjectTagsTable.id,
+                class: settings.newAnalysis.subjectTagsTable.class,
+                subjects: option.subjects
+            }));
+
             calculationSelect.html(calculationSelectTemplate({
+                calculations: option.calculations
+            }));
+
+            calculationTagsTable.html(calculationTagsTableTemplate({
+                id: settings.newAnalysis.calculationTagsTable.id,
+                class: settings.newAnalysis.calculationTagsTable.class,
                 calculations: option.calculations
             }));
             
@@ -796,7 +828,7 @@ let QuestionGenerator = (() => {
 
             DataStorage.Subjects.find(subjects[i].id, (subject) => {
                 subjects[i].question = subject.question;
-                
+
                 $container.append(
                     $(template(subjects[i]))
                 );

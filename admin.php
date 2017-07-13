@@ -184,88 +184,111 @@ require("config/env.php");
                         <h3>Create/Update an Analysis</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="form-group">
-                            <label for="new-analysis-name-input">Enter Name.</label>
-                            <input class="form-control" id="new-analysis-name-input" placeholder="Name">
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <h4>Subject Comparison Configuration</h4>
+                        <ul class="nav nav-tabs">
+                            <li role="presentation" class="active"><a href="#new-analysis-form-tab">Analysis Form</a></li>
+                            <li role="presentation"><a href="#new-analysis-dictionary-tab">References</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" id="new-analysis-form-tab" class="tab-pane active">
+                                <div class="form-group">
+                                    <label for="new-analysis-name-input">Enter Name.</label>
+                                    <input class="form-control" id="new-analysis-name-input" placeholder="Name">
                                 </div>
-                                <div class="col-sm-5 col-xs-12">
-                                    <select id="new-analysis-subject-select-for-comparison" class="form-control">
-                                        
-                                    </select>
-                                </div>
-                                <div class="col-sm-2 col-xs-12">
-                                    <select id="new-analysis-operator-select-for-subjects" class="form-control">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h4>Subject Comparison Configuration</h4>
+                                        </div>
+                                        <div class="col-sm-5 col-xs-12">
+                                            <select id="new-analysis-subject-select-for-comparison" class="form-control">
+                                                
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-12">
+                                            <select id="new-analysis-operator-select-for-subjects" class="form-control">
 
-                                    </select>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-12">
+                                            <input id="new-analysis-subject-comparison-value" class="form-control" placeholder="Type Something" />
+                                        </div>
+                                        <div class="col-sm-3 col-xs-12">
+                                            <button id="new-analysis-subject-comparison-add-button" class="btn btn-default form-control">Add Subject</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h4>Calculation Comparisons Configuration</h4>
+                                        </div>
+                                        <div class="col-sm-5 col-xs-12">
+                                            <select id="new-analysis-calculation-select-for-comparison" class="form-control">
+                                                
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-12">
+                                            <select id="new-analysis-operator-select-for-calculations" class="form-control">
+
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-12">
+                                            <input id="new-analysis-calculation-comparison-value" class="form-control" placeholder="Type Something" />
+                                        </div>
+                                        <div class="col-sm-3 col-xs-12">
+                                            <button id="new-analysis-calculation-comparison-add-button" class="btn btn-default form-control">Add Calculation</button>
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" id="new-analysis-condition-value" value='{"subjects":[],"calculations":[]}' />
                                 </div>
-                                <div class="col-sm-2 col-xs-12">
-                                    <input id="new-analysis-subject-comparison-value" class="form-control" placeholder="Type Something" />
+                                
+                                <div id="new-analysis-conditions-container" class="form-group">
                                 </div>
-                                <div class="col-sm-3 col-xs-12">
-                                    <button id="new-analysis-subject-comparison-add-button" class="btn btn-default form-control">Add Subject</button>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                            <select id="new-analysis-comparison-type-select" class="form-control">
+                                                <option value="subject">Subject Comparison</option>
+                                                <option value="calculation">Calculation Comparison</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3 col-sm-2 col-xs-6">
+                                            <select id="new-analysis-comparison-visible-type-select" class="form-control">
+                                                <option value="question">Question</option>
+                                                <option value="answer">Answer</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-5 col-md-3 col-sm-3 col-xs-12">
+                                            <select id="new-analysis-comparison-value-select" class="form-control">
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3 col-sm-3 col-xs-6">
+                                            <button id="new-analysis-analysis-tag-add-button" class="btn btn-default form-control">Copy to Clipboard</button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <label for="new-analysis-result-value">Analysis Text</label>
+                                            <textarea type="text" id="new-analysis-result-value" value="" class="form-control" ></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <h4>Calculation Comparisons Configuration</h4>
-                                </div>
-                                <div class="col-sm-5 col-xs-12">
-                                    <select id="new-analysis-calculation-select-for-comparison" class="form-control">
-                                        
-                                    </select>
-                                </div>
-                                <div class="col-sm-2 col-xs-12">
-                                    <select id="new-analysis-operator-select-for-calculations" class="form-control">
-
-                                    </select>
-                                </div>
-                                <div class="col-sm-2 col-xs-12">
-                                    <input id="new-analysis-calculation-comparison-value" class="form-control" placeholder="Type Something" />
-                                </div>
-                                <div class="col-sm-3 col-xs-12">
-                                    <button id="new-analysis-calculation-comparison-add-button" class="btn btn-default form-control">Add Calculation</button>
-                                </div>
-                            </div>
-
-                            <input type="hidden" id="new-analysis-condition-value" value='{"subjects":[],"calculations":[]}' />
-                        </div>
-                        
-                        <div id="new-analysis-conditions-container" class="form-group">
-                            
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                    <select id="new-analysis-comparison-type-select" class="form-control">
-                                        <option value="subject">Subject Comparison</option>
-                                        <option value="calculation">Calculation Comparison</option>
-                                    </select>
-                                </div>
-                                <div class="col-lg-2 col-md-3 col-sm-2 col-xs-6">
-                                    <select id="new-analysis-comparison-visible-type-select" class="form-control">
-                                        <option value="question">Question</option>
-                                        <option value="answer">Answer</option>
-                                    </select>
-                                </div>
-                                <div class="col-lg-5 col-md-3 col-sm-3 col-xs-12">
-                                    <select id="new-analysis-comparison-value-select" class="form-control">
-                                    </select>
-                                </div>
-                                <div class="col-lg-2 col-md-3 col-sm-3 col-xs-6">
-                                    <button id="new-analysis-analysis-tag-add-button" class="btn btn-default form-control">Copy to Clipboard</button>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <label for="new-analysis-result-value">Analysis Text</label>
-                                    <textarea type="text" id="new-analysis-result-value" value="" class="form-control" ></textarea>
+                            <div role="tabpanel" id="new-analysis-dictionary-tab" class="tab-pane">
+                                <ul class="nav nav-tabs">
+                                    <li role="presentation" class="active"><a href="#new-analysis-dictionary-subjects">Subjects</a></li>
+                                    <li role="presentation"><a href="#new-analysis-dictionary-calculations">Calculations</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div role="tabpanel" id="new-analysis-dictionary-subjects" class="tab-pane active">
+                                        <table class="table table-striped table-bordered" id="new-analysis-dictionary-subjects-table">
+                                        </table>
+                                    </div>
+                                    <div role="tabpanel" id="new-analysis-dictionary-calculations" class="tab-pane">
+                                        <table class="table table-striped table-bordered" id="new-analysis-dictionary-calculations-table">
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
