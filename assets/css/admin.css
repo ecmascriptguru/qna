@@ -18,8 +18,6 @@ table tbody tr td {
     vertical-align: middle !important;}
     table#wizards-table th:first-child {
         width: 80px;}
-    table#wizards-table th:nth-child(3) {
-        width: 240px;}
     table th.actions-header {
         width: 240px;}
     table th.wide-actions-header {

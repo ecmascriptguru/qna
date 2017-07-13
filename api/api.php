@@ -1,14 +1,14 @@
 <?php
 
-require("../config/env.php");
-require("../config/db-config.php");
+require_once("../config/env.php");
+require_once("../config/db-config.php");
 
-require("../classes/qnaTypes.php");
-require("../classes/qnaWizards.php");
-require("../classes/qnaSubjects.php");
-require("../classes/qnaCalculations.php");
-require("../classes/qnaAnalyses.php");
-require("../classes/qnaResults.php");
+require_once("../classes/qnaTypes.php");
+require_once("../classes/qnaWizards.php");
+require_once("../classes/qnaSubjects.php");
+require_once("../classes/qnaCalculations.php");
+require_once("../classes/qnaAnalyses.php");
+require_once("../classes/qnaResults.php");
 
 if (!isset($_POST) || empty($_POST)) {
     $DATA = $_GET;
@@ -49,6 +49,10 @@ switch($end_point) {
             ]);
         } else if ($action == "create") {
             $return = create_wizard($conn, $params);
+
+            echo json_encode($return);
+        } else if ($action == "clone") {
+            $return = clone_wizard($conn, $params);
 
             echo json_encode($return);
         } else if ($action == "get") {

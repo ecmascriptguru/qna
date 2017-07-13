@@ -1253,9 +1253,10 @@ let QuestionGenerator = (() => {
 
     /**
      * Rerender wizards table with data pulled from data store.
+     * @param {function} success
      * @return {void}
      */
-    const updateWizardsTable = () => {
+    const updateWizardsTable = (success) => {
         DataStorage.Wizards.get((wizards) => {
             let table = $(`#${settings.wizards.table.id}`);
             let source = $("#wizards-table-template").html();
@@ -1687,7 +1688,17 @@ let QuestionGenerator = (() => {
                 $record.remove();
                 extractAnalysisConditionsFromConfig()
             }
-        }).on("click", "button.wizard-edit", (event) => {
+        })
+        .on("click", "button.wizard-clone", (event) => {
+            let wizardId = event.target.getAttribute("data-id");
+
+            DataStorage.Wizards.clone(wizardId, (response) => {
+                updateWizardsTable(() => {
+                    renderWizardsPanel();
+                })
+            })
+        })
+        .on("click", "button.wizard-edit", (event) => {
             let $record = $(event.target).parents("tr");
             let wizardId = $record.attr("data-wizard-id");
 
@@ -1695,7 +1706,8 @@ let QuestionGenerator = (() => {
                 _selected_wizard = wizardId;
                 renderNewWizardForm(wizard);
             });
-        }).on("click", "button.wizard-delete", (event) => {
+        })
+        .on("click", "button.wizard-delete", (event) => {
             let $record = $(event.target).parents("tr");
             let wizardId = $record.attr("data-wizard-id");
 

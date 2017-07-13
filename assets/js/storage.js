@@ -127,7 +127,7 @@ let DataStorage = (() => {
         let _calculations = Constants.calculations;
         let _analyses = Constants.analyses;
 
-        let _offset = 3;
+        let _offset = 4;
 
         /**
          * Getting all of Question and Answer Wizards
@@ -198,6 +198,73 @@ let DataStorage = (() => {
                 }, failure);
             }
                 
+        }
+
+        /**
+         * Create a new wizard cloned from a specific wizard.
+         * @param {number} id 
+         * @param {function} success 
+         * @param {function} failure 
+         * @return {void}
+         */
+        const cloneWizard = (id, success, failure) => {
+            if (env == "demo") {
+                // findWizard(id, (sourceWizard) => {
+                //     let desWizard = {
+                //         name: `Copy of ${sourceWizard.name}`
+                //     };
+
+                //     let wizardId = addWizard(desWizard);
+                //     let {calculations, subjects} = Analyses.options(id);// getOptions(id);
+                //     let analyses = Analyses.get(id);
+                //     let subjectsMap = {},
+                //         calculationsMap = {},
+                //         analysesMap = {};
+
+                //     //  Management of subjects
+                //     for (let i = 0; i < subjects.length; i ++) {
+                //         let curSubject = subjects[i];
+                //         curSubject.wizard_id = wizardId;
+                //         subjectsMap[subjects[i].id] = Subjects.insert(curSubject);
+                //     }
+
+                //     subjects = Subjects.get(wizardId);
+                //     for (let i = 0; i < subjects.length; i ++) {
+                //         let answers = subjects[i].answers;
+                //         if (typeof answers == "string") {
+                //             answers = JSON.parse(answers);
+                //         }
+
+                //         for (let j = 0; j < answers.length; j ++) {
+                //             if (answers[j].next) {
+                //                 answers[j].next = subjectsMap[answers[j].next];
+                //             }
+                //         }
+                //         subjects[i].answers = JSON.stringify(answers);
+                //         if (Subjects.update(subjects[i].id, subjects[i]) == false) {
+                //             alert("Failure to update subject");
+                //         }
+                //     }
+
+                //     console.log("Hello");
+                // })
+            } else {
+                sendRequest(QNAConfig.baseUrl(), {
+                    end_point: "wizards",
+                    action: "clone",
+                    params: JSON.stringify({
+                        id: id
+                    })
+                }, (response) => {
+                    if (response.status) {
+                        success({
+                            id: response.wizard_id
+                        });
+                    } else {
+                        success({});
+                    }
+                }, failure);
+            }
         }
 
         /**
@@ -348,6 +415,7 @@ let DataStorage = (() => {
         return {
             get: get,
             insert: addWizard,
+            clone: cloneWizard,
             remove: deleteWizard,
             update: updateWizard,
             find: findWizard,
@@ -357,7 +425,7 @@ let DataStorage = (() => {
 
     let Subjects = (() => {
         let _subjects = Constants.subjects;
-        let _offset = 1;
+        let _offset = 30;
 
         /**
          * Get all Subjects.
@@ -368,15 +436,15 @@ let DataStorage = (() => {
          */
         const get = (wizard_id, success, failure) => {
             if (env === "demo") {
-                let results = [];
-                for (let i = 0; i < _subjects.length; i ++) {
-                    if (_subjects[i].wizard_id == wizard_id) {
-                        let type = AnswerTypes.find(_subjects[i].type_id);
-                        let cur = _subjects[i];
-                        cur.type_name = type.type_name;
-                        results.push(cur);
-                    }
-                }
+                let results = _subjects.filter(subject => subject.wizard_id == wizard_id);
+                // for (let i = 0; i < _subjects.length; i ++) {
+                //     if (_subjects[i].wizard_id == wizard_id) {
+                //         let type = AnswerTypes.find(_subjects[i].type_id);
+                //         let cur = _subjects[i];
+                //         cur.type_name = type.type_name;
+                //         results.push(cur);
+                //     }
+                // }
                 if (typeof success === "function") {
                     success(results);
                 } else {
@@ -421,7 +489,7 @@ let DataStorage = (() => {
                 if (typeof success === "function") {
                     success(tempSubject);
                 } else {
-                    return offset -1;
+                    return _offset -1;
                 }
             } else {
                 sendRequest(QNAConfig.baseUrl(), {
@@ -582,7 +650,7 @@ let DataStorage = (() => {
      */
     let Calculations = (() => {
         let _calculations = Constants.calculations;
-        let _offset = 1;
+        let _offset = 10;
 
         /**
          * Get all Calculations.

@@ -23,13 +23,22 @@ function get_all_subjects($conn, $params) {
  */
 function create_subject($conn, $params) {
     $type_id = $params->type_id;
+    $answers = null;
     if (!isset($type_id) || empty($type_id)) {
         $type_id = 1;
     }
+
     $type = get_type($conn, $params->type_id);
 
+    if (isset($params->answers) && !empty($params->answers)) {
+        $answers = $params->answers;
+    } else {
+        $answers = $type['value'];
+    }
+    
+
     $query = "INSERT INTO `qna_subjects` (question, wizard_id, type_id, answers)
-                VALUES ('{$params->question}', {$params->wizard_id}, {$type['id']}, '{$type['value']}')";
+                VALUES ('{$params->question}', {$params->wizard_id}, {$type['id']}, '{$answers}')";
 
     if ($conn->query($query) === TRUE) {
         return [

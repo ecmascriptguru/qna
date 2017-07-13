@@ -203,7 +203,7 @@
             <tr>
                 <th>#</th>
                 <th>Name</th>
-                <th class="actions-header">Actions</th>
+                <th class="wide-actions-header">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -212,10 +212,13 @@
                 <td>{{@index}}</td>
                 <td>{{name}}</td>
                 <td>
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
+                        <button class="btn btn-default form-control wizard-clone" data-id="{{id}}">Clone</button>
+                    </div>
+                    <div class="col-xs-4">
                         <button class="btn btn-info form-control wizard-edit">Edit</button>
                     </div>
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
                         <button class="btn btn-danger form-control wizard-delete">Delete</button>
                     </div>
                 </td>
