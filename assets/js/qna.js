@@ -2594,6 +2594,13 @@ let QuestionRenderer = (() => {
                         alert("Please give us information necessary.");
                         return false;
                     } else {
+                        _result = {
+                            address,
+                            city,
+                            state,
+                            zip_code
+                        };
+
                         start(wizard);
                     }
             });
@@ -2711,7 +2718,7 @@ let QuestionRenderer = (() => {
         })
         .on("click", $(`#${settings.analysis.submitButton.id}`), (event) => {
             if (event.target.getAttribute("id") == settings.analysis.submitButton.id && confirm("Are you sure to submit your answers?")) {
-                DataStorage.Results.insert(_userId ,_selectedWizard.id, _done, (response) => {
+                DataStorage.Results.insert(_userId ,_selectedWizard.id, _result, _done, (response) => {
                     alert("Thanks for your answers.");
                     // renderWizardsPanel();
                     renderAnalysisPanel(_done, false);

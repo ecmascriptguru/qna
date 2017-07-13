@@ -40,22 +40,29 @@ function get_results_by_wizard($conn, $params) {
 function create_result($conn, $params) {
     $paramResult = $params->result;
     $paramAnswers = $params->answers;
+
+    $address = $paramResult->address;
+    $city = $paramResult->city;
+    $state = $paramResult->state;
+    $zip_code = $paramResult->zip_code;
     $user_id = $paramResult->user_id;
     if (!isset($paramResult->user_id) || empty($paramResult->user_id)) {
         $user_id = 1;   // Initialized with default value.
     }
 
-    $query = "INSERT INTO `qna_results` (user_id, wizard_id, analysis)
-                VALUES ('{$user_id}', {$paramResult->wizard_id}, 0)";
+    $query = "INSERT INTO `qna_results` (address, city, state, zip_code, user_id, wizard_id, analysis) VALUES ('{$address}', '{$city}', '{$state}', '{$zip_code}', '{$user_id}', {$paramResult->wizard_id}, 0)";
+
+    // var_dump($query);exit;
     
     if ($conn->query($query) === TRUE) {
         $result_id = $conn->insert_id;
         foreach($paramAnswers as $answer) {
+            $value = addslashes($answer->value);
             $query = "INSERT INTO `qna_answers` (result_id, subject_id, value, estimation)
-                        VALUES ({$result_id}, {$answer->id}, '{$answer->value}', 0)";
+                        VALUES ({$result_id}, {$answer->id}, '{$value}', 0)";
             
             if (!$conn->query($query)) {
-                die("Something went wrong in SQL");
+                die($query);
             }
         }
         return [
@@ -82,7 +89,15 @@ function get_result($conn, $params) {
     if ($result->num_rows > 0) {
         $resultRow = $result->fetch_assoc();
 
-        $query = "SELECT answers.*, subjects.question as question FROM `qna_answers` as answers, `qna_subjects` as subjects WHERE `answers`.`result_id`={$resultRow['id']} and `subjects`.id=`answers`.`subject_id`";
+        $query = "SELECT 
+                    answers.*, 
+                    subjects.question as question 
+                FROM 
+                    `qna_answers` as answers, 
+                    `qna_subjects` as subjects 
+                WHERE 
+                    `answers`.`result_id`={$resultRow['id']} and 
+                    `subjects`.id=`answers`.`subject_id`";
         $answers = array();
         $answerResult = $conn->query($query);
         if ($answerResult->num_rows > 0) {

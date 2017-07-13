@@ -1197,15 +1197,20 @@ let DataStorage = (() => {
          * Create a new result with answers given by leads
          * @param {number} user_id
          * @param {number} wizard_id 
+         * @param {object} info
          * @param {array} answers 
          * @param {function} success 
          * @param {function} failure 
          * @return {array} in case of that there are no callback function in parameter.
          */
-        const createResult = (user_id, wizard_id, answers, success, failure) => {
+        const createResult = (user_id, wizard_id, info, answers, success, failure) => {
             let result = {
                 id: _resultOffset,
                 user_id: user_id,
+                address: info.address,
+                city: info.city,
+                state: info.state,
+                zip_code: info.zip_code,
                 wizard_id,
                 analysis: null
             };
