@@ -305,6 +305,9 @@ let QuestionGenerator = (() => {
             backButton: {
                 id: "result-back-button"
             }
+        },
+        dictionaryWidget: {
+            id: "dictionary-widget"
         }
     }
 
@@ -321,8 +324,19 @@ let QuestionGenerator = (() => {
         $(`#${step}`).addClass("active")
 
         //  Redrawing tables
-        if (step == settings.wizards.panel.id) {
-            updateWizardsTable();
+
+        switch(step) {
+            case settings.wizards.panel.id:
+                updateWizardsTable();
+                break;
+
+            case settings.subjects.panel.id:
+            case settings.newSubject.panel.id:
+            case settings.newCalculation.panel.id:
+            case settings.newAnalysis.panel.id:
+                $(`#${settings.dictionaryWidget.id}`).show();
+                renderDictionaryWidget();
+                break;
         }
     }
 
@@ -720,6 +734,30 @@ let QuestionGenerator = (() => {
         });
 
         goTo(settings.newCalculation.panel.id);
+    }
+
+
+    const renderDictionaryWidget = () => {
+        DataStorage.Analysis.options(_selected_wizard, (option) => {
+            let subjectTagsTable = $(`#${settings.newAnalysis.subjectTagsTable.id}`),
+                subjectTagsTableSource = $(`#${settings.newAnalysis.subjectTagsTable.template.id}`).html(),
+                subjectTagsTableTemplate = Handlebars.compile(subjectTagsTableSource),
+                calculationTagsTable = $(`#${settings.newAnalysis.calculationTagsTable.id}`),
+                calculationTagsTableSource = $(`#${settings.newAnalysis.calculationTagsTable.template.id}`).html(),
+                calculationTagsTableTemplate = Handlebars.compile(calculationTagsTableSource);
+
+            subjectTagsTable.html(subjectTagsTableTemplate({
+                id: settings.newAnalysis.subjectTagsTable.id,
+                class: settings.newAnalysis.subjectTagsTable.class,
+                subjects: option.subjects
+            }));
+
+            calculationTagsTable.html(calculationTagsTableTemplate({
+                id: settings.newAnalysis.calculationTagsTable.id,
+                class: settings.newAnalysis.calculationTagsTable.class,
+                calculations: option.calculations
+            }));
+        });
     }
 
 
@@ -1839,6 +1877,30 @@ let QuestionGenerator = (() => {
                         }))
                     );
                 }
+            }
+        })
+        .on("click", `button.copy-tag`, (event) => {
+            let tag = event.target.getAttribute("data-tag");
+            let $curButton = $(event.target);
+
+            if (tag == "") {
+                alert("Something went wrong.");
+            } else {
+                let $body = $("body");
+                let $tmp = $("<input/>");
+                tag = "{{" + tag + "}}";
+                $body.append($tmp);
+                $tmp.val(tag).select();
+                document.execCommand("copy");
+                $tmp.remove();
+
+                $curButton.removeClass("btn-default").addClass("btn-success");
+
+                let tempTimer = window.setTimeout(() => {
+                    $curButton.removeClass("btn-success").addClass("btn-default");
+
+                    clearTimeout(tempTimer);
+                }, 5000);
             }
         })
         .on("click", `button#${settings.newAnalysis.analysisTagAddButton.id}`, (event) => {

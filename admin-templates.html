@@ -66,18 +66,19 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Question Tag</th>
-                <th>Answers Tag</th>
                 <th>Question</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             {{#each subjects}}
             <tr>
                 <td>{{@index}}</td>
-                <td>Q{{id}}</td>
-                <td>A{{id}}</td>
                 <td>{{question}}</td>
+                <td>
+                    <button class="btn btn-default copy-tag pull-left" data-tag="Q{{id}}" title="Copy Question tag to Clipboard">Q</button>
+                    <button class="btn btn-default copy-tag pull-right" data-tag="A{{id}}" title="Copy Answer tag to Clipboard">A</button>
+                </td>
             </tr>
             {{/each}}
         </tbody>
@@ -90,18 +91,19 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Name Tag</th>
-                <th>Value Tag</th>
                 <th>Calculation Name</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             {{#each calculations}}
             <tr>
                 <td>{{@index}}</td>
-                <td>Cal{{id}}</td>
-                <td>Val{{id}}</td>
                 <td>{{name}}</td>
+                <td>
+                    <button class="btn btn-default copy-tag pull-left" data-tag="Cal{{id}}" title="Copy Calculation Name tag to Clipboard">Cal</button>
+                    <button class="btn btn-default copy-tag pull-right" data-tag="Val{{id}}" title="Copy Calculation Value tag to Clipboard">Val</button>
+                </td>
             </tr>
             {{/each}}
         </tbody>

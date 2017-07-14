@@ -306,7 +306,7 @@ require("config/env.php");
                 </div>
             </div>
 
-            <div id="new-analysis-dictionary-tab" class="content col-md-4 col-xs-12">
+            <div id="dictionary-widget" class="content col-md-4 col-xs-12">
                 <ul class="nav nav-tabs">
                     <li role="presentation" class="active"><a href="#new-analysis-dictionary-subjects">Subjects</a></li>
                     <li role="presentation"><a href="#new-analysis-dictionary-calculations">Calculations</a></li>
