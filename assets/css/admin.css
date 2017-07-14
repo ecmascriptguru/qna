@@ -1,9 +1,11 @@
+textarea {
+    resize: vertical;}
 .content {
     display: none;}
     .content.active {
         display: block;}
 
-        
+
     .panel.panel-default .panel-heading {
         position: relative;}
         .panel.panel-default .panel-heading button.btn.new-subject,

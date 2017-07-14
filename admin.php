@@ -256,7 +256,7 @@ require("config/env.php");
                         </div>
 
                         <div class="form-group">
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                     <select id="new-analysis-comparison-type-select" class="form-control">
                                         <option value="subject">Subject Comparison</option>
@@ -276,7 +276,7 @@ require("config/env.php");
                                 <div class="col-lg-2 col-md-3 col-sm-3 col-xs-6">
                                     <button id="new-analysis-analysis-tag-add-button" class="btn btn-default form-control">Copy to Clipboard</button>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="row">
                                 <div class="col-xs-12">
                                     <label for="new-analysis-result-value">Analysis Text</label>
