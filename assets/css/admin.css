@@ -26,3 +26,5 @@ table tbody tr td {
         width: 240px;}
     table th.wide-actions-header {
         width: 360px;}
+    table th.small-actions-header {
+        width: 120px;}
