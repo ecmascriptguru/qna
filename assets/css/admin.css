@@ -1,7 +1,9 @@
-.panel {
+.content {
     display: none;}
-    .panel.active {
+    .content.active {
         display: block;}
+
+        
     .panel.panel-default .panel-heading {
         position: relative;}
         .panel.panel-default .panel-heading button.btn.new-subject,

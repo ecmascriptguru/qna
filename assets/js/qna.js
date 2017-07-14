@@ -13,7 +13,6 @@ let QuestionGenerator = (() => {
         _subjects = [],
         _calculations = [],
         _analyses = [],
-        $_container = null,
         $_wizardsTable = null;
 
     /**
@@ -318,7 +317,7 @@ let QuestionGenerator = (() => {
         if (!step) {
             step = settings.wizards.panel.id;
         }
-        $(".panel.active").removeClass("active");
+        $(".content.active").removeClass("active");
         $(`#${step}`).addClass("active")
 
         //  Redrawing tables
@@ -1418,7 +1417,8 @@ let QuestionGenerator = (() => {
         
         initWizardsTable();
 
-        $(document).on("click", "button.answer-option-delete", (event) => {
+        $(document)
+        .on("click", "button.answer-option-delete", (event) => {
             event.preventDefault();
             let $optionContainer = $(event.target).parents("div.row.answer-option");
             let optionsCount = $optionContainer.parent().children("div.row.answer-option").length;
@@ -1589,7 +1589,7 @@ let QuestionGenerator = (() => {
                 goTo(settings.subjects.panel.id);
             });
         })
-        .on("click", $(`button#${settings.newAnalysis.subjectComparisonAddButton.id}`), () => {
+        .on("click", `button#${settings.newAnalysis.subjectComparisonAddButton.id}`, () => {
             let $condition = $(`#${settings.newAnalysis.hiddenConditionInput.id}`),
                 $subjectSelect = $(`#${settings.newAnalysis.subjectSelect.id}`),
                 $operatorSelect = $(`#${settings.newAnalysis.operatorSelectForSubject.id}`),
@@ -1620,7 +1620,7 @@ let QuestionGenerator = (() => {
                 $value.val("");
             }
         })
-        .on("click", $(`#${settings.newAnalysis.calculationComparisonAddButton.id}`), (event) => {
+        .on("click", `#${settings.newAnalysis.calculationComparisonAddButton.id}`, (event) => {
             if (event.target.getAttribute("id") != settings.newAnalysis.calculationComparisonAddButton.id) {
                 return false;
             }
@@ -1880,8 +1880,7 @@ let QuestionGenerator = (() => {
      * @param { string } baseUrl 
      * @return {void}
      */
-    const init = (containerID, baseUrl) => {
-        $_container = $(`#${containerID}`);
+    const init = (baseUrl) => {
         _apiBaseUrl = `${baseUrl}api/api.php`;
         initComponents();
         goTo();
@@ -2633,7 +2632,7 @@ let QuestionRenderer = (() => {
                 })
             }
         })
-        .on("click", $(`#${settings.subject.panel.id} div.panel-footer button.subject-control-button`), (event) => {
+        .on("click", `#${settings.subject.panel.id} div.panel-footer button.subject-control-button`, (event) => {
             // event.preventDefault();
             let targetID = event.target.getAttribute("data-target");
 
@@ -2713,14 +2712,14 @@ let QuestionRenderer = (() => {
                 $("button.subject-control-button.next").attr({'data-target': answers[index].next});
             }
         })
-        .on("keypress", $(`#${settings.subject.panel.id} div.panel-body`), (event) => {
+        .on("keypress", `#${settings.subject.panel.id} div.panel-body`, (event) => {
             let keyCode = event.keyCode ? event.keyCode : event.which;
 
             if (keyCode == 13 && event.target.tagName.toLowerCase() != "textarea") {
                 $(`#${settings.subject.panel.id} button.next`).click();
             }
         })
-        .on("click", $(`#${settings.analysis.backToAnswersButton.id}`), (event) => {
+        .on("click", `#${settings.analysis.backToAnswersButton.id}`, (event) => {
             if (event.target.getAttribute("id") == settings.analysis.backToAnswersButton.id) {
                 let buffer = _done.pop();
                 _selectedSubject = buffer;
@@ -2728,7 +2727,7 @@ let QuestionRenderer = (() => {
                 goTo(settings.wizards.panel.id);
             }
         })
-        .on("click", $(`#${settings.analysis.submitButton.id}`), (event) => {
+        .on("click", `#${settings.analysis.submitButton.id}`, (event) => {
             if (event.target.getAttribute("id") == settings.analysis.submitButton.id && confirm("Are you sure to submit your answers?")) {
                 DataStorage.Results.insert(_userId ,_selectedWizard.id, _result, _done, (response) => {
                     alert("Thanks for your answers.");
