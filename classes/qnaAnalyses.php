@@ -35,8 +35,9 @@ function get_all_analyses($conn, $params) {
  *  Creating a new fresh analysis
  */
 function create_analysis($conn, $params) {
+    $result = mysqli_real_escape_string($conn, $params->result);
     $query = "INSERT INTO `qna_analyses` (`name`, `wizard_id`, `condition`, `result`)
-                VALUES ('{$params->name}', {$params->wizard_id}, '{$params->condition}', '{$params->result}')";
+                VALUES ('{$params->name}', {$params->wizard_id}, '{$params->condition}', '{$result}')";
 
     if ($conn->query($query) === TRUE) {
         return [
@@ -78,7 +79,8 @@ function get_analysis($conn, $params) {
  *  updating a analysis
  */
 function update_analysis($conn, $params) {
-    $query = "UPDATE `qna_analyses` SET `name`='{$params->name}', `condition`='{$params->condition}', `result`='{$params->result}' WHERE id={$params->id}";
+    $result = mysqli_real_escape_string($conn, $params->result);
+    $query = "UPDATE `qna_analyses` SET `name`='{$params->name}', `condition`='{$params->condition}', `result`='{$result}' WHERE id={$params->id}";
     
     if ($conn->query($query) === TRUE) {
         return [

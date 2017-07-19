@@ -5,7 +5,7 @@ let QNAConfig = (() => {
 
     const getBaseUrl = () => {
         if (env === "dev" || env === "demo") {
-            baseUrl = "http://qna.dev:8000/api/api.php";
+            baseUrl = "http://qna.dev/api/api.php";
         } else {
             baseUrl = "http://98.142.208.206/~alexdev/api/api.php";
         }
