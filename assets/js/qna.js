@@ -320,6 +320,9 @@ let QuestionGenerator = (() => {
         if (!step) {
             step = settings.wizards.panel.id;
         }
+        if (step == "wizards-panel") {
+            $(`#${settings.dictionaryWidget.id}`).hide();
+        }
         $(".content.active").removeClass("active");
         $(`#${step}`).addClass("active")
 
@@ -1604,6 +1607,16 @@ let QuestionGenerator = (() => {
             DataStorage.Analysis.find(id, (analysis) => {
                 renderNewAnalysisForm(analysis);
                 goTo(settings.newAnalysis.panel.id);
+            });
+        })
+        .on("click", "button.analysis-delete", (event) => {
+            let $record = $(event.target).parents("tr");
+            let id = $record.attr("data-analysis-id");
+
+            DataStorage.Analysis.remove(id, (result) => {
+                if (result) {
+                    $record.remove();
+                }
             });
         })
         .on("click", "button.result-view", (event) => {
